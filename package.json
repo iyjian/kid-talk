@@ -24,6 +24,7 @@
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^8.0.0",
+    "@nestjs/event-emitter": "^1.4.1",
     "@nestjs/platform-express": "^8.0.0",
     "@types/crypto-js": "^4.1.1",
     "crypto-js": "^4.1.1",
