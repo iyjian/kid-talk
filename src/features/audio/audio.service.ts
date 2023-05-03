@@ -4,6 +4,20 @@ import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import crypto from 'crypto';
 import moment from 'moment';
 import WebSocket from 'ws';
+import Speaker from 'speaker';
+import {Readable} from 'stream'
+
+type Text2SpeechResponse = {
+  "code": number,
+  "message": string,
+  "sid": string,
+  "data":{
+      "audio":string,
+      "ced":string,
+      "status":number
+  }
+}
+
 
 @Injectable()
 export class AudioService {
@@ -13,6 +27,11 @@ export class AudioService {
   private readonly logger = new Logger(AudioService.name);
   private ws: WebSocket;
   private text2speechClient: WebSocket;
+  private speaker = new Speaker({
+    channels: 1,          // 1 channel
+    bitDepth: 16,         // 每个样本占16个比特(2个字节)
+    sampleRate: 16000     // 每秒钟16000个采样(一秒钟32kb数据量)
+  });
 
   constructor(
     private readonly configService: ConfigService,
@@ -61,8 +80,11 @@ export class AudioService {
   }
 
   @OnEvent('event.audio.text2speech')
-  handleOrderCreatedEvent(payload: any) {
-    console.log(payload);
+  handleText2SpeechResult(payload: Text2SpeechResponse) {
+    // https://www.xfyun.cn/doc/tts/online_tts/API.html#%E6%8E%A5%E5%8F%A3%E8%B0%83%E7%94%A8%E6%B5%81%E7%A8%8B
+    // 服务端可能返回data为空的帧，并且错误码为0，这种帧客户端可以直接忽略，不解析(搜索上面链接的注意事项)
+    if (!payload.data) return
+    Readable.from(Buffer.from(payload.data.audio, 'base64')).pipe(this.speaker)
   }
 
   getAuthorization(
@@ -99,7 +121,8 @@ export class AudioService {
       },
       business: {
         aue: 'raw',
-        vcn: 'xiaoyan',
+        auf: 'audio/L16;rate=16000',
+        vcn,
         pitch,
         speed,
         volume,
