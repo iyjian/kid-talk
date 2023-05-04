@@ -4,42 +4,78 @@ import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import crypto from 'crypto';
 import moment from 'moment';
 import WebSocket from 'ws';
-import Speaker from 'speaker';
-import {Readable} from 'stream'
+import { Server, Socket } from 'socket.io';
+import {
+  MessageBody,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+  WsResponse,
+  OnGatewayConnection,
+} from '@nestjs/websockets';
 
 type Text2SpeechResponse = {
-  "code": number,
-  "message": string,
-  "sid": string,
-  "data":{
-      "audio":string,
-      "ced":string,
-      "status":number
-  }
-}
+  code: number;
+  message: string;
+  sid: string;
+  data: {
+    audio: string;
+    ced: string;
+    status: number;
+  };
+};
 
-
-@Injectable()
+// @Injectable()
+// @WebSocketGateway({
+//   cors: {
+//     origin: '*',
+//   },
+// })
+// implements OnGatewayConnection
 export class AudioService {
   private readonly appId = this.configService.get('kdxf.appId');
   private readonly apiSecret = this.configService.get('kdxf.apiSecret');
   private readonly apiKey = this.configService.get('kdxf.apiKey');
   private readonly logger = new Logger(AudioService.name);
-  private ws: WebSocket;
+  // private ws: WebSocket;
   private text2speechClient: WebSocket;
-  private speaker = new Speaker({
-    channels: 1,          // 1 channel
-    bitDepth: 16,         // 每个样本占16个比特(2个字节)
-    sampleRate: 16000     // 每秒钟16000个采样(一秒钟32kb数据量)
-  });
+  @WebSocketServer()
+  server: Server;
+  private readonly socketUsers = {};
 
   constructor(
     private readonly configService: ConfigService,
     private eventEmitter: EventEmitter2,
   ) {
-    this.init();
+    // this.init();
   }
 
+  /**
+   * 为每个客户端新建两个text2speech speech2text的连接
+   *
+   * @param client
+   */
+  // handleConnection(client: Socket) {
+  //   this.logger.debug(`socketio client connected: ${client.id}`);
+  //   this.socketUsers[client.id] = {
+  //     client,
+  //     text2speechClient: this.initClient('/v2/tts'),
+  //     speech2TextClient: this.initClient('/v2/iat'),
+  //   };
+  //   this.socketUsers[client.id].text2speechClient.onmessage = (event: any) => {
+  //     this.eventEmitter.emit(
+  //       'event.audio.text2speech',
+  //       client.id,
+  //       JSON.parse(event.data.toString()),
+  //     );
+  //   };
+  // }
+
+  /**
+   *
+   * @param path
+   * @returns
+   */
   initClient(path: string) {
     const host = 'iat-api.xfyun.cn';
     const date = moment()
@@ -56,68 +92,59 @@ export class AudioService {
         perMessageDeflate: false,
       },
     );
-
-    // this.text2speechClient.onmessage = (event) => {
-    //   this.eventEmitter.emit(
-    //     'event.audio.text2speech',
-    //     JSON.parse(event.data.toString()),
-    //   );
-    // };
-
-    // this.text2speechClient.onopen = () => {
-    //   this.logger.debug('ws connected');
-    //   this.text2speech('hello world');
-    // };
   }
 
-  init() {
-    const host = 'iat-api.xfyun.cn';
-    const date = moment()
-      .subtract(8, 'hours')
-      .format('ddd, DD MMM YYYY HH:mm:ss GMT');
-    const authorization = this.getAuthorization(host, date, '/v2/tts');
-    this.logger.debug(`authorization: ${authorization} date: ${date}`);
+  // init() {
+  //   const host = 'iat-api.xfyun.cn';
+  //   const date = moment()
+  //     .subtract(8, 'hours')
+  //     .format('ddd, DD MMM YYYY HH:mm:ss GMT');
+  //   const authorization = this.getAuthorization(host, date, '/v2/tts');
+  //   this.logger.debug(`authorization: ${authorization} date: ${date}`);
 
-    this.text2speechClient = new WebSocket(
-      `wss://iat-api.xfyun.cn/v2/tts?authorization=${authorization}&date=${encodeURIComponent(
-        date,
-      )}&host=${host}`,
-      {
-        perMessageDeflate: false,
-      },
-    );
+  //   this.text2speechClient = new WebSocket(
+  //     `wss://iat-api.xfyun.cn/v2/tts?authorization=${authorization}&date=${encodeURIComponent(
+  //       date,
+  //     )}&host=${host}`,
+  //     {
+  //       perMessageDeflate: false,
+  //     },
+  //   );
 
-    // this.ws = new WebSocket(
-    //   `wss://iat-api.xfyun.cn/v2/iat?authorization=${authorization}&date=${encodeURIComponent(
-    //     date,
-    //   )}&host=${host}`,
-    //   {
-    //     perMessageDeflate: false,
-    //   },
-    // );
+  //   // this.ws = new WebSocket(
+  //   //   `wss://iat-api.xfyun.cn/v2/iat?authorization=${authorization}&date=${encodeURIComponent(
+  //   //     date,
+  //   //   )}&host=${host}`,
+  //   //   {
+  //   //     perMessageDeflate: false,
+  //   //   },
+  //   // );
 
-    this.text2speechClient.onmessage = (event) => {
-      this.eventEmitter.emit(
-        'event.audio.text2speech',
-        JSON.parse(event.data.toString()),
-      );
-    };
+  //   this.text2speechClient.onmessage = (event) => {
+  //     this.eventEmitter.emit(
+  //       'event.audio.text2speech',
+  //       JSON.parse(event.data.toString()),
+  //     );
+  //   };
 
-    this.text2speechClient.onopen = () => {
-      this.logger.debug('ws connected');
-      this.text2speech('hello world');
-    };
-  }
+  //   this.text2speechClient.onopen = () => {
+  //     this.logger.debug('ws connected');
+  //     this.text2speech('hello world');
+  //   };
+  // }
 
   @OnEvent('event.audio.text2speech')
-  handleText2SpeechResult(payload: Text2SpeechResponse) {
+  handleText2SpeechResult(clientId: string, payload: Text2SpeechResponse) {
     // https://www.xfyun.cn/doc/tts/online_tts/API.html#%E6%8E%A5%E5%8F%A3%E8%B0%83%E7%94%A8%E6%B5%81%E7%A8%8B
     // 服务端可能返回data为空的帧，并且错误码为0，这种帧客户端可以直接忽略，不解析(搜索上面链接的注意事项)
-    if (!payload.data) return
-    Readable.from(Buffer.from(payload.data.audio, 'base64')).pipe(this.speaker)
+    if (!payload.data) return;
+    this.logger.verbose(
+      `event.audio.text2speech - clientId: ${clientId} payload: ${payload}`,
+    );
+    // Readable.from(Buffer.from(payload.data.audio, 'base64'));
   }
 
-  getAuthorization(
+  private getAuthorization(
     host: string,
     date: string,
     path: string = '/v2/iat',
