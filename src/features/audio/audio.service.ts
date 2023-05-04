@@ -40,6 +40,36 @@ export class AudioService {
     this.init();
   }
 
+  initClient(path: string) {
+    const host = 'iat-api.xfyun.cn';
+    const date = moment()
+      .subtract(8, 'hours')
+      .format('ddd, DD MMM YYYY HH:mm:ss GMT');
+    const authorization = this.getAuthorization(host, date, path);
+    this.logger.debug(`authorization: ${authorization} date: ${date}`);
+
+    return new WebSocket(
+      `wss://${host}${path}?authorization=${authorization}&date=${encodeURIComponent(
+        date,
+      )}&host=${host}`,
+      {
+        perMessageDeflate: false,
+      },
+    );
+
+    // this.text2speechClient.onmessage = (event) => {
+    //   this.eventEmitter.emit(
+    //     'event.audio.text2speech',
+    //     JSON.parse(event.data.toString()),
+    //   );
+    // };
+
+    // this.text2speechClient.onopen = () => {
+    //   this.logger.debug('ws connected');
+    //   this.text2speech('hello world');
+    // };
+  }
+
   init() {
     const host = 'iat-api.xfyun.cn';
     const date = moment()
