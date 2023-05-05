@@ -51,9 +51,6 @@ devDependencies:
   '@nestjs/testing':
     specifier: ^8.0.0
     version: 8.4.7(@nestjs/common@8.4.7)(@nestjs/core@8.4.7)(@nestjs/platform-express@8.4.7)
-  '@types/audiobuffer-to-wav':
-    specifier: ^1.0.2
-    version: 1.0.2
   '@types/express':
     specifier: ^4.17.13
     version: 4.17.17
@@ -1177,10 +1174,6 @@ packages:
 
   /@tsconfig/node16@1.0.3:
     resolution: {integrity: sha512-yOlFc+7UtL/89t2ZhjPvvB/DeAr3r+Dq58IgzsFkOAvVC6NMJXmCGjbptdXdR9qsX7pKcTL+s87FtYREi2dEEQ==}
-    dev: true
-
-  /@types/audiobuffer-to-wav@1.0.2:
-    resolution: {integrity: sha512-bWEtCSS7ywZUyb0qIxR+MR0lqq9tJIcAJfC3rJLw/HTKqfNZ6suKbIqFja7YQObSWAJA0lRTTxTzTqUwgEFPog==}
     dev: true
 
   /@types/babel__core@7.20.0:
