@@ -6,4 +6,15 @@ const socket = io('http://localhost:3000', {
 
 console.log(socket);
 
-socket.emit('events', { name: 'Nest' });
+// setTimeout(() => {
+//
+// }, 2000);
+
+socket.on('ready', (data) => {
+  console.log(data);
+  socket.emit('text2speech', { text: 'hello world' });
+});
+
+socket.on('audio', (data) => {
+  console.log(data);
+});

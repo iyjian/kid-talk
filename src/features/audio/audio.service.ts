@@ -14,6 +14,7 @@ import {
   OnGatewayConnection,
   ConnectedSocket,
 } from '@nestjs/websockets';
+import toWav from 'audiobuffer-to-wav';
 
 type Text2SpeechResponse = {
   code: number;
@@ -63,6 +64,9 @@ export class AudioService implements OnGatewayConnection {
       client,
       text2speechClient: this.initClient('/v2/tts'),
       speech2TextClient: this.initClient('/v2/iat'),
+    };
+    this.socketUsers[client.id].text2speechClient.onopen = () => {
+      client.emit('ready', { text2speech: true });
     };
     this.socketUsers[client.id].text2speechClient.onmessage = (event: any) => {
       this.eventEmitter.emit(
@@ -144,10 +148,10 @@ export class AudioService implements OnGatewayConnection {
       `event.audio.text2speech - clientId: ${clientId} payload: ${payload}`,
     );
     // Readable.from(Buffer.from(payload.data.audio, 'base64'));
-    this.socketUsers[clientId].client.send(payload.data.audio);
+    this.socketUsers[clientId].client.emit('audio', payload.data.audio);
   }
 
-  private getAuthorization(
+  public getAuthorization(
     host: string,
     date: string,
     path: string = '/v2/iat',
@@ -168,15 +172,17 @@ export class AudioService implements OnGatewayConnection {
     return authorization;
   }
 
-  @SubscribeMessage('events')
+  @SubscribeMessage('text2speech')
   handleClientEvents(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { text: string },
   ) {
     console.log(client.id, data);
+    this.text2speech(this.socketUsers[client.id].text2speechClient, data.text);
   }
 
   private text2speech(
+    wsClient: WebSocket,
     text: string,
     speed = 50,
     volume = 50,
@@ -188,7 +194,8 @@ export class AudioService implements OnGatewayConnection {
         app_id: this.appId,
       },
       business: {
-        aue: 'raw',
+        aue: 'lame',
+        sfl: 1,
         auf: 'audio/L16;rate=16000',
         vcn,
         pitch,
@@ -200,6 +207,12 @@ export class AudioService implements OnGatewayConnection {
         text: Buffer.from(text).toString('base64'),
       },
     };
-    this.text2speechClient.send(JSON.stringify(payload));
+    wsClient.send(JSON.stringify(payload));
+  }
+
+  public PCMBase64ToWAVBase64(pcmBase64: string): string {
+    // AudioContext
+    // toWav(Buffer.from(pcmBase64, 'base64'))
+    return '';
   }
 }
