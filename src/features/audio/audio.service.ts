@@ -12,6 +12,7 @@ import {
   WebSocketServer,
   WsResponse,
   OnGatewayConnection,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 
 type Text2SpeechResponse = {
@@ -25,22 +26,23 @@ type Text2SpeechResponse = {
   };
 };
 
-// @Injectable()
-// @WebSocketGateway({
-//   cors: {
-//     origin: '*',
-//   },
-// })
-// implements OnGatewayConnection
-export class AudioService {
+@Injectable()
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
+//
+export class AudioService implements OnGatewayConnection {
+  // @WebSocketServer()
+  // server: Server;
   private readonly appId = this.configService.get('kdxf.appId');
   private readonly apiSecret = this.configService.get('kdxf.apiSecret');
   private readonly apiKey = this.configService.get('kdxf.apiKey');
   private readonly logger = new Logger(AudioService.name);
   // private ws: WebSocket;
   private text2speechClient: WebSocket;
-  @WebSocketServer()
-  server: Server;
+
   private readonly socketUsers = {};
 
   constructor(
@@ -55,21 +57,21 @@ export class AudioService {
    *
    * @param client
    */
-  // handleConnection(client: Socket) {
-  //   this.logger.debug(`socketio client connected: ${client.id}`);
-  //   this.socketUsers[client.id] = {
-  //     client,
-  //     text2speechClient: this.initClient('/v2/tts'),
-  //     speech2TextClient: this.initClient('/v2/iat'),
-  //   };
-  //   this.socketUsers[client.id].text2speechClient.onmessage = (event: any) => {
-  //     this.eventEmitter.emit(
-  //       'event.audio.text2speech',
-  //       client.id,
-  //       JSON.parse(event.data.toString()),
-  //     );
-  //   };
-  // }
+  handleConnection(client: Socket) {
+    this.logger.debug(`socketio client connected: ${client.id}`);
+    this.socketUsers[client.id] = {
+      client,
+      text2speechClient: this.initClient('/v2/tts'),
+      speech2TextClient: this.initClient('/v2/iat'),
+    };
+    this.socketUsers[client.id].text2speechClient.onmessage = (event: any) => {
+      this.eventEmitter.emit(
+        'event.audio.text2speech',
+        client.id,
+        JSON.parse(event.data.toString()),
+      );
+    };
+  }
 
   /**
    *
@@ -142,6 +144,7 @@ export class AudioService {
       `event.audio.text2speech - clientId: ${clientId} payload: ${payload}`,
     );
     // Readable.from(Buffer.from(payload.data.audio, 'base64'));
+    this.socketUsers[clientId].client.send(payload.data.audio);
   }
 
   private getAuthorization(
@@ -165,7 +168,15 @@ export class AudioService {
     return authorization;
   }
 
-  text2speech(
+  @SubscribeMessage('events')
+  handleClientEvents(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { text: string },
+  ) {
+    console.log(client.id, data);
+  }
+
+  private text2speech(
     text: string,
     speed = 50,
     volume = 50,
