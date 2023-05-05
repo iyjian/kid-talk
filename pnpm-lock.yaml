@@ -22,15 +22,6 @@ dependencies:
   '@nestjs/websockets':
     specifier: 9.1.6
     version: 9.1.6(@nestjs/common@8.4.7)(@nestjs/core@8.4.7)(@nestjs/platform-socket.io@9.1.6)(reflect-metadata@0.1.13)(rxjs@7.8.1)
-  '@types/crypto-js':
-    specifier: ^4.1.1
-    version: 4.1.1
-  audiobuffer-to-wav:
-    specifier: ^1.0.0
-    version: 1.0.0
-  crypto-js:
-    specifier: ^4.1.1
-    version: 4.1.1
   moment:
     specifier: ^2.29.4
     version: 2.29.4
@@ -1246,10 +1237,6 @@ packages:
     dependencies:
       '@types/node': 16.18.25
 
-  /@types/crypto-js@4.1.1:
-    resolution: {integrity: sha512-BG7fQKZ689HIoc5h+6D2Dgq1fABRa0RbBWKBd9SP/MVRVXROflpm5fhwyATX5duFmbStzyzyycPB8qUYKDH3NA==}
-    dev: false
-
   /@types/eslint-scope@3.7.4:
     resolution: {integrity: sha512-9K4zoImiZc3HlIp6AVUDE4CWYx22a+lhSZMYNpbjW04+YF0KWj4pJXnEMjdnFTiQibFFmElcsasJXDbdI/EPhA==}
     dependencies:
@@ -1820,10 +1807,6 @@ packages:
   /asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
 
-  /audiobuffer-to-wav@1.0.0:
-    resolution: {integrity: sha512-CAoir4NRrAzAgYo20tEMiKZR84coE8bq/L+H2kwAaULVY4+0xySsEVtNT5raqpzmH6y0pqzY6EmoViLd9W8F/w==}
-    dev: false
-
   /axios@0.27.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
@@ -2259,10 +2242,6 @@ packages:
       shebang-command: 2.0.0
       which: 2.0.2
     dev: true
-
-  /crypto-js@4.1.1:
-    resolution: {integrity: sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==}
-    dev: false
 
   /cssom@0.3.8:
     resolution: {integrity: sha512-b0tGHbfegbhPJpxpiBPU2sCkigAqtM9O121le6bbOlgyV+NyGyCmVfJ6QW9eRjz8CpNfWEOYBIMIGRYkLwsIYg==}
