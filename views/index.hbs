@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <title>Socket.io</title>
+  </head>
+  <body>
+    <input id="text"/>
+    <button id="btn">朗读</button>
+  </body>
+</html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+<script>
+let isReady = false
+const socket = io('http://localhost:3000');
+
+document.querySelector('#btn').addEventListener('click', () => {
+  socket.emit('text2speech', { text: document.querySelector('#text').value }, result => {
+    console.log(result)
+    playAudio(result)
+  });
+})
+
+function playAudio(data) {
+  const blob=new Blob([data], {type : 'audio/ogg'});
+  const blobUrl = URL.createObjectURL(blob);
+  const audio = new Audio(blobUrl);
+  audio.play();
+}
+
+
+function convertDataURIToBinary(base64) {
+  var raw = window.atob(base64);
+  var rawLength = raw.length;
+  var array = new Uint8Array(new ArrayBuffer(rawLength));
+
+  for(i = 0; i < rawLength; i++) {
+    array[i] = raw.charCodeAt(i);
+  }
+  return array;
+}
+</script>
