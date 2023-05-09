@@ -36,3 +36,17 @@ var audio = new Audio(blobUrl);
 
 audio.play();
 ```
+
+## m4a转mp3
+```bash
+ffmpeg -i input.m4a -c:v copy -c:a libmp3lame -q:a 4 output.mp3
+```
+
+ffmpeg -i test.m4a -ac 1 -ar 8000 -f s16le test.pcm
+
+
+
+## 更改采样率
+```bash
+ffmpeg -i test.m4a -ac 1 -ar 16000 -c:v copy -c:a libmp3lame -q:a 4  -y test.mp3
+```

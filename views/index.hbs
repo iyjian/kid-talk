@@ -8,8 +8,10 @@
   </body>
 </html>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/RecordRTC/5.5.4/RecordRTC.js"></script>
+
 <script>
-let isReady = false
+
 const socket = io('http://localhost:3000');
 
 document.querySelector('#btn').addEventListener('click', () => {
@@ -37,4 +39,32 @@ function convertDataURIToBinary(base64) {
   }
   return array;
 }
+
+navigator.mediaDevices.getUserMedia({
+    audio: true
+}).then(async function(stream) {
+    const recorder = RecordRTC(stream, {
+        type: 'audio',
+        mimeType: 'audio/wav',
+        timeSlice: 1000,
+        sampleRate: 8000,
+        numberOfAudioChannels: 1,
+        ondataavailable: function(blob) {},
+    });
+
+    console.log(recorder)
+
+    recorder.startRecording();
+
+    const sleep = m => new Promise(r => setTimeout(r, m));
+    await sleep(3000);
+
+    recorder.stopRecording(function() {
+        let blob = recorder.getBlob();
+        blob.arrayBuffer().then(buffer => {
+          socket.emit('speech2text', buffer)
+        })
+    });
+});
+
 </script>

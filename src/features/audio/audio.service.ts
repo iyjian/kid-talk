@@ -73,4 +73,9 @@ export class AudioService implements OnGatewayConnection {
     });
     return result.data;
   }
+
+  @SubscribeMessage('speech2text')
+  async handleSpeech2Text(@MessageBody() data: Buffer) {
+    console.log(data);
+  }
 }
