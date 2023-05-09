@@ -19,12 +19,13 @@ import baiduAIP from 'baidu-aip-sdk';
 })
 //
 export class AudioService implements OnGatewayConnection {
+  private readonly logger = new Logger(AudioService.name);
   private readonly baiduAIPAccessKey =
     this.configService.get('baidu.accessKey');
   private readonly baiduAIPAccessSecret =
     this.configService.get('baidu.accessSecret');
   private readonly baiduAIPAppId = this.configService.get('baidu.accessKey');
-  private readonly logger = new Logger(AudioService.name);
+
   private readonly client = new baiduAIP.speech(
     this.baiduAIPAppId,
     this.baiduAIPAccessKey,
@@ -33,22 +34,7 @@ export class AudioService implements OnGatewayConnection {
 
   private readonly socketUsers = {};
 
-  constructor(
-    private readonly configService: ConfigService,
-    private eventEmitter: EventEmitter2,
-  ) {
-    console.log(this.configService.get('baidu.accessKey'));
-    console.log(this.configService.get('baidu.accessSecret'));
-    // this.client.text2audio('百度语音合成测试').then(
-    //   function (result) {
-    //     console.log(result);
-    //   },
-    //   function (e) {
-    //     // 发生网络错误
-    //     console.log(e);
-    //   },
-    // );
-  }
+  constructor(private readonly configService: ConfigService) {}
 
   /**
    * 为每个客户端新建两个text2speech speech2text的连接
@@ -63,14 +49,15 @@ export class AudioService implements OnGatewayConnection {
   }
 
   @SubscribeMessage('text2speech')
-  async handleClientEvents(@MessageBody() data: { text: string }) {
-    this.logger.debug(`handleClientEvents - text2speech - text: ${data.text}`);
+  async handleClientEvents(@MessageBody() text: string) {
+    this.logger.debug(`handleClientEvents - text2speech - text: ${text}`);
     // 调用调试工具
     // https://console.bce.baidu.com/tools/?_=1669807341890#/api?product=AI&project=%E8%AF%AD%E9%9F%B3%E6%8A%80%E6%9C%AF&parent=%E8%AF%AD%E9%9F%B3%E5%90%88%E6%88%90&api=text2audio&method=post
-    const result = await this.client.text2audio(data.text, {
+    const result = await this.client.text2audio(text, {
       per: 5,
       spd: 6,
     });
+    console.log(result.data.toString('base64'));
     return result.data;
   }
 
