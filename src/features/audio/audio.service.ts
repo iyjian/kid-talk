@@ -71,6 +71,7 @@ export class AudioService implements OnGatewayConnection {
       per: 5,
       spd: 6,
     });
+    console.log(result.data.toString('base64'))
     return result.data;
   }
 
