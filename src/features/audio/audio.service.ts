@@ -49,11 +49,11 @@ export class AudioService implements OnGatewayConnection {
   }
 
   @SubscribeMessage('text2speech')
-  async handleClientEvents(@MessageBody() text: string) {
-    this.logger.debug(`handleClientEvents - text2speech - text: ${text}`);
+  async handleClientEvents(@MessageBody() data: string) {
+    this.logger.debug(`handleClientEvents - text2speech - text: ${data}`);
     // 调用调试工具
     // https://console.bce.baidu.com/tools/?_=1669807341890#/api?product=AI&project=%E8%AF%AD%E9%9F%B3%E6%8A%80%E6%9C%AF&parent=%E8%AF%AD%E9%9F%B3%E5%90%88%E6%88%90&api=text2audio&method=post
-    const result = await this.client.text2audio(text, {
+    const result = await this.client.text2audio(data, {
       per: 5,
       spd: 6,
     });

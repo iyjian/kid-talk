@@ -5,6 +5,8 @@
   <body>
     <input id="text"/>
     <button id="btn">朗读</button>
+    <button id="startRecord">录音开始</button>
+    <button id="stopRecord">录音结束</button>
   </body>
 </html>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
@@ -40,10 +42,15 @@ function convertDataURIToBinary(base64) {
   return array;
 }
 
-navigator.mediaDevices.getUserMedia({
+let stream
+let recorder
+
+async function initUserMedia () {
+  stream = await navigator.mediaDevices.getUserMedia({
     audio: true
-}).then(async function(stream) {
-    const recorder = RecordRTC(stream, {
+  })
+
+  recorder = RecordRTC(stream, {
         type: 'audio',
         mimeType: 'audio/wav',
         timeSlice: 1000,
@@ -51,20 +58,22 @@ navigator.mediaDevices.getUserMedia({
         numberOfAudioChannels: 1,
         ondataavailable: function(blob) {},
     });
+}
 
-    console.log(recorder)
+initUserMedia()
 
-    recorder.startRecording();
+document.querySelector('#startRecord').addEventListener('click', () => {
+  recorder.startRecording();
+})
 
-    const sleep = m => new Promise(r => setTimeout(r, m));
-    await sleep(3000);
-
-    recorder.stopRecording(function() {
+document.querySelector('#stopRecord').addEventListener('click', () => {
+      recorder.stopRecording(function() {
         let blob = recorder.getBlob();
         blob.arrayBuffer().then(buffer => {
           socket.emit('speech2text', buffer)
         })
     });
-});
+})
+
 
 </script>
