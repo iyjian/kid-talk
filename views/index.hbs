@@ -7,6 +7,9 @@
     <button id="btn">朗读</button>
     <button id="startRecord">录音开始</button>
     <button id="stopRecord">录音结束</button>
+    <p id="conversation">
+
+    </p>
   </body>
 </html>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
@@ -30,7 +33,6 @@ function playAudio(data) {
   audio.play();
 }
 
-
 function convertDataURIToBinary(base64) {
   var raw = window.atob(base64);
   var rawLength = raw.length;
@@ -51,13 +53,13 @@ async function initUserMedia () {
   })
 
   recorder = RecordRTC(stream, {
-        type: 'audio',
-        mimeType: 'audio/wav',
-        timeSlice: 1000,
-        sampleRate: 8000,
-        numberOfAudioChannels: 1,
-        ondataavailable: function(blob) {},
-    });
+    type: 'audio',
+    mimeType: 'audio/wav',
+    timeSlice: 1000,
+    sampleRate: 16000,
+    numberOfAudioChannels: 1,
+    ondataavailable: function(blob) {},
+  });
 }
 
 initUserMedia()
@@ -70,7 +72,12 @@ document.querySelector('#stopRecord').addEventListener('click', () => {
       recorder.stopRecording(function() {
         let blob = recorder.getBlob();
         blob.arrayBuffer().then(buffer => {
-          socket.emit('speech2text', buffer)
+          socket.emit('speech2text', buffer, result => {
+            console.log(result)
+            if (result && result.result && result.result.length > 0) {
+              document.querySelector('#conversation').value += result.result[0] + '</br>'
+            }
+          })
         })
     });
 })

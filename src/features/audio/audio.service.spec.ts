@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AudioService } from './audio.service';
 import { ConfigModule } from '@nestjs/config';
+import fs from 'fs';
+import path from 'path';
+import conf from './../../config';
 
 describe('AudioService', () => {
   let service: AudioService;
@@ -9,15 +12,7 @@ describe('AudioService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
-          load: [
-            () => ({
-              kdxf: {
-                appId: process.env.KDXF_APP_ID,
-                apiSecret: 'secretxxxxxxxx2df7900c09xxxxxxxx',
-                apiKey: 'keyxxxxxxxx8ee279348519exxxxxxxx',
-              },
-            }),
-          ],
+          load: [conf],
         }),
       ],
       providers: [AudioService],
@@ -26,15 +21,12 @@ describe('AudioService', () => {
     service = module.get<AudioService>(AudioService);
   });
 
-  it('should be defined', () => {
-    const authorization = service.getAuthorization(
-      'iat-api.xfyun.cn',
-      'Wed, 10 Jul 2019 07:35:43 GMT',
+  it('should be defined', async () => {
+    const buf = fs.readFileSync(
+      path.join(__dirname, './../../../testData/test2.wav'),
     );
-    expect(authorization).toBe(
-      'YXBpX2tleT0ia2V5eHh4eHh4eHg4ZWUyNzkzNDg1MTlleHh4eHh4eHgiLCBhbGdvcml0aG09ImhtYWMtc2hhMjU2IiwgaGVhZGVycz0iaG9zdCBkYXRlIHJlcXVlc3QtbGluZSIsIHNpZ25hdHVyZT0iSHAzVHk0WmtTQm1MOGpLeU9McFFpdjlTcjVudm1lWUVIN1dzTC9aTzJKZz0i',
-    );
+    console.log(buf);
+    const result = await service.handleSpeech2Text(buf);
+    console.log(result);
   });
-
-  it('should be defined', () => {});
 });

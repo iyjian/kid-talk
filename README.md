@@ -50,3 +50,14 @@ ffmpeg -i test.m4a -ac 1 -ar 8000 -f s16le test.pcm
 ```bash
 ffmpeg -i test.m4a -ac 1 -ar 16000 -c:v copy -c:a libmp3lame -q:a 4  -y test.mp3
 ```
+
+## 转PCM
+```bash
+ffmpeg -y  -i test2.webm  -acodec pcm_s16le -f s16le -ac 1 -ar 16000 test2.pcm
+```
+
+```bash
+ffprobe -show_streams -show_format test2.pcm
+```
+
+ffmpeg -i test2.webm -ac 1 -ar 16000 -vn test2.wav

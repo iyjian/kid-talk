@@ -10,6 +10,10 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import baiduAIP from 'baidu-aip-sdk';
+import fs from 'fs';
+import ffmpeg from 'fluent-ffmpeg';
+import { Readable } from 'stream';
+import path from 'path';
 
 @Injectable()
 @WebSocketGateway({
@@ -63,6 +67,39 @@ export class AudioService implements OnGatewayConnection {
 
   @SubscribeMessage('speech2text')
   async handleSpeech2Text(@MessageBody() data: Buffer) {
-    console.log(data);
+    const transformedFile = path.join(
+      __dirname,
+      `./tmp/${Math.round(Math.random() * 10000000)}.wav`,
+    );
+
+    const readable = new Readable();
+    readable._read = () => {}; // _read is required but you can noop it
+    readable.push(data);
+    readable.push(null);
+
+    const stream = fs.createWriteStream(transformedFile);
+
+    const transformed = await new Promise((resolve, reject) => {
+      ffmpeg(readable)
+        .format('wav')
+        .output(stream, { end: true })
+        .outputOptions(['-ar 1', '-ar 16000', '-vn'])
+        .on('end', function () {
+          console.log('Finished processing');
+          resolve(stream);
+        })
+        .run();
+    });
+
+    const result = await this.client.recognize(
+      fs.readFileSync(transformedFile),
+      'wav',
+      16000,
+      {
+        dev_pid: 1737,
+      },
+    );
+    console.log(result);
+    return result;
   }
 }

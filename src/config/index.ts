@@ -9,4 +9,11 @@ export default () => ({
     accessKey: process.env.BAIDU_AIP_ACCESS_KEY,
     accessSecret: process.env.BAIDU_AIP_ACCESS_SECRET,
   },
+  openai: {
+    apiKey: process.env.OPENAI_API_KEY,
+  },
+  proxy: {
+    host: process.env.PROXY_HOST,
+    port: process.env.PROXY_PORT,
+  },
 });
