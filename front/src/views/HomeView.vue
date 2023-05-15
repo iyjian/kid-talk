@@ -1,6 +1,8 @@
 <template>
   <main>
-    
+    <p v-for="message in messages">
+      {{ message.content }}
+    </p>
     <input type="text" v-model="content"><button @click="send">发送</button>
   </main>
 </template>
@@ -9,20 +11,30 @@
 import { io } from "socket.io-client";
 import RecordRTC from 'recordrtc'
 import { ref } from "vue";
+import axios from 'axios'
+import { reactive } from "vue";
 
 const session = 'test'
 const socket = io('http://localhost:3000');
 let stream: any
 let recorder: any
 const content = ref("")
+const messages = ref<{content: string}[]>([])
+
+
 
 initUserMedia()
+refresh()
 
+async function refresh () {
+  const result = await axios.get(`http://localhost:3000/chatrepo/session/${session}`)
+  messages.value = result.data
+}
 
 function send() {
   socket.emit('chat', { content: content.value, session }, (result: any) => {
     const {text, audio} = result
-    
+    refresh()
     if (audio) {
       playAudio(audio)
     }

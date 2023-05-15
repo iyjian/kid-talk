@@ -103,6 +103,8 @@ export class ChatService implements OnGatewayConnection {
       completionTokens: result.usage.completion_tokens,
     });
 
+    // await this.chatrepoService.findAllBySession(session);
+
     return {
       text: result.choices[0].message.content,
       audio: await this.baiduSpeechService.text2Speech(response),
