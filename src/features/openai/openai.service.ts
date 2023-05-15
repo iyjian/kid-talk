@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Configuration, OpenAIApi } from 'openai';
 import tunnel from 'tunnel';
+import { ChatrepoService } from '../chatrepo/chatrepo.service';
 
 @Injectable()
 export class OpenaiService {
@@ -15,7 +16,14 @@ export class OpenaiService {
       port: this.configService.get('proxy.port'),
     },
   });
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly chatrepoService: ChatrepoService,
+  ) {}
+
+  private formatContent(str: string) {
+    return str.split(/\n/).map(line => line.trim()).join('\n')
+  }
 
   /**
     {
@@ -37,7 +45,22 @@ export class OpenaiService {
       }
     }
    */
-  async chat(): Promise<any> {
+  async chat(session: string, role: string, content: string, name?: string) {
+    const messages = JSON.parse(
+      JSON.stringify(await this.chatrepoService.findAllBySession(session)),
+    );
+
+    const message = {
+      session,
+      role,
+      content: this.formatContent(content),
+      name,
+    };
+
+    await this.chatrepoService.create(message);
+
+    messages.push(message);
+
     const result = await this.openai.createChatCompletion(
       {
         model: 'gpt-3.5-turbo',
@@ -45,19 +68,19 @@ export class OpenaiService {
         n: 1,
         stream: false,
         max_tokens: 1000,
-        messages: [
-          {
-            role: 'system',
-            content: `You are an English teacher and I am a Chinese 4th grade student with only 4000 vocabulary. 
-1. You practice English with me
-2. you ask me questions as actively as possible
-3. don't be cold, and if my answer has grammatical or expression errors, you need to correct my grammatical or expression errors in your next answer. 
-please say OK, and start if you understand.`,
-          },
-        ],
+        messages,
       },
       { httpsAgent: this.agent },
     );
+
+    await this.chatrepoService.create({
+      session,
+      role: result.data.choices[0].message.role,
+      content: result.data.choices[0].message.content,
+      promptTokens: result.data.usage.prompt_tokens,
+      completionTokens: result.data.usage.completion_tokens,
+    });
+
     return result.data;
   }
 }

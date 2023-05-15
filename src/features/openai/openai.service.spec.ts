@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OpenaiService } from './openai.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import conf from './../../config';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { ChatrepoModule } from '../chatrepo/chatrepo.module';
 
 describe('OpenaiService', () => {
   let service: OpenaiService;
@@ -9,8 +11,32 @@ describe('OpenaiService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
+        ChatrepoModule,
         ConfigModule.forRoot({
           load: [conf],
+        }),
+        SequelizeModule.forRootAsync({
+          imports: [ConfigModule],
+          useFactory: (configService: ConfigService) => ({
+            dialect: 'mysql',
+            host: configService.get('mysql.host'),
+            port: +configService.get<number>('mysql.port'),
+            username: configService.get('mysql.username'),
+            password: configService.get('mysql.password'),
+            database: configService.get('mysql.db'),
+            models: [],
+            autoLoadModels: true,
+            synchronize: true,
+            pool: {
+              max: 100,
+              min: 0,
+              idle: 10000,
+            },
+            timezone: '+08:00',
+            logging:
+              configService.get<string>('sqlLogging') === 'true' ? true : false,
+          }),
+          inject: [ConfigService],
         }),
       ],
       providers: [OpenaiService],
@@ -20,7 +46,7 @@ describe('OpenaiService', () => {
   });
 
   it('should be defined', async () => {
-    const result = await service.chat();
+    const result = await service.chat('test');
     console.log(result.choices[0]);
   });
 });
