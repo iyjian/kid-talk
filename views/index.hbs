@@ -1,28 +1,31 @@
 <html>
   <head>
-    <title>Socket.io</title>
+    <title>Chat</title>
   </head>
   <body>
-    <input id="text"/>
-    <button id="btn">朗读</button>
-    <button id="startRecord">录音开始</button>
-    <button id="stopRecord">录音结束</button>
+
+    {{!-- <button id="startRecord">录音开始</button>
+    <button id="stopRecord">录音结束</button> --}}
     <p id="conversation">
 
     </p>
+    <input id="text"/><button id="btn">发送</button>
   </body>
 </html>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/RecordRTC/5.5.4/RecordRTC.js"></script>
 
 <script>
-
+const session = 'test'
 const socket = io('http://localhost:3000');
 
 document.querySelector('#btn').addEventListener('click', () => {
-  socket.emit('text2speech', { text: document.querySelector('#text').value }, result => {
-    console.log(result)
-    playAudio(result)
+  socket.emit('chat', { content: document.querySelector('#text').value, session }, result => {
+    const {text, audio} = result
+    document.querySelector('#conversation').value += text + '</br>'
+    if (audio) {
+      playAudio(audio)
+    }
   });
 })
 
@@ -64,6 +67,7 @@ async function initUserMedia () {
 
 initUserMedia()
 
+/*
 document.querySelector('#startRecord').addEventListener('click', () => {
   recorder.startRecording();
 })
@@ -81,6 +85,6 @@ document.querySelector('#stopRecord').addEventListener('click', () => {
         })
     });
 })
-
+*/
 
 </script>

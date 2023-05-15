@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   ChatCompletionRequestMessage,
@@ -7,10 +7,10 @@ import {
   OpenAIApi,
 } from 'openai';
 import tunnel from 'tunnel';
-import { ChatrepoService } from '../chatrepo/chatrepo.service';
 
 @Injectable()
 export class OpenaiService {
+  private readonly logger = new Logger(OpenaiService.name);
   private readonly configuration = new Configuration({
     apiKey: this.configService.get('openai.apiKey'),
   });
@@ -43,25 +43,10 @@ export class OpenaiService {
       }
     }
    */
-  // session: string, role: string, content: string, name?: string
   async chat(
     messages: ChatCompletionRequestMessage[],
   ): Promise<CreateChatCompletionResponse> {
-    // const messages = JSON.parse(
-    //   JSON.stringify(await this.chatrepoService.findAllBySession(session)),
-    // );
-
-    // const message = {
-    //   session,
-    //   role,
-    //   content: this.formatContent(content),
-    //   name,
-    // };
-
-    // await this.chatrepoService.create(message);
-
-    // messages.push(message);
-
+    this.logger.debug(`chat - messages: ${JSON.stringify(messages)}`);
     const result = await this.openai.createChatCompletion(
       {
         model: 'gpt-3.5-turbo',
@@ -73,14 +58,6 @@ export class OpenaiService {
       },
       { httpsAgent: this.agent },
     );
-
-    // await this.chatrepoService.create({
-    //   session,
-    //   role: result.data.choices[0].message.role,
-    //   content: result.data.choices[0].message.content,
-    //   promptTokens: result.data.usage.prompt_tokens,
-    //   completionTokens: result.data.usage.completion_tokens,
-    // });
 
     return result.data;
   }

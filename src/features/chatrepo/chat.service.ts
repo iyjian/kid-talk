@@ -9,6 +9,7 @@ import {
 } from '@nestjs/websockets';
 import { ChatrepoService } from './chatrepo.service';
 import { OpenaiService } from '../openai/openai.service';
+import { BaiduSpeechService } from '../audio/baidu.speech.service';
 
 @Injectable()
 @WebSocketGateway({
@@ -23,9 +24,9 @@ export class ChatService implements OnGatewayConnection {
   private readonly socketUsers = {};
 
   constructor(
-    private readonly configService: ConfigService,
     private readonly chatrepoService: ChatrepoService,
     private readonly openaiService: OpenaiService,
+    private readonly baiduSpeechService: BaiduSpeechService,
   ) {}
 
   private formatContent(str: string) {
@@ -36,7 +37,7 @@ export class ChatService implements OnGatewayConnection {
   }
 
   /**
-   * 
+   *
    *
    * @param client
    */
@@ -47,41 +48,64 @@ export class ChatService implements OnGatewayConnection {
     };
   }
 
-  
   // async handleClientEvents(@MessageBody() data: string) {
   //   this.logger.debug(`handleClientEvents - text2speech - text: ${data}`);
   // }
-  
+
   @SubscribeMessage('chat')
-  async chat(@MessageBody() data: {session: string, role: string, content: string, name?: string}) {
-    
-    const {session, role, content, name} = data
-    
+  async chat(
+    @MessageBody()
+    data: {
+      session: string;
+      content: string | Buffer;
+      role?: string;
+      name?: string;
+    },
+  ): Promise<{
+    text: string;
+    audio?: Buffer;
+  }> {
+    let { session, role = 'user', content, name } = data;
+
+    if (typeof content !== 'string') {
+      content = '';
+    }
+
     const messages = JSON.parse(
       JSON.stringify(await this.chatrepoService.findAllBySession(session)),
     );
 
-    const message = {
+    // const message = {
+    //   session,
+    //   role,
+    //   content: this.formatContent(content),
+    //   name,
+    // };
+
+    await this.chatrepoService.create({
       session,
       role,
       content: this.formatContent(content),
       name,
-    };
+    });
 
-    await this.chatrepoService.create(message);
-
-    messages.push(message);
+    messages.push({ role, content: this.formatContent(content), name });
 
     const result = await this.openaiService.chat(messages);
+
+    const response = result.choices[0].message.content;
 
     await this.chatrepoService.create({
       session,
       role: result.choices[0].message.role,
-      content: result.choices[0].message.content,
+      content: response,
       promptTokens: result.usage.prompt_tokens,
       completionTokens: result.usage.completion_tokens,
     });
 
-    return result;
+    return {
+      text: result.choices[0].message.content,
+      audio: await this.baiduSpeechService.text2Speech(response),
+    };
   }
 }

@@ -11,7 +11,6 @@ describe('OpenaiService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        ChatrepoModule,
         ConfigModule.forRoot({
           load: [conf],
         }),
@@ -46,7 +45,19 @@ describe('OpenaiService', () => {
   });
 
   it('should be defined', async () => {
-    const result = await service.chat('test');
+    const result = await service.chat([
+      {
+        role: 'system',
+        content:
+          'You are an English teacher and I am a Chinese 4th grade student with only 4000 vocabulary. \n1. You practice English with me\n2. you ask me questions as actively as possible\nstart if you understand.',
+      },
+      {
+        role: 'assistant',
+        content:
+          'Yes, I understand. Let’s begin practicing English together! Could you please tell me what topics interest you the most?',
+      },
+      { role: 'user', content: 'my name is wuchong' },
+    ]);
     console.log(result.choices[0]);
   });
 });
