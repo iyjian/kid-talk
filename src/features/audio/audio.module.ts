@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { AudioService } from './audio.service';
-import { EventEmitterModule } from '@nestjs/event-emitter';
+import { BaiduSpeechService } from './baidu.speech.service';
 
 @Module({
-  imports: [EventEmitterModule.forRoot()],
-  providers: [AudioService],
+  providers: [BaiduSpeechService],
+  exports: [BaiduSpeechService],
 })
 export class AudioModule {}
