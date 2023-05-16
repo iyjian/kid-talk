@@ -1,11 +1,13 @@
 <template>
-  <main @keydown.native="onSpaceKeyDown($event)" @keyup="onSpaceKeyUp($event)">
-    <p v-for="message in messages">
-      {{ message.content }}
-    </p>
+  <div>
+    <div class="messages">
+      <div v-for="message, idx in messages" :key="idx" class="message">
+        {{ message.content }}
+      </div>
+    </div>
     {{ recording }}
     <input type="text" v-model="content"><button @click="sendText">发送</button>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -21,33 +23,54 @@ let recorder: any
 const content = ref("")
 const messages = ref<{content: string}[]>([])
 const recording = ref(false)
+const startRecordingTime = ref('')
 
+// @keydown.space="onSpaceKeyDown($event)" @keyup.space="onSpaceKeyUp($event)"
+window.addEventListener("keypress", event => {
+  event.preventDefault()
+  if (event.code === 'Space' && !recording.value) {
+    recording.value = true
+    recorder.startRecording()
+  }
+});
 
+window.addEventListener("keyup", event => {
+  event.preventDefault()
+  if (event.code === 'Space') {
+    recording.value = false
+    recorder.stopRecording(function() {
+      let blob = recorder.getBlob();
+      blob.arrayBuffer().then((buffer: BinaryData) => {
+        // send(buffer)
+      })
+    });
+  }
+});
 
 initUserMedia()
 refresh()
 
-function onSpaceKeyDown (event: KeyboardEvent) {
-  console.log(event.code)
-  if (event.code === 'Space') {
-    recording.value = true
-    event.preventDefault()
-    recorder.startRecording()
-  }
-}
+// function onSpaceKeyDown (event: KeyboardEvent) {
+//   console.log(event, '---------')
+//   if (event.code === 'Space') {
+//     recording.value = true
+//     event.preventDefault()
+//     recorder.startRecording()
+//   }
+// }
 
-function onSpaceKeyUp (event: KeyboardEvent) {
-  if (event.code === 'Space') {
-    event.preventDefault()
-    recorder.stopRecording(function() {
-        let blob = recorder.getBlob();
-        blob.arrayBuffer().then((buffer: BinaryData) => {
-          send(buffer)
-          recording.value = false
-        })
-    });
-  }
-}
+// function onSpaceKeyUp (event: KeyboardEvent) {
+//   if (event.code === 'Space') {
+//     event.preventDefault()
+//     recorder.stopRecording(function() {
+//         let blob = recorder.getBlob();
+//         blob.arrayBuffer().then((buffer: BinaryData) => {
+//           send(buffer)
+//           recording.value = false
+//         })
+//     });
+//   }
+// }
 
 async function refresh () {
   const result = await axios.get(`http://localhost:3000/chatrepo/session/${session}`)
@@ -104,3 +127,18 @@ function convertDataURIToBinary(base64: string) {
 
 
 </script>
+
+<style scoped>
+.messages {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-bottom: 5px;
+  min-height: 600px;
+  padding: 20px;
+}
+.message {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+</style>
