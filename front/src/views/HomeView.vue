@@ -1,9 +1,10 @@
 <template>
-  <main>
+  <main @keydown.native="onSpaceKeyDown($event)" @keyup="onSpaceKeyUp($event)">
     <p v-for="message in messages">
       {{ message.content }}
     </p>
-    <input type="text" v-model="content"><button @click="send">发送</button>
+    {{ recording }}
+    <input type="text" v-model="content"><button @click="sendText">发送</button>
   </main>
 </template>
 
@@ -12,7 +13,6 @@ import { io } from "socket.io-client";
 import RecordRTC from 'recordrtc'
 import { ref } from "vue";
 import axios from 'axios'
-import { reactive } from "vue";
 
 const session = 'test'
 const socket = io('http://localhost:3000');
@@ -20,19 +20,46 @@ let stream: any
 let recorder: any
 const content = ref("")
 const messages = ref<{content: string}[]>([])
+const recording = ref(false)
 
 
 
 initUserMedia()
 refresh()
 
+function onSpaceKeyDown (event: KeyboardEvent) {
+  console.log(event.code)
+  if (event.code === 'Space') {
+    recording.value = true
+    event.preventDefault()
+    recorder.startRecording()
+  }
+}
+
+function onSpaceKeyUp (event: KeyboardEvent) {
+  if (event.code === 'Space') {
+    event.preventDefault()
+    recorder.stopRecording(function() {
+        let blob = recorder.getBlob();
+        blob.arrayBuffer().then((buffer: BinaryData) => {
+          send(buffer)
+          recording.value = false
+        })
+    });
+  }
+}
+
 async function refresh () {
   const result = await axios.get(`http://localhost:3000/chatrepo/session/${session}`)
   messages.value = result.data
 }
 
-function send() {
-  socket.emit('chat', { content: content.value, session }, (result: any) => {
+function sendText(){
+  send(content.value)
+}
+
+function send(content: string | BinaryData) {
+  socket.emit('chat', { content, session }, (result: any) => {
     const {text, audio} = result
     refresh()
     if (audio) {

@@ -53,7 +53,8 @@ export class BaiduSpeechService {
     // 调用调试工具
     // https://console.bce.baidu.com/tools/?_=1669807341890#/api?product=AI&project=%E8%AF%AD%E9%9F%B3%E6%8A%80%E6%9C%AF&parent=%E8%AF%AD%E9%9F%B3%E5%90%88%E6%88%90&api=text2audio&method=post
     const result = await this.client.text2audio(data, {
-      per: 5,
+      // 度逍遥（精品）=5003，度小鹿=5118
+      per: 5003,
       spd: 6,
     });
     return result.data;
