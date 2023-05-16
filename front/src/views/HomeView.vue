@@ -2,7 +2,7 @@
   <div>
     <div class="messages">
       <div v-for="message, idx in messages" :key="idx" class="message">
-        {{ message.content }}
+        <span class="role">{{message.role}}:</span> {{ message.content }}
       </div>
     </div>
     {{ recording }}
@@ -21,7 +21,7 @@ const socket = io('http://localhost:3000');
 let stream: any
 let recorder: any
 const content = ref("")
-const messages = ref<{content: string}[]>([])
+const messages = ref<{content: string, role: string}[]>([])
 const recording = ref(false)
 const startRecordingTime = ref('')
 
@@ -140,5 +140,8 @@ function convertDataURIToBinary(base64: string) {
 .message {
   font-size: 16px;
   margin-bottom: 5px;
+}
+.message .role {
+  font-weight: bold;
 }
 </style>
