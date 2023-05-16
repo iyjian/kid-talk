@@ -23,13 +23,14 @@ let recorder: any
 const content = ref("")
 const messages = ref<{content: string, role: string}[]>([])
 const recording = ref(false)
-const startRecordingTime = ref('')
+const startRecordingTime = ref<number>(0)
 
 // @keydown.space="onSpaceKeyDown($event)" @keyup.space="onSpaceKeyUp($event)"
 window.addEventListener("keypress", event => {
   event.preventDefault()
   if (event.code === 'Space' && !recording.value) {
     recording.value = true
+    startRecordingTime.value = +new Date()
     recorder.startRecording()
   }
 });
@@ -38,10 +39,15 @@ window.addEventListener("keyup", event => {
   event.preventDefault()
   if (event.code === 'Space') {
     recording.value = false
-    recorder.stopRecording(function() {
+    recorder.stopRecording(() => {
       let blob = recorder.getBlob();
       blob.arrayBuffer().then((buffer: BinaryData) => {
-        // send(buffer)
+        if (+new Date() - startRecordingTime.value > 1000) {
+          console.log('send voice', buffer.byteLength)
+          send(buffer)
+        } else {
+          alert('录音时间太短')
+        }
       })
     });
   }

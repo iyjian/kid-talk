@@ -68,7 +68,10 @@ export class ChatService implements OnGatewayConnection {
     let { session, role = 'user', content, name } = data;
 
     if (typeof content !== 'string') {
-      content = '';
+      const speech2TextResult = await this.baiduSpeechService.speech2Text(
+        content,
+      );
+      content = speech2TextResult.result[0];
     }
 
     const messages = JSON.parse(
