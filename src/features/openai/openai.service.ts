@@ -46,7 +46,7 @@ export class OpenaiService {
   async chat(
     messages: ChatCompletionRequestMessage[],
   ): Promise<CreateChatCompletionResponse> {
-    this.logger.debug(`chat - messages: ${JSON.stringify(messages)}`);
+    const startTime = +new Date();
     const result = await this.openai.createChatCompletion(
       {
         model: 'gpt-3.5-turbo',
@@ -58,7 +58,7 @@ export class OpenaiService {
       },
       { httpsAgent: this.agent },
     );
-
+    this.logger.debug(`chatgpt - timing: ${+new Date() - startTime}ms`);
     return result.data;
   }
 }

@@ -44,23 +44,32 @@ export class BaiduSpeechService {
     this.baiduAIPAccessSecret,
   );
 
-  private readonly socketUsers = {};
-
   constructor(private readonly configService: ConfigService) {}
 
+  /**
+   * 文字转语音
+   *
+   * @param data
+   * @param per
+   * @param spd
+   * @returns
+   */
   async text2Speech(
     data: string,
     per: number = 5003,
     spd: number = 5,
   ): Promise<Buffer> {
-    this.logger.debug(`text2speech - text: ${data}`);
     // 调用调试工具
     // https://console.bce.baidu.com/tools/?_=1669807341890#/api?product=AI&project=%E8%AF%AD%E9%9F%B3%E6%8A%80%E6%9C%AF&parent=%E8%AF%AD%E9%9F%B3%E5%90%88%E6%88%90&api=text2audio&method=post
+    const startTime = +new Date();
     const result = await this.client.text2audio(data, {
       // 度逍遥（精品）=5003，度小鹿=5118
       per,
       spd,
     });
+    this.logger.debug(
+      `text2speech - text: ${data} timing: ${+new Date() - startTime}ms`,
+    );
     return result.data;
   }
 
@@ -70,6 +79,7 @@ export class BaiduSpeechService {
    * @returns
    */
   async speech2Text(data: Buffer): Promise<SPEECH2TEXT_RESULT> {
+    const startTime = +new Date();
     const transformedFile = path.join(
       __dirname,
       `./tmp/${Math.round(Math.random() * 10000000)}.wav`,
@@ -91,7 +101,6 @@ export class BaiduSpeechService {
         .output(stream, { end: true })
         .outputOptions(['-ar 1', '-ar 16000', '-vn'])
         .on('end', function () {
-          console.log('Finished processing');
           resolve(stream);
         })
         .run();
@@ -105,7 +114,7 @@ export class BaiduSpeechService {
         dev_pid: 1737,
       },
     );
-
+    this.logger.debug(`speech2Text - timing: ${+new Date() - startTime}ms`);
     return result;
   }
 }
