@@ -32,4 +32,9 @@ export default () => ({
     db: parseInt(process.env.REDIS_DB, 0),
     ttl: parseInt(process.env.REDIS_TTL, 0),
   },
+  auth: {
+    authingAppId: process.env.AUTHING_APP_ID,
+    authingAppHost: process.env.AUTHING_APP_HOST,
+    superToken: process.env.SUPER_TOKEN,
+  },
 });

@@ -7,9 +7,9 @@ export class ChatrepoController {
 
   @Get('session/:session')
   findAllBySession(
-    @Param('session') session: string,
+    @Param('sessionId') sessionId: string,
     @Query('maxId') maxId: string,
   ) {
-    return this.chatrepoService.findAllBySession(session, +maxId);
+    return this.chatrepoService.findAllBySession(+sessionId, +maxId);
   }
 }

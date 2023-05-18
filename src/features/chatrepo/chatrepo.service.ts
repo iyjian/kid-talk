@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Chat } from './chatrepo.entity';
+import { Session } from './session.entity';
 import { Op } from 'sequelize';
 
 @Injectable()
@@ -8,10 +9,12 @@ export class ChatrepoService {
   constructor(
     @InjectModel(Chat)
     private readonly ChatModel: typeof Chat,
+    @InjectModel(Session)
+    private readonly SessionModel: typeof Session,
   ) {}
 
   create(payload: {
-    session: string;
+    sessionId: number;
     role: string;
     content: string;
     name?: string;
@@ -21,13 +24,28 @@ export class ChatrepoService {
     return this.ChatModel.create(payload);
   }
 
-  findAllBySession(session: string, maxId?: number) {
+  async init() {
+    const session = await this.SessionModel.create({
+      name: '',
+      userId: 1,
+    });
+    return this.ChatModel.create({
+      sessionId: session.id,
+      role: 'system',
+      content: '',
+    });
+  }
+
+  findAllBySession(sessionId: number, maxId?: number) {
     return this.ChatModel.findAll({
       attributes: ['role', 'content'],
       where: {
-        session,
+        sessionId,
         id: {
           [Op.gt]: maxId || 0,
+        },
+        role: {
+          [Op.ne]: 'system',
         },
       },
       order: [['id', 'asc']],

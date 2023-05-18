@@ -12,8 +12,11 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@authing/vue-ui-components": "^4.3.10",
+    "authing-js-sdk": "^4.23.44",
     "axios": "^1.4.0",
     "element-plus": "^2.3.4",
+    "howler": "^2.2.3",
     "pinia": "^2.0.36",
     "recordrtc": "^5.6.2",
     "socket.io-client": "^4.6.1",
@@ -23,6 +26,7 @@
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.2.0",
     "@tsconfig/node18": "^2.0.1",
+    "@types/howler": "^2.2.7",
     "@types/node": "^18.16.8",
     "@types/recordrtc": "^5.6.11",
     "@vitejs/plugin-vue": "^4.2.3",

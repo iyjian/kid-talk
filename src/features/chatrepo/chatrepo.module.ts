@@ -6,9 +6,15 @@ import { AudioModule } from '../audio/audio.module';
 import { OpenaiModule } from '../openai/openai.module';
 import { ChatService } from './chat.service';
 import { ChatrepoController } from './chatrepo.controller';
+import { User } from './user.entity';
+import { Session } from './session.entity';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Chat]), AudioModule, OpenaiModule],
+  imports: [
+    SequelizeModule.forFeature([Chat, Session, User]),
+    AudioModule,
+    OpenaiModule,
+  ],
   providers: [ChatrepoService, ChatService],
   exports: [ChatrepoService],
   controllers: [ChatrepoController],

@@ -6,16 +6,22 @@ import {
   BelongsTo,
   Model,
 } from 'sequelize-typescript';
+import { User } from './user.entity';
+import { Session } from './session.entity';
 
 @Table({
   tableName: 't_chat',
 })
 export class Chat extends Model<Chat> {
+  @ForeignKey(() => Session)
   @Column({
     allowNull: false,
     type: DataType.STRING(40),
   })
-  session: string;
+  sessionId: number;
+
+  @BelongsTo(() => Session, 'sessionId')
+  session: Session;
 
   @Column({
     allowNull: false,

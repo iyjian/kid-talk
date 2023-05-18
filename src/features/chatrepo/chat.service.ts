@@ -1,15 +1,16 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable, Logger, UseGuards } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
   OnGatewayConnection,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { ChatrepoService } from './chatrepo.service';
 import { OpenaiService } from '../openai/openai.service';
 import { BaiduSpeechService } from '../audio/baidu.speech.service';
+import { ApiGuard } from './../../core/api.guard';
 
 @Injectable()
 @WebSocketGateway({
@@ -52,11 +53,45 @@ export class ChatService implements OnGatewayConnection {
   //   this.logger.debug(`handleClientEvents - text2speech - text: ${data}`);
   // }
 
+  @UseGuards(ApiGuard)
+  @SubscribeMessage('test')
+  test(@ConnectedSocket() client: Socket) {
+    console.log(client.handshake.query.token);
+  }
+
+  @SubscribeMessage('init')
+  async startNewChat(@MessageBody() data: { mode: string }) {
+    const messages = [];
+    const chatRepo = await this.chatrepoService.init();
+
+    messages.push({
+      role: chatRepo.role,
+      content: this.formatContent(chatRepo.content),
+    });
+
+    const result = await this.openaiService.chat(messages);
+
+    const response = result.choices[0].message.content;
+
+    await this.chatrepoService.create({
+      sessionId: chatRepo.sessionId,
+      role: result.choices[0].message.role,
+      content: response,
+      promptTokens: result.usage.prompt_tokens,
+      completionTokens: result.usage.completion_tokens,
+    });
+
+    return {
+      text: result.choices[0].message.content,
+      audio: await this.baiduSpeechService.text2Speech(response),
+    };
+  }
+
   @SubscribeMessage('chat')
   async chat(
     @MessageBody()
     data: {
-      session: string;
+      sessionId: number;
       content: string | Buffer;
       role?: string;
       name?: string;
@@ -65,7 +100,7 @@ export class ChatService implements OnGatewayConnection {
     text: string;
     audio?: Buffer;
   }> {
-    let { session, role = 'user', content, name } = data;
+    let { sessionId, role = 'user', content, name } = data;
 
     if (typeof content !== 'string') {
       const speech2TextResult = await this.baiduSpeechService.speech2Text(
@@ -75,18 +110,11 @@ export class ChatService implements OnGatewayConnection {
     }
 
     const messages = JSON.parse(
-      JSON.stringify(await this.chatrepoService.findAllBySession(session)),
+      JSON.stringify(await this.chatrepoService.findAllBySession(sessionId)),
     );
 
-    // const message = {
-    //   session,
-    //   role,
-    //   content: this.formatContent(content),
-    //   name,
-    // };
-
     await this.chatrepoService.create({
-      session,
+      sessionId,
       role,
       content: this.formatContent(content),
       name,
@@ -99,14 +127,12 @@ export class ChatService implements OnGatewayConnection {
     const response = result.choices[0].message.content;
 
     await this.chatrepoService.create({
-      session,
+      sessionId,
       role: result.choices[0].message.role,
       content: response,
       promptTokens: result.usage.prompt_tokens,
       completionTokens: result.usage.completion_tokens,
     });
-
-    // await this.chatrepoService.findAllBySession(session);
 
     return {
       text: result.choices[0].message.content,

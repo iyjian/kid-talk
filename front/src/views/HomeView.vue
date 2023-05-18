@@ -1,6 +1,6 @@
 <template>
   <div style="display: flex;flex-direction: column;align-items: center;">
-    <div class="messages">
+    <!-- <div class="messages">
       <div v-for="message, idx in messages" :key="idx" class="message">
         <span class="role">{{message.role}}:</span> {{ message.content }}
       </div>
@@ -8,23 +8,31 @@
     <div style="display: flex;align-items: center;flex-direction: column;">
       <button class="record-button" :class="recording ? 'Rec' : 'notRec'"></button>
       <span>按住空格后说话</span>recording: {{ recording }}&nbsp;&nbsp;&nbsp;isKeyDown:{{ isKeyDown }}
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script setup lang="ts">
+import {Howl, Howler} from 'howler';
 import { io } from "socket.io-client";
 import { ref } from "vue";
 import axios from 'axios'
 const debug = false
 const session = 'test'
-const socket = io('/');
-let stream: any
+const socket = io('/', {
+  query: {
+    token: localStorage.getItem('token')
+  }
+});
 const content = ref("")
 const messages = ref<{content: string, role: string}[]>([])
 const recording = ref(false)
 const isKeyDown = ref(false)
 const startRecordingTime = ref<number>(0)
+
+setTimeout(() => {
+  socket.emit('test')
+}, 2000)
 
 // @ts-ignore
 const SpeechRecognition = window.SpeechRecognition || webkitSpeechRecognition;
@@ -166,9 +174,23 @@ document.body.addEventListener('touchstart', unlockAudio);
 function playAudio(data: BinaryData) {
   const blob=new Blob([data], {type : 'audio/ogg'});
   const blobUrl = URL.createObjectURL(blob);
-  const audio = new Audio(blobUrl);
-  audio.play();
+  // const audio = new Audio(blobUrl);
+  // audio.play();
+  const sound = new Howl({
+    src: blobUrl
+  });
+
+  sound.play();
 }
+
+// setTimeout(() => {
+//   const sound = new Howl({
+//     src: './2-seconds-and-500-milliseconds-of-silence.mp3'
+//   });
+
+//   sound.play();
+//   console.log('played')
+// }, 3000)
 
 </script>
 
