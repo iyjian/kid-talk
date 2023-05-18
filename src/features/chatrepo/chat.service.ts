@@ -17,7 +17,9 @@ import { ApiGuard } from './../../core/api.guard';
   cors: {
     origin: '*',
   },
+  transports: ['pooling'],
 })
+
 //
 export class ChatService implements OnGatewayConnection {
   private readonly logger = new Logger(ChatService.name);
@@ -98,7 +100,7 @@ export class ChatService implements OnGatewayConnection {
     },
   ): Promise<{
     text: string;
-    audio?: Buffer;
+    audio?: String;
   }> {
     let { sessionId, role = 'user', content, name } = data;
 
@@ -109,9 +111,10 @@ export class ChatService implements OnGatewayConnection {
       content = speech2TextResult.result[0];
     }
 
-    const messages = JSON.parse(
-      JSON.stringify(await this.chatrepoService.findAllBySession(sessionId)),
-    );
+    // const messages = JSON.parse(
+    //   JSON.stringify(await this.chatrepoService.findAllBySession(sessionId)),
+    // );
+    const messages = [];
 
     await this.chatrepoService.create({
       sessionId,
@@ -134,9 +137,10 @@ export class ChatService implements OnGatewayConnection {
       completionTokens: result.usage.completion_tokens,
     });
 
+    const audio = await this.baiduSpeechService.text2Speech(response);
     return {
       text: result.choices[0].message.content,
-      audio: await this.baiduSpeechService.text2Speech(response),
+      audio: 'data:audio/mp3;base64,' + audio.toString('base64'),
     };
   }
 }

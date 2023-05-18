@@ -1,0 +1,19 @@
+version: "3.5"
+
+services:
+  api:
+    image: iyjian/kidtalk-api
+    restart: always
+    build:
+      context: .
+    env_file:
+      - .env
+  ui:
+    image: iyjian/kidtalk-ui
+    build:
+      context: ./front
+    restart: always
+    env_file:
+      - .env    
+    ports:
+      - 53001:3001

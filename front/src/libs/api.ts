@@ -1,11 +1,11 @@
 // import { Table, Project, Code } from "@/types";
-import { RequestBase } from "./RequestBase";
+import { RequestBase } from './RequestBase'
 
 class APIClient extends RequestBase {
   constructor() {
-    super();
+    super()
   }
-  
+
   public getSession(sessionId: number) {
     return this.request.get(`/api/chatrepo/session/${sessionId}`)
   }

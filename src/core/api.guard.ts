@@ -39,7 +39,7 @@ export class ApiGuard implements CanActivate {
         return true;
       } else {
         this.logger.debug(`apiGuard - canActivate - token: ${token}`);
-        return true
+        return true;
         // throw new HttpException('未登录', 700);
       }
     } else if (context.getType() === 'ws') {
@@ -55,7 +55,7 @@ export class ApiGuard implements CanActivate {
        * AUTHING 认证
        */
       const { status } = await this.authing.checkLoginStatus(token);
-      console.log(await this.authing.checkLoginStatus(token))
+      console.log(await this.authing.checkLoginStatus(token));
 
       if (status) {
         return true;
@@ -64,7 +64,7 @@ export class ApiGuard implements CanActivate {
         throw new WsException('未登录');
       }
     } else {
-      return false
+      return false;
     }
   }
 }

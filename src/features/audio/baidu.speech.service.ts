@@ -66,6 +66,8 @@ export class BaiduSpeechService {
       // 度逍遥（精品）=5003，度小鹿=5118
       per,
       spd,
+      // 3为mp3格式(默认)； 4为pcm-16k；5为pcm-8k；6为wav（内容同pcm-16k）; 注意aue=4或者6是语音识别要求的格式，但是音频内容不是语音识别要求的自然人发音，所以识别效果会受影响。
+      aue: 3,
     });
     this.logger.debug(
       `text2speech - text: ${data} timing: ${+new Date() - startTime}ms`,
