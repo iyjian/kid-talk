@@ -25,7 +25,7 @@ const socket = io('', {
   query: {
     token: localStorage.getItem('token')
   },
-  transports: ['polling']
+  // transports: ['polling']
 })
 const messages = ref<{ content: string; role: string }[]>([])
 const recording = ref(false)

@@ -17,7 +17,7 @@ import { ApiGuard } from './../../core/api.guard';
   cors: {
     origin: '*',
   },
-  transports: ['pooling'],
+  // transports: ['pooling'],
 })
 
 //
