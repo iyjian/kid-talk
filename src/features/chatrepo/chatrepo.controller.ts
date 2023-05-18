@@ -5,7 +5,7 @@ import { ChatrepoService } from './chatrepo.service';
 export class ChatrepoController {
   constructor(private readonly chatrepoService: ChatrepoService) {}
 
-  @Get('session/:session')
+  @Get('session/:sessionId')
   findAllBySession(
     @Param('sessionId') sessionId: string,
     @Query('maxId') maxId: string,

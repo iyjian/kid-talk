@@ -15,5 +15,11 @@ export class User extends Model<User> {
     allowNull: false,
     type: DataType.STRING(40),
   })
+  uid: string;
+
+  @Column({
+    allowNull: false,
+    type: DataType.STRING(40),
+  })
   name: string;
 }

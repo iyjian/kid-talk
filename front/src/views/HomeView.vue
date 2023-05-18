@@ -17,6 +17,7 @@ import {Howl, Howler} from 'howler';
 import { io } from "socket.io-client";
 import { ref } from "vue";
 import axios from 'axios'
+import {apiClient} from './../libs/api'
 const debug = false
 const session = 'test'
 const socket = io('/', {
@@ -138,7 +139,7 @@ window.addEventListener("keyup", event => {
 refresh()
 
 async function refresh () {
-  const result = await axios.get(`/api/chatrepo/session/${session}`)
+  const result = await apiClient.getSession(1)
   messages.value = result.data
 }
 

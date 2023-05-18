@@ -14,7 +14,7 @@
   "dependencies": {
     "@authing/vue-ui-components": "^4.3.10",
     "authing-js-sdk": "^4.23.44",
-    "axios": "^1.4.0",
+    "axios": "^0.27.2",
     "element-plus": "^2.3.4",
     "howler": "^2.2.3",
     "pinia": "^2.0.36",

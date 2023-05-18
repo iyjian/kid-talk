@@ -56,7 +56,7 @@ export class ChatService implements OnGatewayConnection {
   @UseGuards(ApiGuard)
   @SubscribeMessage('test')
   test(@ConnectedSocket() client: Socket) {
-    console.log(client.handshake.query.token);
+    // console.log(client.handshake.query.token);
   }
 
   @SubscribeMessage('init')

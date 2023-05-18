@@ -12,7 +12,7 @@ specifiers:
   '@vue/eslint-config-typescript': ^11.0.3
   '@vue/tsconfig': ^0.4.0
   authing-js-sdk: ^4.23.44
-  axios: ^1.4.0
+  axios: ^0.27.2
   element-plus: ^2.3.4
   eslint: ^8.39.0
   eslint-plugin-vue: ^9.11.0
@@ -31,7 +31,7 @@ specifiers:
 dependencies:
   '@authing/vue-ui-components': 4.3.10_vue@3.3.2
   authing-js-sdk: 4.23.44
-  axios: 1.4.0
+  axios: 0.27.2
   element-plus: 2.3.4_vue@3.3.2
   howler: 2.2.3
   pinia: 2.0.36_typescript@5.0.4+vue@3.3.2
@@ -1046,12 +1046,11 @@ packages:
       - debug
     dev: false
 
-  /axios/1.4.0:
-    resolution: {integrity: sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==}
+  /axios/0.27.2:
+    resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
       follow-redirects: 1.15.2
       form-data: 4.0.0
-      proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
     dev: false
@@ -2532,10 +2531,6 @@ packages:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       react-is: 16.13.1
-    dev: false
-
-  /proxy-from-env/1.1.0:
-    resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
     dev: false
 
   /punycode/2.3.0:
