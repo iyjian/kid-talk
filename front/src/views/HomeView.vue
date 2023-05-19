@@ -24,7 +24,7 @@ const sessionId = 1
 const socket = io('', {
   query: {
     token: localStorage.getItem('token')
-  },
+  }
 })
 const messages = ref<{ content: string; role: string }[]>([])
 const recording = ref(false)
@@ -170,7 +170,6 @@ function playAudio(data: string) {
 
   sound.play()
 }
-
 </script>
 
 <style scoped>

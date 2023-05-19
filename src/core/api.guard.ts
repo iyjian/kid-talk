@@ -14,7 +14,7 @@ export class ApiGuard implements CanActivate {
   private readonly logger = new Logger(ApiGuard.name);
   private readonly authing = new AuthenticationClient({
     appId: '',
-    appHost: ''
+    appHost: '',
   });
   // {
   //   appId: this.configService.get('auth.authingAppId'),

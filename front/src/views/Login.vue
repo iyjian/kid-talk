@@ -10,7 +10,7 @@
 import { Guard } from '@authing/vue-ui-components'
 import '@authing/vue-ui-components/lib/index.min.css'
 import { defineComponent } from 'vue'
-import VueRouter from 'vue-router';
+import VueRouter from 'vue-router'
 
 export default defineComponent({
   name: 'LoginView',

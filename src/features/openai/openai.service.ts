@@ -15,12 +15,14 @@ export class OpenaiService {
     apiKey: this.configService.get('openai.apiKey'),
   });
   private readonly openai = new OpenAIApi(this.configuration);
-  private readonly agent = this.configService.get('proxy.host') ? tunnel.httpsOverHttp({
-    proxy: {
-      host: this.configService.get('proxy.host'),
-      port: this.configService.get('proxy.port'),
-    },
-  }) : undefined;
+  private readonly agent = this.configService.get('proxy.host')
+    ? tunnel.httpsOverHttp({
+        proxy: {
+          host: this.configService.get('proxy.host'),
+          port: this.configService.get('proxy.port'),
+        },
+      })
+    : undefined;
   constructor(private readonly configService: ConfigService) {}
 
   /**
