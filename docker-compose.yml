@@ -4,14 +4,14 @@ services:
   api:
     image: iyjian/kidtalk-api
     restart: always
-    build:
-      context: .
+    # build:
+    #   context: .
     env_file:
       - .env
   ui:
     image: iyjian/kidtalk-ui
-    build:
-      context: ./front
+    # build:
+    #   context: ./front
     restart: always
     env_file:
       - .env    
