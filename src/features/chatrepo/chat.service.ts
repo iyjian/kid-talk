@@ -110,10 +110,10 @@ export class ChatService implements OnGatewayConnection {
       content = speech2TextResult.result[0];
     }
 
-    // const messages = JSON.parse(
-    //   JSON.stringify(await this.chatrepoService.findAllBySession(sessionId)),
-    // );
-    const messages = [];
+    const messages = JSON.parse(
+      JSON.stringify(await this.chatrepoService.findAllBySession(sessionId)),
+    );
+    // const messages = [];
 
     await this.chatrepoService.create({
       sessionId,

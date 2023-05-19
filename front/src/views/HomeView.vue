@@ -89,32 +89,33 @@ recognition.onspeechend = () => {
   // recognition.stop();
 }
 
-// window.addEventListener("touchstart", event => {
-//   if (debug) {
-//     messages.value.push({content: 'speech reconition - touchstart', role: 'debug'})
-//   }
-//   if (!recording.value && !isKeyDown.value) {
-//     console.log('speech reconition - touchstart')
-//   if (debug) {
-//     messages.value.push({content: 'speech reconition - onspeechend', role: 'debug'})
-//   }
-//     recording.value = true
-//     startRecordingTime.value = +new Date()
-//     recognition.start();
-//   }
-// })
+window.addEventListener("touchstart", event => {
+  event.preventDefault()
+  if (debug) {
+    messages.value.push({content: 'speech reconition - touchstart', role: 'debug'})
+  }
+  if (!recording.value && !isKeyDown.value) {
+    console.log('speech reconition - touchstart')
+  if (debug) {
+    messages.value.push({content: 'speech reconition - onspeechend', role: 'debug'})
+  }
+    recording.value = true
+    startRecordingTime.value = +new Date()
+    recognition.start();
+  }
+})
 
-// window.addEventListener("touchend", event => {
-//   if (debug) {
-//     messages.value.push({content: 'speech reconition - touchend', role: 'debug'})
-//   }
-//   event.preventDefault()
-//   if (recording.value) {
-//     recording.value = false
-//     isKeyDown.value = false
-//     recognition.stop();
-//   }
-// })
+window.addEventListener("touchend", event => {
+  event.preventDefault()
+  if (debug) {
+    messages.value.push({content: 'speech reconition - touchend', role: 'debug'})
+  }
+  if (recording.value) {
+    recording.value = false
+    isKeyDown.value = false
+    recognition.stop();
+  }
+})
 
 window.addEventListener('keypress', (event) => {
   event.preventDefault()

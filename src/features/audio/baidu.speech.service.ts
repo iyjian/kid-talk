@@ -72,6 +72,7 @@ export class BaiduSpeechService {
     this.logger.debug(
       `text2speech - text: ${data} timing: ${+new Date() - startTime}ms`,
     );
+    this.logger.debug(result);
     return result.data;
   }
 
