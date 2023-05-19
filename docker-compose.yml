@@ -2,14 +2,14 @@ version: "3.5"
 
 services:
   api:
-    image: iyjian/kidtalk-api
+    image: iyjian/kid-talk-api
     restart: always
     # build:
     #   context: .
     env_file:
       - .env
   ui:
-    image: iyjian/kidtalk-ui
+    image: iyjian/kid-talk-ui
     # build:
     #   context: ./front
     restart: always
