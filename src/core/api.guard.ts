@@ -13,9 +13,13 @@ import { AuthenticationClient } from 'authing-js-sdk';
 export class ApiGuard implements CanActivate {
   private readonly logger = new Logger(ApiGuard.name);
   private readonly authing = new AuthenticationClient({
-    appId: this.configService.get('auth.authingAppId'),
-    appHost: this.configService.get('auth.authingAppHost'),
+    appId: '',
+    appHost: ''
   });
+  // {
+  //   appId: this.configService.get('auth.authingAppId'),
+  //   appHost: this.configService.get('auth.authingAppHost'),
+  // }
 
   constructor(private readonly configService: ConfigService) {}
 
@@ -39,8 +43,7 @@ export class ApiGuard implements CanActivate {
         return true;
       } else {
         this.logger.debug(`apiGuard - canActivate - token: ${token}`);
-        return true;
-        // throw new HttpException('未登录', 700);
+        throw new HttpException('未登录', 700);
       }
     } else if (context.getType() === 'ws') {
       const token = context.switchToWs().getClient().handshake.query.token;
