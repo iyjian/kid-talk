@@ -14,18 +14,7 @@ COPY . .
 
 RUN pnpm build
 
-# FROM node:18-alpine
-
-# WORKDIR /usr/src/app
-
-# COPY --from=builder /usr/src/build/dist /usr/src/app/dist
-# COPY --from=builder /usr/src/build/index.js /usr/src/app
-
-# RUN yarn add static-web-proxy
-
-# ENTRYPOINT ["node", "index"] 
-
-# EXPOSE 3000
+RUN ls /app/dist
 
 FROM nginx:stable-alpine as production-stage
 
