@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { io } from 'socket.io-client'
-import RecordRTC from 'recordrtc'
+// import RecordRTC from 'recordrtc'
 import { ref } from 'vue'
 import axios from 'axios'
 
@@ -83,14 +83,15 @@ async function initUserMedia() {
     audio: true
   })
 
-  recorder = new RecordRTC(stream, {
-    type: 'audio',
-    mimeType: 'audio/wav',
-    timeSlice: 1000,
-    sampleRate: 16000,
-    numberOfAudioChannels: 1,
-    ondataavailable: function (blob) {}
-  })
+  // recorder = new RecordRTC(stream, {
+  //   type: 'audio',
+  //   mimeType: 'audio/wav',
+  //   timeSlice: 1000,
+  //   sampleRate: 16000,
+  //   numberOfAudioChannels: 1,
+  //   ondataavailable: function (blob) {}
+  // })
+  recorder = undefined
 }
 
 function playAudio(data: BinaryData) {
