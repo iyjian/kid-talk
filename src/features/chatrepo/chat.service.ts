@@ -12,6 +12,12 @@ import { OpenaiService } from '../openai/openai.service';
 import { BaiduSpeechService } from '../audio/baidu.speech.service';
 import { ApiGuard } from './../../core/api.guard';
 
+type ChatResponse = {
+  sessionId: number;
+  text: string;
+  audio?: string;
+};
+
 @Injectable()
 @WebSocketGateway({
   cors: {
@@ -61,7 +67,9 @@ export class ChatService implements OnGatewayConnection {
   }
 
   @SubscribeMessage('init')
-  async startNewChat(@MessageBody() data: { mode: string }) {
+  async startNewChat(
+    @MessageBody() data: { mode: string },
+  ): Promise<ChatResponse> {
     const messages = [];
     const chatRepo = await this.chatrepoService.init();
 
@@ -82,9 +90,11 @@ export class ChatService implements OnGatewayConnection {
       completionTokens: result.usage.completion_tokens,
     });
 
+    const audio = await this.baiduSpeechService.text2Speech(response);
     return {
+      sessionId: chatRepo.sessionId,
       text: result.choices[0].message.content,
-      audio: await this.baiduSpeechService.text2Speech(response),
+      audio: 'data:audio/mp3;base64,' + audio.toString('base64'),
     };
   }
 
@@ -97,10 +107,7 @@ export class ChatService implements OnGatewayConnection {
       role?: string;
       name?: string;
     },
-  ): Promise<{
-    text: string;
-    audio?: String;
-  }> {
+  ): Promise<ChatResponse> {
     let { sessionId, role = 'user', content, name } = data;
 
     if (typeof content !== 'string') {
@@ -138,6 +145,7 @@ export class ChatService implements OnGatewayConnection {
 
     const audio = await this.baiduSpeechService.text2Speech(response);
     return {
+      sessionId,
       text: result.choices[0].message.content,
       audio: 'data:audio/mp3;base64,' + audio.toString('base64'),
     };
