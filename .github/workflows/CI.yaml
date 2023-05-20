@@ -40,3 +40,4 @@ jobs:
         context: ./front
         push: true
         tags: iyjian/kid-talk-ui:latest
+    - run: curl https://hook.tltr.top/p/586425a2454e46ba809c701bd04f6bf4?content=kidtalk-built
