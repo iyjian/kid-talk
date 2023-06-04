@@ -1,4 +1,10 @@
-import { CacheModule, Module } from '@nestjs/common';
+import {
+  CacheModule,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AudioModule } from './features/audio/audio.module';
@@ -8,6 +14,7 @@ import redisStore from 'cache-manager-ioredis';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ChatrepoModule } from './features/chatrepo/chatrepo.module';
 import conf from './config';
+import { AuthMiddleware } from './core/auth.middleware';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -56,4 +63,10 @@ import conf from './config';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}

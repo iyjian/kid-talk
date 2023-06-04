@@ -8,6 +8,7 @@ import { ChatService } from './chat.service';
 import { ChatrepoController } from './chatrepo.controller';
 import { User } from './user.entity';
 import { Session } from './session.entity';
+import { UserService } from './user.service';
 
 @Module({
   imports: [
@@ -15,8 +16,8 @@ import { Session } from './session.entity';
     AudioModule,
     OpenaiModule,
   ],
-  providers: [ChatrepoService, ChatService],
-  exports: [ChatrepoService],
+  providers: [ChatrepoService, ChatService, UserService],
+  exports: [ChatrepoService, UserService],
   controllers: [ChatrepoController],
 })
 export class ChatrepoModule {}

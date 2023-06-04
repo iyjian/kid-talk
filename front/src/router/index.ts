@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HomeView from '../views/LetsChat.vue'
 import Login from './../views/Login.vue'
 import { AuthenticationClient } from 'authing-js-sdk'
 

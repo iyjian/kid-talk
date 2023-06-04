@@ -40,6 +40,7 @@ export class ApiGuard implements CanActivate {
       const { status } = await this.authing.checkLoginStatus(token);
 
       if (status) {
+        this.logger.debug(`apiGuard - success`);
         return true;
       } else {
         this.logger.debug(`apiGuard - canActivate - token: ${token}`);
