@@ -53,4 +53,16 @@ export class ChatrepoService {
       order: [['id', 'asc']],
     });
   }
+
+  async findLatestSession(userId: number) {
+    const latestSession = await this.SessionModel.findOne({
+      where: {
+        userId,
+      },
+      order: [['id', 'desc']],
+    });
+    if (latestSession) {
+      return this.findAllBySession(latestSession.id);
+    }
+  }
 }

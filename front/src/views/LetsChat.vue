@@ -21,7 +21,7 @@ import { io } from 'socket.io-client'
 import { ref } from 'vue'
 import { apiClient } from './../libs/api'
 const debug = false
-let currentSessionId = 1
+
 const socket = io('', {
   query: {
     token: localStorage.getItem('token')
@@ -31,6 +31,17 @@ const messages = ref<{ content: string; role: string }[]>([])
 const recording = ref(false)
 const isKeyDown = ref(false)
 const startRecordingTime = ref<number>(0)
+
+
+let currentSessionId = 1
+
+const latestSession = await apiClient.getLatestSession()
+
+if (latestSession?.data?.length > 0) {
+  messages.value = latestSession.data
+  currentSessionId = latestSession.data.
+}
+
 
 // setTimeout(() => {
 //   socket.emit('test')
