@@ -11,6 +11,9 @@ import { ChatrepoService } from './chatrepo.service';
 import { OpenaiService } from '../openai/openai.service';
 import { BaiduSpeechService } from '../audio/baidu.speech.service';
 import { ApiGuard } from './../../core/api.guard';
+import { AuthenticationClient } from 'authing-js-sdk';
+import { ConfigService } from '@nestjs/config';
+import { UserService } from './user.service';
 
 type ChatResponse = {
   sessionId: number;
@@ -31,11 +34,35 @@ export class ChatService implements OnGatewayConnection {
 
   private readonly socketUsers = {};
 
+  private readonly authing = new AuthenticationClient({
+    appId: this.configService.get('auth.authingAppId'),
+    appHost: this.configService.get('auth.authingAppHost'),
+  });
+
   constructor(
     private readonly chatrepoService: ChatrepoService,
     private readonly openaiService: OpenaiService,
     private readonly baiduSpeechService: BaiduSpeechService,
+    private readonly configService: ConfigService,
+    private readonly userService: UserService,
   ) {}
+
+  private async getUserId(client: Socket) {
+    const token = client.handshake.query.token as string;
+    const userInfo = (await this.authing.checkLoginStatus(token)) as {
+      code: number;
+      message: string;
+      status: boolean;
+      exp: number;
+      iat: number;
+      data: {
+        id: string;
+        userPoolId: string;
+      };
+    };
+    const user = await this.userService.findOneByUid(userInfo.data.id);
+    return user.id;
+  }
 
   private formatContent(str: string) {
     return str
@@ -49,6 +76,7 @@ export class ChatService implements OnGatewayConnection {
    *
    * @param client
    */
+  @UseGuards(ApiGuard)
   handleConnection(client: Socket) {
     this.logger.debug(`socketio client connected: ${client.id}`);
     this.socketUsers[client.id] = {
@@ -69,9 +97,11 @@ export class ChatService implements OnGatewayConnection {
   @SubscribeMessage('init')
   async startNewChat(
     @MessageBody() data: { mode: string },
+    @ConnectedSocket() client: Socket,
   ): Promise<ChatResponse> {
+    const userId = await this.getUserId(client);
     const messages = [];
-    const chatRepo = await this.chatrepoService.init();
+    const chatRepo = await this.chatrepoService.init(userId);
 
     messages.push({
       role: chatRepo.role,

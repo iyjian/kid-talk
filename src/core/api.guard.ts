@@ -24,6 +24,7 @@ export class ApiGuard implements CanActivate {
   constructor(private readonly configService: ConfigService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    console.log(context.getType());
     if (context.getType() === 'http') {
       const request = context.switchToHttp().getRequest<Request>();
       const token = request.headers['token'];
@@ -31,6 +32,7 @@ export class ApiGuard implements CanActivate {
         this.configService.get('auth.superToken') &&
         token === this.configService.get('auth.superToken')
       ) {
+        this.logger.debug(`apiGuard - superToken`);
         return true;
       }
 

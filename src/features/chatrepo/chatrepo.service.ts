@@ -25,10 +25,10 @@ export class ChatrepoService {
     return this.ChatModel.create(payload);
   }
 
-  async init() {
+  async init(userId: number) {
     const session = await this.SessionModel.create({
       name: '',
-      userId: 1,
+      userId,
     });
 
     return this.ChatModel.create({
