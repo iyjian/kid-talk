@@ -7,9 +7,10 @@
     </div>
     <div style="display: flex; align-items: center; flex-direction: column">
       <button class="record-button" :class="recording ? 'Rec' : 'notRec'"></button>
-      <span>按住空格后说话</span>recording: {{ recording }}&nbsp;&nbsp;&nbsp;isKeyDown:{{
+      <span>按住空格后说话</span><button @click="restart">开始新对话</button>
+      <!-- recording: {{ recording }}&nbsp;&nbsp;&nbsp;isKeyDown:{{
         isKeyDown
-      }}
+      }} -->
     </div>
   </div>
 </template>
@@ -20,7 +21,7 @@ import { io } from 'socket.io-client'
 import { ref } from 'vue'
 import { apiClient } from './../libs/api'
 const debug = false
-const sessionId = 1
+let currentSessionId = 1
 const socket = io('', {
   query: {
     token: localStorage.getItem('token')
@@ -140,12 +141,23 @@ window.addEventListener('keyup', (event) => {
 refresh()
 
 async function refresh() {
-  const result = await apiClient.getSession(sessionId)
+  const result = await apiClient.getSession(currentSessionId)
   messages.value = result.data
 }
 
+async function restart() {
+  socket.emit('init', { mode: '' }, (result: any) => {
+    const { sessionId, text, audio } = result
+    currentSessionId = sessionId
+    refresh()
+    if (audio) {
+      playAudio(audio)
+    }
+  })
+}
+
 function send(content: string | BinaryData) {
-  socket.emit('chat', { content, sessionId }, (result: any) => {
+  socket.emit('chat', { content, sessionId: currentSessionId }, (result: any) => {
     const { text, audio } = result
     refresh()
     if (audio) {

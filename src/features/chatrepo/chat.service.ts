@@ -91,6 +91,7 @@ export class ChatService implements OnGatewayConnection {
     });
 
     const audio = await this.baiduSpeechService.text2Speech(response);
+
     return {
       sessionId: chatRepo.sessionId,
       text: result.choices[0].message.content,

@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Chat } from './chatrepo.entity';
 import { Session } from './session.entity';
 import { Op } from 'sequelize';
+import { ENGLISH_TEACHER_PROMPT } from './prompts';
 
 @Injectable()
 export class ChatrepoService {
@@ -29,10 +30,11 @@ export class ChatrepoService {
       name: '',
       userId: 1,
     });
+
     return this.ChatModel.create({
       sessionId: session.id,
       role: 'system',
-      content: '',
+      content: ENGLISH_TEACHER_PROMPT,
     });
   }
 

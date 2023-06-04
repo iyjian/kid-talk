@@ -62,6 +62,7 @@ export class BaiduSpeechService {
     // 调用调试工具
     // https://console.bce.baidu.com/tools/?_=1669807341890#/api?product=AI&project=%E8%AF%AD%E9%9F%B3%E6%8A%80%E6%9C%AF&parent=%E8%AF%AD%E9%9F%B3%E5%90%88%E6%88%90&api=text2audio&method=post
     const startTime = +new Date();
+    this.logger.debug(`text2speech - start - text: ${data}`);
     const result = await this.client.text2audio(data, {
       // 度逍遥（精品）=5003，度小鹿=5118
       per,
@@ -70,9 +71,13 @@ export class BaiduSpeechService {
       aue: 3,
     });
     this.logger.debug(
-      `text2speech - text: ${data} timing: ${+new Date() - startTime}ms`,
+      `text2speech - end - timing: ${+new Date() - startTime}ms`,
     );
-    // this.logger.debug(result);
+
+    if (result.err_no) {
+      this.logger.debug(result);
+      throw new Error(result.err_msg);
+    }
     return result.data;
   }
 
