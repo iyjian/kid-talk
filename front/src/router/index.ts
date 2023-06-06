@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/LetsChat.vue'
+import LetsChat from '../views/LetsChat.vue'
 import Login from './../views/Login.vue'
 import { AuthenticationClient } from 'authing-js-sdk'
 
@@ -12,8 +12,8 @@ const router = createRouter({
   routes: [
     {
       path: '/chat',
-      name: 'home',
-      component: HomeView
+      name: 'chat',
+      component: LetsChat
     },
     {
       path: '/login',

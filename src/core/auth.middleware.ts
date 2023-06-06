@@ -36,17 +36,26 @@ export class AuthMiddleware implements NestMiddleware {
         userPoolId: string;
       };
     };
+
     this.logger.debug(userInfo);
+
     if (!userInfo || !userInfo.status) {
       throw new HttpException('无权限', HttpStatus.UNAUTHORIZED);
     }
+
     const user = await this.userService.findOneByUid(userInfo.data.id);
-    if (!user) {
+
+    if (!user || !user.isEnable) {
+      if (!user) {
+        await this.userService.create(userInfo.data.id);
+      }
       throw new HttpException('无权限', HttpStatus.UNAUTHORIZED);
     }
+
     req['locals'] = {
       user: { id: user.id },
     };
+
     next();
   }
 }

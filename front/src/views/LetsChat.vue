@@ -8,9 +8,6 @@
     <div style="display: flex; align-items: center; flex-direction: column">
       <button class="record-button" :class="recording ? 'Rec' : 'notRec'"></button>
       <span>按住空格后说话</span><button @click="restart">开始新对话</button>
-      <!-- recording: {{ recording }}&nbsp;&nbsp;&nbsp;isKeyDown:{{
-        isKeyDown
-      }} -->
     </div>
   </div>
 </template>
@@ -33,15 +30,15 @@ const isKeyDown = ref(false)
 const startRecordingTime = ref<number>(0)
 
 
-let currentSessionId = 1
+let currentSessionId: number
 
-const latestSession = await apiClient.getLatestSession()
-
-if (latestSession?.data?.length > 0) {
-  messages.value = latestSession.data
-  currentSessionId = latestSession.data.
+apiClient.getLatestSession().then(latestSession => {
+  if (latestSession?.data?.latestSession) {
+  messages.value = latestSession.data.chatHistories
+  console.log(messages.value)
+  currentSessionId = latestSession.data.latestSession.id
 }
-
+})
 
 // setTimeout(() => {
 //   socket.emit('test')

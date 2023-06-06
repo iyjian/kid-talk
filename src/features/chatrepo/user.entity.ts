@@ -22,4 +22,11 @@ export class User extends Model<User> {
     type: DataType.STRING(40),
   })
   name: string;
+
+  @Column({
+    allowNull: false,
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+  isEnable: boolean;
 }

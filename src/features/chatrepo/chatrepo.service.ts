@@ -62,7 +62,10 @@ export class ChatrepoService {
       order: [['id', 'desc']],
     });
     if (latestSession) {
-      return this.findAllBySession(latestSession.id);
+      return {
+        latestSession,
+        chatHistories: await this.findAllBySession(latestSession.id),
+      };
     }
   }
 }
