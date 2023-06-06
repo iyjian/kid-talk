@@ -31,27 +31,29 @@ const isDefinedRoute = (path: string) => {
 }
 
 router.beforeEach(async (to, from, next) => {
-  console.log(`beforeEach: to.path: ${to.path} has route: ${isDefinedRoute(to.path)} ${router.hasRoute('chat')}`)
-  if (to.path !== '/login') {
-    const user = await authClient.getCurrentUser()
-    if (user?.token) {
-      const { status } = await authClient.checkLoginStatus(user.token)
-      if (status) {
-        if (!isDefinedRoute(to.path)) {
-          router.push('/login')
-          next()
-        } else {
-          next()
-        }
-      } else {
-        router.push('/login')
-        next()
-      }
-    } else {
-      router.push('/login')
-      next()
-    }
+  console.log(`beforeEach - routePath: ${to.path} isDefined: ${isDefinedRoute(to.path)}`)
+
+  if (to.path === '/login') {
+    next()
+    return
+  }
+  
+  const user = await authClient.getCurrentUser()
+  
+  if (!user?.token) {
+    router.push('/login')
+    next()
+    return
+  }
+  
+  const { status } = await authClient.checkLoginStatus(user.token)
+  
+  if (status && isDefinedRoute(to.path)) {
+    // 如果已登录或者是有定义的路由，则渲染页面
+    next()
   } else {
+    // 否则进入登录页
+    router.push('/login')
     next()
   }
 })

@@ -2,7 +2,7 @@
   <div style="display: flex; flex-direction: column; align-items: center">
     <div class="messages">
       <div v-for="(message, idx) in messages" :key="idx" class="message">
-        <span class="role">{{ message.role }}:</span> {{ message.content }}
+        <span class="role">{{ message.role === 'assistant' ? 'teacher' : 'you' }}:</span> {{ message.content }}
       </div>
     </div>
     <div style="display: flex; align-items: center; flex-direction: column">
@@ -156,6 +156,7 @@ async function refresh() {
 }
 
 async function restart() {
+  messages.value = []
   socket.emit('init', { mode: '' }, (result: any) => {
     const { sessionId, text, audio } = result
     currentSessionId = sessionId
@@ -202,7 +203,8 @@ function playAudio(data: string) {
   justify-content: flex-end;
   margin-bottom: 5px;
   max-height: 60vh;
-  max-width: 900px;
+  min-height: 60vh;
+  width: 60vw;
   padding: 20px;
   border: 1px solid lightgray;
   overflow: scroll;
