@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Response, Request, NextFunction } from 'express';
 import { AuthenticationClient } from 'authing-js-sdk';
-import 'dotenv/config';
+// import 'dotenv/config';
 import ConfigService from './../config';
 import { UserService } from './../features/chatrepo/user.service';
 
@@ -17,8 +17,10 @@ const configService = ConfigService();
 export class AuthMiddleware implements NestMiddleware {
   private readonly logger = new Logger(AuthMiddleware.name);
   private readonly authing = new AuthenticationClient({
-    appId: configService.auth.authingAppId,
-    appHost: configService.auth.authingAppHost,
+    // appId: configService.auth.authingAppId,
+    // appHost: configService.auth.authingAppHost,
+    appId: '',
+    appHost: '',
   });
   constructor(private readonly userService: UserService) {}
 
