@@ -149,8 +149,10 @@ window.addEventListener('keyup', (event) => {
 refresh()
 
 async function refresh() {
-  const result = await apiClient.getSession(currentSessionId)
-  messages.value = result.data
+  if (currentSessionId) {
+    const result = await apiClient.getSession(currentSessionId)
+    messages.value = result.data
+  }
 }
 
 async function restart() {
