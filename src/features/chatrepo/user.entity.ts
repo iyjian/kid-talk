@@ -7,6 +7,9 @@ import {
   Model,
 } from 'sequelize-typescript';
 
+// gpt-3.5 $0.002 / 1K tokens
+// https://openai.com/pricing
+
 @Table({
   tableName: 't_user',
 })

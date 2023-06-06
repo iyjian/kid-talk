@@ -26,7 +26,7 @@ export class AuthMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction): Promise<void> {
     const token = req.headers['token'] as string;
-    this.logger.debug(`token: ${token}`);
+    // this.logger.debug(`token: ${token}`);
     const userInfo = (await this.authing.checkLoginStatus(token)) as {
       code: number;
       message: string;
@@ -39,9 +39,10 @@ export class AuthMiddleware implements NestMiddleware {
       };
     };
 
-    this.logger.debug(userInfo);
+    // this.logger.debug(userInfo);
 
     if (!userInfo || !userInfo.status) {
+      this.logger.debug(`auth failed`);
       throw new HttpException('无权限', HttpStatus.UNAUTHORIZED);
     }
 

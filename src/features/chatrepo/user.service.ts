@@ -21,6 +21,7 @@ export class UserService {
   create(uid: string) {
     return this.UserModel.create({
       uid,
+      name: 'user',
     });
   }
 }
