@@ -17,7 +17,7 @@ const router = createRouter({
     },
     {
       path: '/login',
-      name: 'Login',
+      name: 'login',
       meta: {
         menuIgnore: true
       },
@@ -31,7 +31,7 @@ const isDefinedRoute = (path: string) => {
 }
 
 router.beforeEach(async (to, from, next) => {
-  console.log(`beforeEach: to.path: ${to.path} has route: ${isDefinedRoute(to.path)}`)
+  console.log(`beforeEach: to.path: ${to.path} has route: ${isDefinedRoute(to.path)} ${router.hasRoute('chat')}`)
   if (to.path !== '/login') {
     const user = await authClient.getCurrentUser()
     if (user?.token) {
