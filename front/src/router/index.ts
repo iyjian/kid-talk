@@ -26,21 +26,30 @@ const router = createRouter({
   ]
 })
 
+const isDefinedRoute = (path: string) => {
+  return router.getRoutes().map(route => route.path).filter(routePath => routePath === path).length
+}
+
 router.beforeEach(async (to, from, next) => {
-  console.log(`beforeEach: to.path: ${to.path}`)
+  console.log(`beforeEach: to.path: ${to.path} has route: ${isDefinedRoute(to.path)}`)
   if (to.path !== '/login') {
     const user = await authClient.getCurrentUser()
     if (user?.token) {
       const { status } = await authClient.checkLoginStatus(user.token)
       if (status) {
-        next()
+        if (!isDefinedRoute(to.path)) {
+          router.push('/login')
+          next()
+        } else {
+          next()
+        }
       } else {
         router.push('/login')
-        // next()
+        next()
       }
     } else {
       router.push('/login')
-      // next()
+      next()
     }
   } else {
     next()
