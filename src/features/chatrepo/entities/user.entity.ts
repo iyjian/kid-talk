@@ -5,7 +5,7 @@ import {
   ForeignKey,
   BelongsTo,
   Model,
-} from 'sequelize-typescript';
+} from 'sequelize-typescript'
 
 // gpt-3.5 $0.002 / 1K tokens
 // https://openai.com/pricing
@@ -18,18 +18,18 @@ export class User extends Model<User> {
     allowNull: false,
     type: DataType.STRING(40),
   })
-  uid: string;
+  uid: string
 
   @Column({
     allowNull: false,
     type: DataType.STRING(40),
   })
-  name: string;
+  name: string
 
   @Column({
     allowNull: false,
     type: DataType.BOOLEAN,
     defaultValue: false,
   })
-  isEnable: boolean;
+  isEnable: boolean
 }

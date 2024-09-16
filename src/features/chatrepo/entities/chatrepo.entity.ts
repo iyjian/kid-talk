@@ -5,8 +5,8 @@ import {
   ForeignKey,
   BelongsTo,
   Model,
-} from 'sequelize-typescript';
-import { Session } from './session.entity';
+} from 'sequelize-typescript'
+import { Session } from './session.entity'
 
 @Table({
   tableName: 't_chat',
@@ -17,38 +17,38 @@ export class Chat extends Model<Chat> {
     allowNull: false,
     type: DataType.STRING(40),
   })
-  sessionId: number;
+  sessionId: number
 
   @BelongsTo(() => Session, 'sessionId')
-  session: Session;
+  session: Session
 
   @Column({
     allowNull: false,
     type: DataType.STRING(40),
   })
-  role: string;
+  role: string
 
   @Column({
     allowNull: false,
     type: DataType.TEXT,
   })
-  content: string;
+  content: string
 
   @Column({
     allowNull: true,
     type: DataType.STRING(40),
   })
-  name: string;
+  name: string
 
   @Column({
     allowNull: true,
     type: DataType.INTEGER,
   })
-  promptTokens: number;
+  promptTokens: number
 
   @Column({
     allowNull: true,
     type: DataType.INTEGER,
   })
-  completionTokens: number;
+  completionTokens: number
 }

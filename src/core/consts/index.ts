@@ -15,4 +15,4 @@ export enum DockerContainerStatus {
   'notpresent' = 'notpresent',
 }
 
-export const BAD_QUESTION_SCORE_LOWWER_BOUND = 0.3;
+export const BAD_QUESTION_SCORE_LOWWER_BOUND = 0.3

@@ -1,2 +1,2 @@
-export * from './req.decorator';
-export * from './codegen.decorator';
+export * from './req.decorator'
+export * from './codegen.decorator'

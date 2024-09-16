@@ -5,8 +5,8 @@ import {
   ForeignKey,
   BelongsTo,
   Model,
-} from 'sequelize-typescript';
-import { User } from './user.entity';
+} from 'sequelize-typescript'
+import { User } from './user.entity'
 
 @Table({
   tableName: 't_session',
@@ -16,15 +16,15 @@ export class Session extends Model<Session> {
     allowNull: false,
     type: DataType.STRING(40),
   })
-  name: string;
+  name: string
 
   @ForeignKey(() => User)
   @Column({
     allowNull: false,
     type: DataType.INTEGER,
   })
-  userId: number;
+  userId: number
 
   @BelongsTo(() => User, 'userId')
-  user: User;
+  user: User
 }

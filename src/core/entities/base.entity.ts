@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid';
+import { nanoid } from 'nanoid'
 import {
   Model,
   Column,
@@ -9,8 +9,8 @@ import {
   Unique,
   DefaultScope,
   BeforeBulkUpdate,
-} from 'sequelize-typescript';
-import { QueryTypes } from 'sequelize';
+} from 'sequelize-typescript'
+import { QueryTypes } from 'sequelize'
 
 @DefaultScope(() => ({
   where: {
@@ -26,13 +26,13 @@ export class BaseModel<T> extends Model<T> {
   @Default(() => nanoid(32))
   @Unique(true)
   @Column(DataType.STRING(32))
-  syncKey: string;
+  syncKey: string
 
   @Comment('是否有效')
   @AllowNull(true)
   @Default(true)
   @Column
-  isActive?: boolean;
+  isActive?: boolean
 
   /**
     attributes: { isActive: true, updatedAt: 2022-11-18T09:35:57.322Z },
@@ -57,7 +57,7 @@ export class BaseModel<T> extends Model<T> {
       !instance.attributes ||
       instance.attributes.isActive !== null
     ) {
-      return;
+      return
     }
 
     const sql = `
@@ -67,38 +67,38 @@ export class BaseModel<T> extends Model<T> {
         where referenced_table_name is not null
               and table_schema = '${process.env.MYSQL_DB}'
               and referenced_table_name = '${instance.model.tableName}';
-      `;
+      `
     /**
      * 找到和软删除数据有关联的表以及有关联的字段
      */
     const rows = await instance.transaction.sequelize.query(sql, {
       type: QueryTypes.SELECT,
-    });
+    })
 
     if (rows && rows.length > 0) {
-      const sqls = [];
+      const sqls = []
       for (const row of rows) {
         /**
          * 逐个查询这些关联表中的数据是否出于活跃状态
          */
         sqls.push(
           `select 1 from ${row.tableName} where ${row.columnName} = ${instance.where.id} and isActive = 1`,
-        );
+        )
       }
 
       const finalSql = `select count(*) as cnt from (${sqls.join(
         ' union all ',
-      )}) t`;
+      )}) t`
 
       const result = await instance.transaction.sequelize.query(finalSql, {
         type: QueryTypes.SELECT,
         transaction: instance.transaction,
-      });
+      })
       /**
        * 如果查询到有关联数据处于活跃状态则不予软删除
        */
       if (result && result.length === 1 && result[0]['cnt'] > 0) {
-        throw new Error('SequelizeForeignKeyConstraintError');
+        throw new Error('SequelizeForeignKeyConstraintError')
       }
     }
   }

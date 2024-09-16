@@ -1,20 +1,20 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import OpenAI from 'openai';
-import { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
+import { Injectable, Logger } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import OpenAI from 'openai'
+import { ChatCompletionMessageParam } from 'openai/resources/chat/completions'
 
 @Injectable()
 export class OpenaiService {
-  private readonly logger = new Logger(OpenaiService.name);
+  private readonly logger = new Logger(OpenaiService.name)
 
   private readonly openai = new OpenAI({
     baseURL: this.configService.get('openai.endpoint'),
     apiKey: this.configService.get('openai.apiKey'),
-  });
+  })
 
   constructor(private readonly configService: ConfigService) {
-    console.log(this.configService.get('openai.endpoint'));
-    console.log(this.configService.get('openai.apiKey'));
+    console.log(this.configService.get('openai.endpoint'))
+    console.log(this.configService.get('openai.apiKey'))
   }
 
   /**
@@ -47,8 +47,8 @@ export class OpenaiService {
       stream: false,
       max_tokens: 1000,
       messages,
-    });
-    return result;
+    })
+    return result
   }
 
   async ask(quest: string, model: string = 'gpt-4o') {
@@ -64,15 +64,15 @@ export class OpenaiService {
           role: 'user',
         },
       ],
-    });
+    })
   }
 
   async createSpeech(
     body: OpenAI.Audio.Speech.SpeechCreateParams,
     options?: OpenAI.RequestOptions,
   ): Promise<Buffer> {
-    console.log(`createSpeech - ${JSON.stringify(body)}`);
-    const response = await this.openai.audio.speech.create(body, options);
-    return Buffer.from(await response.arrayBuffer());
+    console.log(`createSpeech - ${JSON.stringify(body)}`)
+    const response = await this.openai.audio.speech.create(body, options)
+    return Buffer.from(await response.arrayBuffer())
   }
 }

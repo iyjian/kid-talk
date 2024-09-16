@@ -1,10 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
-import crypto from 'crypto';
-import moment from 'moment';
-import WebSocket from 'ws';
-import { Server, Socket } from 'socket.io';
+import { Injectable, Logger } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter'
+import crypto from 'crypto'
+import moment from 'moment'
+import WebSocket from 'ws'
+import { Server, Socket } from 'socket.io'
 import {
   MessageBody,
   SubscribeMessage,
@@ -13,19 +13,19 @@ import {
   WsResponse,
   OnGatewayConnection,
   ConnectedSocket,
-} from '@nestjs/websockets';
-import baiduAIP from 'baidu-aip-sdk';
+} from '@nestjs/websockets'
+import baiduAIP from 'baidu-aip-sdk'
 
 type Text2SpeechResponse = {
-  code: number;
-  message: string;
-  sid: string;
+  code: number
+  message: string
+  sid: string
   data: {
-    audio: string;
-    ced: string;
-    status: number;
-  };
-};
+    audio: string
+    ced: string
+    status: number
+  }
+}
 
 @Injectable()
 @WebSocketGateway({
@@ -35,37 +35,36 @@ type Text2SpeechResponse = {
 })
 //
 export class KDXFAudioService implements OnGatewayConnection {
-  private readonly appId = this.configService.get('kdxf.appId');
-  private readonly apiSecret = this.configService.get('kdxf.apiSecret');
-  private readonly apiKey = this.configService.get('kdxf.apiKey');
-  private readonly baiduAIPAccessKey =
-    this.configService.get('baidu.accessKey');
+  private readonly appId = this.configService.get('kdxf.appId')
+  private readonly apiSecret = this.configService.get('kdxf.apiSecret')
+  private readonly apiKey = this.configService.get('kdxf.apiKey')
+  private readonly baiduAIPAccessKey = this.configService.get('baidu.accessKey')
   private readonly baiduAIPAccessSecret =
-    this.configService.get('baidu.accessSecret');
-  private readonly logger = new Logger(KDXFAudioService.name);
+    this.configService.get('baidu.accessSecret')
+  private readonly logger = new Logger(KDXFAudioService.name)
   private readonly client = new baiduAIP.speech(
     0,
     this.baiduAIPAccessKey,
     this.baiduAIPAccessSecret,
-  );
+  )
 
-  private readonly socketUsers = {};
+  private readonly socketUsers = {}
 
   constructor(
     private readonly configService: ConfigService,
     private eventEmitter: EventEmitter2,
   ) {
-    console.log(this.configService.get('baidu.accessKey'));
-    console.log(this.configService.get('baidu.accessSecret'));
+    console.log(this.configService.get('baidu.accessKey'))
+    console.log(this.configService.get('baidu.accessSecret'))
     this.client.text2audio('百度语音合成测试').then(
       function (result) {
-        console.log(result);
+        console.log(result)
       },
       function (e) {
         // 发生网络错误
-        console.log(e);
+        console.log(e)
       },
-    );
+    )
   }
 
   /**
@@ -74,10 +73,10 @@ export class KDXFAudioService implements OnGatewayConnection {
    * @param client
    */
   handleConnection(client: Socket) {
-    this.logger.debug(`socketio client connected: ${client.id}`);
+    this.logger.debug(`socketio client connected: ${client.id}`)
     this.socketUsers[client.id] = {
       client,
-    };
+    }
   }
 
   public registerKDXFClientForSocketIOClient(
@@ -85,27 +84,27 @@ export class KDXFAudioService implements OnGatewayConnection {
     type: 'text2speechClient' | 'speech2TextClient',
     cb: (payload: any) => void,
   ) {
-    const socketIOClient = this.socketUsers[clientId];
+    const socketIOClient = this.socketUsers[clientId]
     if (socketIOClient[type]) {
-      socketIOClient[type].close();
+      socketIOClient[type].close()
     }
     socketIOClient[type] = this.initClient(
       type === 'text2speechClient' ? '/v2/tts' : '/v2/iat',
-    );
+    )
     socketIOClient[type].onopen = () => {
-      socketIOClient.client.emit('ready', { [type]: true });
-      cb(socketIOClient[type]);
-    };
+      socketIOClient.client.emit('ready', { [type]: true })
+      cb(socketIOClient[type])
+    }
     socketIOClient[type].onmessage = (event: any) => {
       console.log(
         `registerKDXFClientForSocketIOClient - ${type} - onMessage - `,
-      );
+      )
       this.eventEmitter.emit(
         'event.audio.text2speech',
         clientId,
         JSON.parse(event.data.toString()),
-      );
-    };
+      )
+    }
   }
 
   /**
@@ -114,12 +113,12 @@ export class KDXFAudioService implements OnGatewayConnection {
    * @returns
    */
   initClient(path: string) {
-    const host = 'iat-api.xfyun.cn';
+    const host = 'iat-api.xfyun.cn'
     const date = moment()
       .subtract(8, 'hours')
-      .format('ddd, DD MMM YYYY HH:mm:ss GMT');
-    const authorization = this.getAuthorization(host, date, path);
-    this.logger.debug(`authorization: ${authorization} date: ${date}`);
+      .format('ddd, DD MMM YYYY HH:mm:ss GMT')
+    const authorization = this.getAuthorization(host, date, path)
+    this.logger.debug(`authorization: ${authorization} date: ${date}`)
 
     return new WebSocket(
       `wss://${host}${path}?authorization=${authorization}&date=${encodeURIComponent(
@@ -128,19 +127,19 @@ export class KDXFAudioService implements OnGatewayConnection {
       {
         perMessageDeflate: false,
       },
-    );
+    )
   }
 
   @OnEvent('event.audio.text2speech')
   handleText2SpeechResult(clientId: string, payload: Text2SpeechResponse) {
     // https://www.xfyun.cn/doc/tts/online_tts/API.html#%E6%8E%A5%E5%8F%A3%E8%B0%83%E7%94%A8%E6%B5%81%E7%A8%8B
     // 服务端可能返回data为空的帧，并且错误码为0，这种帧客户端可以直接忽略，不解析(搜索上面链接的注意事项)
-    if (!payload.data) return;
+    if (!payload.data) return
     this.logger.verbose(
       `event.audio.text2speech - clientId: ${clientId} payload: ${payload}`,
-    );
+    )
     // Readable.from(Buffer.from(payload.data.audio, 'base64'));
-    this.socketUsers[clientId].client.emit('audio', payload.data.audio);
+    this.socketUsers[clientId].client.emit('audio', payload.data.audio)
   }
 
   public getAuthorization(
@@ -148,20 +147,20 @@ export class KDXFAudioService implements OnGatewayConnection {
     date: string,
     path: string = '/v2/iat',
   ): string {
-    const message = `host: ${host}\ndate: ${date}\nGET ${path} HTTP/1.1`;
+    const message = `host: ${host}\ndate: ${date}\nGET ${path} HTTP/1.1`
 
     const sign = crypto
       .createHmac('sha256', Buffer.from(this.apiSecret, 'utf-8'))
       .update(message)
-      .digest('base64');
+      .digest('base64')
 
-    this.logger.debug(`${this.apiKey} ${this.apiSecret} sign: ${sign}`);
+    this.logger.debug(`${this.apiKey} ${this.apiSecret} sign: ${sign}`)
 
-    const authorizationOrigin = `api_key="${this.apiKey}", algorithm="hmac-sha256", headers="host date request-line", signature="${sign}"`;
+    const authorizationOrigin = `api_key="${this.apiKey}", algorithm="hmac-sha256", headers="host date request-line", signature="${sign}"`
 
-    const authorization = Buffer.from(authorizationOrigin).toString('base64');
+    const authorization = Buffer.from(authorizationOrigin).toString('base64')
 
-    return authorization;
+    return authorization
   }
 
   @SubscribeMessage('text2speech')
@@ -169,8 +168,8 @@ export class KDXFAudioService implements OnGatewayConnection {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { text: string },
   ) {
-    this.logger.debug(`handleClientEvents - text2speech - text: ${data.text}`);
-    this.text2speech(client.id, data.text);
+    this.logger.debug(`handleClientEvents - text2speech - text: ${data.text}`)
+    this.text2speech(client.id, data.text)
   }
 
   private text2speech(
@@ -198,13 +197,13 @@ export class KDXFAudioService implements OnGatewayConnection {
         status: 2,
         text: Buffer.from(text).toString('base64'),
       },
-    };
+    }
     this.registerKDXFClientForSocketIOClient(
       clientId,
       'text2speechClient',
       (client) => {
-        client.send(JSON.stringify(payload));
+        client.send(JSON.stringify(payload))
       },
-    );
+    )
   }
 }

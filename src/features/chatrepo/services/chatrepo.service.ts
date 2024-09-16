@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Chat } from '../entities/chatrepo.entity';
-import { Session } from '../entities/session.entity';
-import { Op } from 'sequelize';
-import { ENGLISH_TEACHER_PROMPT } from './prompts';
+import { Injectable } from '@nestjs/common'
+import { InjectModel } from '@nestjs/sequelize'
+import { Chat } from '../entities/chatrepo.entity'
+import { Session } from '../entities/session.entity'
+import { Op } from 'sequelize'
+import { ENGLISH_TEACHER_PROMPT } from './prompts'
 
 @Injectable()
 export class ChatrepoService {
@@ -15,27 +15,27 @@ export class ChatrepoService {
   ) {}
 
   create(payload: {
-    sessionId: number;
-    role: string;
-    content: string;
-    name?: string;
-    promptTokens?: number;
-    completionTokens?: number;
+    sessionId: number
+    role: string
+    content: string
+    name?: string
+    promptTokens?: number
+    completionTokens?: number
   }) {
-    return this.ChatModel.create(payload);
+    return this.ChatModel.create(payload)
   }
 
   async init(userId: number) {
     const session = await this.SessionModel.create({
       name: '',
       userId,
-    });
+    })
 
     return this.ChatModel.create({
       sessionId: session.id,
       role: 'system',
       content: ENGLISH_TEACHER_PROMPT,
-    });
+    })
   }
 
   findAllBySession(sessionId: number, maxId?: number) {
@@ -51,7 +51,7 @@ export class ChatrepoService {
         },
       },
       order: [['id', 'asc']],
-    });
+    })
   }
 
   async findLatestSession(userId: number) {
@@ -60,12 +60,12 @@ export class ChatrepoService {
         userId,
       },
       order: [['id', 'desc']],
-    });
+    })
     if (latestSession) {
       return {
         latestSession,
         chatHistories: await this.findAllBySession(latestSession.id),
-      };
+      }
     }
   }
 }

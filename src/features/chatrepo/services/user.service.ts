@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Op } from 'sequelize';
-import { User } from './../entities/user.entity';
+import { Injectable } from '@nestjs/common'
+import { InjectModel } from '@nestjs/sequelize'
+import { Op } from 'sequelize'
+import { User } from './../entities/user.entity'
 
 @Injectable()
 export class UserService {
@@ -15,13 +15,13 @@ export class UserService {
       where: {
         uid,
       },
-    });
+    })
   }
 
   create(uid: string) {
     return this.UserModel.create({
       uid,
       name: 'user',
-    });
+    })
   }
 }

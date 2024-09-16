@@ -1,6 +1,6 @@
-import 'reflect-metadata';
+import 'reflect-metadata'
 
-const codeGenCode = Symbol('codeGenCode');
+const codeGenCode = Symbol('codeGenCode')
 
 /**
  *
@@ -8,5 +8,5 @@ const codeGenCode = Symbol('codeGenCode');
  * @returns
  */
 export function codeGen(code: string) {
-  return Reflect.metadata(codeGenCode, code);
+  return Reflect.metadata(codeGenCode, code)
 }

@@ -1,35 +1,35 @@
-import { ApiExtraModels, ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
-import { Request } from 'express';
-import { getTransformer } from '../transforms';
-import _ from 'lodash';
+import { ApiExtraModels, ApiProperty } from '@nestjs/swagger'
+import { Transform, Type } from 'class-transformer'
+import { Request } from 'express'
+import { getTransformer } from '../transforms'
+import _ from 'lodash'
 
 class SortCommand {
   @ApiProperty({
     description: '排序键',
     required: false,
   })
-  key: string;
+  key: string
 
   @ApiProperty({
     description: '排序方向',
     required: false,
   })
-  order: 'desc' | 'asc';
+  order: 'desc' | 'asc'
 }
 
 export class PagingRequestDTO {
   @Transform(({ value }) => {
-    if (value === 'true' || value === '1') return true;
-    if (value === 'false' || value === '0') return false;
-    return value;
+    if (value === 'true' || value === '1') return true
+    if (value === 'false' || value === '0') return false
+    return value
   })
   @ApiProperty({
     description: '是否忽略分页',
     required: false,
   })
   @Transform(getTransformer('booleanTransformer'))
-  skipPaging?: boolean;
+  skipPaging?: boolean
 
   @Type(() => Number)
   @ApiProperty({
@@ -38,7 +38,7 @@ export class PagingRequestDTO {
     required: false,
   })
   @Transform(getTransformer('numberTransformer'))
-  page?: number = 1;
+  page?: number = 1
 
   @Type(() => Number)
   @ApiProperty({
@@ -47,13 +47,13 @@ export class PagingRequestDTO {
     required: false,
   })
   @Transform(getTransformer('numberTransformer'))
-  pageSize?: number = 20;
+  pageSize?: number = 20
 
   @ApiProperty({
     description: '搜索条件',
     required: false,
   })
-  search?: string;
+  search?: string
 
   @ApiProperty({
     description: '排序条件',
@@ -62,38 +62,38 @@ export class PagingRequestDTO {
   })
   @Transform(({ value }) => {
     if (value) {
-      return value.map((o: SortCommand) => [o.key, o.order]);
+      return value.map((o: SortCommand) => [o.key, o.order])
     }
   })
-  sort?: [string, string][];
+  sort?: [string, string][]
 }
 
 interface Locals extends Record<string, any> {
-  user: any;
-  token?: string;
+  user: any
+  token?: string
 }
 
 export interface AuthingRequest extends Request {
-  locals: Locals;
-  query: { token?: string; appId?: string; nonce?: string; sign?: string };
+  locals: Locals
+  query: { token?: string; appId?: string; nonce?: string; sign?: string }
 }
 
-const SequelizeBaseOperators = ['eq', 'ne', 'isnull'] as const;
+const SequelizeBaseOperators = ['eq', 'ne', 'isnull'] as const
 
-type SequelizeBaseOperator = (typeof SequelizeBaseOperators)[number];
+type SequelizeBaseOperator = (typeof SequelizeBaseOperators)[number]
 
-const SequelizeBaseArrayOperators = ['or', 'and', 'in', 'notIn'] as const;
+const SequelizeBaseArrayOperators = ['or', 'and', 'in', 'notIn'] as const
 
-type SequelizeBaseArrayOperator = (typeof SequelizeBaseArrayOperators)[number];
+type SequelizeBaseArrayOperator = (typeof SequelizeBaseArrayOperators)[number]
 
-const SequelizeCompareOperators = ['gt', 'gte', 'lt', 'lte'] as const;
+const SequelizeCompareOperators = ['gt', 'gte', 'lt', 'lte'] as const
 
-type SequelizeCompareOperator = (typeof SequelizeCompareOperators)[number];
+type SequelizeCompareOperator = (typeof SequelizeCompareOperators)[number]
 
-const SequelizeCompareRangeOperators = ['between', 'notbetween'] as const;
+const SequelizeCompareRangeOperators = ['between', 'notbetween'] as const
 
 type SequelizeCompareRangeOperator =
-  (typeof SequelizeCompareRangeOperators)[number];
+  (typeof SequelizeCompareRangeOperators)[number]
 
 const SequelizeStringOperators = [
   'like',
@@ -103,13 +103,13 @@ const SequelizeStringOperators = [
   'iLike',
   'notIlike',
   'regexp',
-] as const;
+] as const
 
-type SequelizeStringOperator = (typeof SequelizeStringOperators)[number];
+type SequelizeStringOperator = (typeof SequelizeStringOperators)[number]
 
-const SequelizeBooleanOperators = ['is', 'not'] as const;
+const SequelizeBooleanOperators = ['is', 'not'] as const
 
-type SequelizeBooleanOperators = (typeof SequelizeBooleanOperators)[number];
+type SequelizeBooleanOperators = (typeof SequelizeBooleanOperators)[number]
 
 export const allOperators = _.flatten(
   _.concat([
@@ -119,28 +119,28 @@ export const allOperators = _.flatten(
     SequelizeStringOperators,
     SequelizeBooleanOperators,
   ]),
-) as any as string[];
+) as any as string[]
 
 export type RequestString =
   | string
   | { [key in SequelizeBaseOperator]?: string | RequestString }
   | { [key in SequelizeBaseArrayOperator]?: string[] | RequestString }
-  | { [key in SequelizeStringOperator]?: string | RequestString };
+  | { [key in SequelizeStringOperator]?: string | RequestString }
 
 export type RequestNumber =
   | number
   | { [key in SequelizeBaseOperator]?: number | RequestNumber }
   | { [key in SequelizeBaseArrayOperator]?: number[] | RequestNumber }
   | { [key in SequelizeCompareOperator]?: number | RequestNumber }
-  | { [key in SequelizeCompareRangeOperator]?: number[] | RequestNumber };
+  | { [key in SequelizeCompareRangeOperator]?: number[] | RequestNumber }
 
 export type RequestDate =
   | Date
   | { [key in SequelizeBaseOperator]?: Date | RequestDate }
   | { [key in SequelizeBaseArrayOperator]?: Date[] | RequestDate }
   | { [key in SequelizeCompareOperator]?: Date | RequestDate }
-  | { [key in SequelizeCompareRangeOperator]?: Date[] | RequestDate };
+  | { [key in SequelizeCompareRangeOperator]?: Date[] | RequestDate }
 
 export type RequestBoolean =
   | boolean
-  | { [key in SequelizeBooleanOperators]?: boolean | RequestBoolean };
+  | { [key in SequelizeBooleanOperators]?: boolean | RequestBoolean }

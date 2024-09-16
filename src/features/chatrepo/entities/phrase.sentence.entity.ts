@@ -7,7 +7,7 @@ import {
   Model,
   Scopes,
 } from 'sequelize-typescript'
-import { codeGen } from './../../../core'
+import { codeGen, BaseModel } from './../../../core'
 
 @Table({
   tableName: 't_phrase_sentence',
@@ -21,7 +21,7 @@ import { codeGen } from './../../../core'
     include: [],
   },
 }))
-export class PhraseSentence extends Model<PhraseSentence> {
+export class PhraseSentence extends BaseModel<PhraseSentence> {
   @Column({
     allowNull: false,
     type: DataType.STRING,

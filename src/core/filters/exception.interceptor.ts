@@ -4,26 +4,26 @@ import {
   ArgumentsHost,
   HttpException,
   HttpStatus,
-} from '@nestjs/common';
-import { CUSTOME_ERROR } from './../../config';
-import * as Sentry from '@sentry/node';
+} from '@nestjs/common'
+// import { CUSTOME_ERROR } from './../../config'
+// import * as Sentry from '@sentry/node'
 
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
-    console.log(exception);
-    Sentry.captureException(exception);
+    // console.log(exception)
+    // Sentry.captureException(exception)
     if (host.getType() === 'http') {
-      const ctx = host.switchToHttp();
-      const response = ctx.getResponse();
+      const ctx = host.switchToHttp()
+      const response = ctx.getResponse()
 
       const httpStatus =
         exception instanceof HttpException
           ? exception.getStatus()
-          : HttpStatus.INTERNAL_SERVER_ERROR;
+          : HttpStatus.INTERNAL_SERVER_ERROR
 
       if (exception instanceof HttpException) {
-        console.log(exception.getResponse());
+        console.log(exception.getResponse())
       }
 
       const errMsg = (
@@ -34,16 +34,16 @@ export class AllExceptionFilter implements ExceptionFilter {
           : exception instanceof Error
           ? exception.message
           : 'internal error'
-      ).toString();
+      ).toString()
 
       if (exception instanceof Error) {
-        exception.message;
+        exception.message
       }
       const responseBody = {
         err: httpStatus,
-        errMsg: errMsg in CUSTOME_ERROR ? CUSTOME_ERROR[errMsg] : errMsg,
-      };
-      response.json(responseBody);
+        errMsg,
+      }
+      response.json(responseBody)
     }
   }
 }

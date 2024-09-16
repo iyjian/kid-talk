@@ -1,19 +1,19 @@
-import { Injectable } from '@nestjs/common';
-import _ from 'lodash';
-import { Op } from 'sequelize';
-import XLSX from 'xlsx';
-import { allOperators } from '../interfaces';
-import exceljs from 'exceljs';
-import { PassThrough, Readable } from 'stream';
+import { Injectable } from '@nestjs/common'
+import _ from 'lodash'
+import { Op } from 'sequelize'
+import XLSX from 'xlsx'
+import { allOperators } from '../interfaces'
+import exceljs from 'exceljs'
+import { PassThrough, Readable } from 'stream'
 
 interface HeaderConfig {
-  key: string;
-  name: string;
-  width: number;
-  bgColor: string;
-  color: string;
-  type: string;
-  align?: string;
+  key: string
+  name: string
+  width: number
+  bgColor: string
+  color: string
+  type: string
+  align?: string
 }
 
 @Injectable()
@@ -32,7 +32,7 @@ export class BaseService {
    * }
    */
   protected omitEmptyProperty(obj: object): any {
-    return _(obj).omitBy(_.isUndefined).omitBy(_.isNull).value();
+    return _(obj).omitBy(_.isUndefined).omitBy(_.isNull).value()
   }
 
   /**
@@ -44,20 +44,20 @@ export class BaseService {
    */
   private getValByKey(obj: object, key: string) {
     if (!key) {
-      throw new Error('key can not be empty');
+      throw new Error('key can not be empty')
     }
-    const keyPath = key.split('.');
+    const keyPath = key.split('.')
     if (keyPath.length === 1) {
-      return obj[key];
+      return obj[key]
     } else {
       try {
-        let val = obj;
+        let val = obj
         for (const keyNode of keyPath) {
-          val = val[keyNode];
+          val = val[keyNode]
         }
-        return val;
+        return val
       } catch (e) {
-        return undefined;
+        return undefined
       }
     }
   }
@@ -75,18 +75,19 @@ export class BaseService {
    * @returns
    */
   public XLSXFileToJson(
-    file: Express.Multer.File,
+    // file: Express.Multer.File,
+    file: any,
     header: string[],
     sheetIdx: number = 0,
   ): any[] {
-    const workbook = XLSX.read(file.buffer);
+    const workbook = XLSX.read(file.buffer)
     return XLSX.utils.sheet_to_json(
       workbook.Sheets[workbook.SheetNames[sheetIdx]],
       {
         header,
         range: 1,
       },
-    );
+    )
   }
 
   // 把json转为excel流
@@ -95,61 +96,61 @@ export class BaseService {
     headerConfig: HeaderConfig[],
     jsonReadableStream: Readable,
   ): Readable {
-    const passThrough = new PassThrough();
+    const passThrough = new PassThrough()
     const workbook = new exceljs.stream.xlsx.WorkbookWriter({
       stream: passThrough,
       useStyles: true,
       useSharedStrings: true,
-    });
-    const worksheet = workbook.addWorksheet('Sheet1');
+    })
+    const worksheet = workbook.addWorksheet('Sheet1')
 
     // 设置列配置
     worksheet.columns = headerConfig.map((header) => ({
       header: header.name,
       key: header.key,
       width: header.width,
-    }));
+    }))
 
     // 应用表头样式
-    const headerRow = worksheet.getRow(1);
+    const headerRow = worksheet.getRow(1)
     headerConfig.forEach((header, index) => {
-      const cell = headerRow.getCell(index + 1);
-      cell.value = header.name;
+      const cell = headerRow.getCell(index + 1)
+      cell.value = header.name
       cell.fill = {
         type: 'pattern',
         pattern: 'solid',
         fgColor: { argb: header.bgColor.replace('#', '') },
-      };
+      }
       cell.font = {
         color: { argb: header.color.replace('#', '') },
         bold: true,
-      };
+      }
       if (header.align) {
         cell.alignment = {
           horizontal: header.align as 'center' | 'left' | 'right',
-        };
+        }
       }
-    });
-    headerRow.commit();
+    })
+    headerRow.commit()
 
     // 异步处理JSON数据流并添加数据行
-    (async () => {
+    ;(async () => {
       for await (const chunk of jsonReadableStream) {
-        const data = JSON.parse(chunk.toString());
-        const row = [];
+        const data = JSON.parse(chunk.toString())
+        const row = []
         headerConfig.forEach((header) => {
-          row.push(data[header.key]);
-        });
-        worksheet.addRow(row).commit();
+          row.push(data[header.key])
+        })
+        worksheet.addRow(row).commit()
       }
 
       // 流结束时的处理
-      worksheet.commit();
-      await workbook.commit();
-      passThrough.end();
-    })();
+      worksheet.commit()
+      await workbook.commit()
+      passThrough.end()
+    })()
 
-    return passThrough;
+    return passThrough
   }
 
   /**
@@ -176,49 +177,49 @@ export class BaseService {
     rows: object[],
     headerConfigs: HeaderConfig[],
   ): Promise<exceljs.Buffer> {
-    const tableData: any = [];
-    const header = headerConfigs.map((headerConfig) => headerConfig.name);
+    const tableData: any = []
+    const header = headerConfigs.map((headerConfig) => headerConfig.name)
 
     for (const row of rows) {
-      const rowData = [];
+      const rowData = []
       for (const headerConfig of headerConfigs) {
-        rowData.push(this.getValByKey(row, headerConfig.key));
+        rowData.push(this.getValByKey(row, headerConfig.key))
       }
-      tableData.push(rowData);
+      tableData.push(rowData)
     }
 
-    const workbook = new exceljs.Workbook();
-    const worksheet = workbook.addWorksheet('sheet1');
+    const workbook = new exceljs.Workbook()
+    const worksheet = workbook.addWorksheet('sheet1')
 
-    worksheet.addRow(header);
-    worksheet.addRows(tableData);
+    worksheet.addRow(header)
+    worksheet.addRows(tableData)
 
     for (const row of worksheet.getRows(1, worksheet.rowCount)) {
       for (let cellIndex = 0; cellIndex < row.cellCount; cellIndex++) {
-        const cell = row.getCell(cellIndex + 1);
+        const cell = row.getCell(cellIndex + 1)
 
         // 如果是表头行
         if (row.number === 1) {
           cell.font = {
             color: { argb: headerConfigs[cellIndex].color },
-          };
+          }
 
           // 设置背景颜色
           cell.fill = {
             type: 'pattern',
             pattern: 'solid',
             fgColor: { argb: headerConfigs[cellIndex].bgColor },
-          };
+          }
 
           // 标题文字居中
           cell.alignment = {
             horizontal: 'center',
-          };
+          }
 
           // 设置列宽
           worksheet.getColumn(cellIndex + 1).width =
-            headerConfigs[cellIndex].width;
-          continue;
+            headerConfigs[cellIndex].width
+          continue
         }
 
         if (headerConfigs[cellIndex].align) {
@@ -227,35 +228,35 @@ export class BaseService {
               | 'left'
               | 'center'
               | 'right',
-          };
-          if (headerConfigs[cellIndex].type === 'string') {
-            cell.alignment.wrapText = true;
-            cell.numFmt = '@';
           }
-          continue;
+          if (headerConfigs[cellIndex].type === 'string') {
+            cell.alignment.wrapText = true
+            cell.numFmt = '@'
+          }
+          continue
         }
 
         if (headerConfigs[cellIndex].type === 'string') {
           cell.alignment = {
             horizontal: 'left',
-          };
+          }
 
           // 设置自动换行
-          cell.alignment.wrapText = true;
+          cell.alignment.wrapText = true
 
           // 设置单元格格式为文本
-          cell.numFmt = '@';
+          cell.numFmt = '@'
         }
 
         if (headerConfigs[cellIndex].type === 'number') {
           cell.alignment = {
             horizontal: 'right',
-          };
+          }
         }
       }
     }
 
-    return workbook.xlsx.writeBuffer();
+    return workbook.xlsx.writeBuffer()
   }
 
   /**
@@ -312,16 +313,16 @@ export class BaseService {
     return include
       .filter((o) => o !== undefined)
       .map((config) => {
-        const item = {};
+        const item = {}
         for (const key in config) {
           if (key === 'include') {
-            item[key] = this.cleanInclude(config[key]);
+            item[key] = this.cleanInclude(config[key])
           } else {
-            item[key] = config[key];
+            item[key] = config[key]
           }
         }
-        return item;
-      });
+        return item
+      })
   }
 
   /**
@@ -349,22 +350,22 @@ export class BaseService {
     const toBeAdded = _.intersection(
       _.xor(existingArr, newArray || []),
       newArray,
-    );
+    )
 
     const toBeDeleted = _.intersection(
       _.xor(existingArr, newArray || []),
       existingArr,
-    );
-    return { toBeAdded, toBeDeleted };
+    )
+    return { toBeAdded, toBeDeleted }
   }
 
   protected normalizeCondition(payload: any) {
-    const condition = _.cloneDeep(payload);
+    const condition = _.cloneDeep(payload)
 
     for (const key in condition) {
       if (key.indexOf('.') !== -1) {
-        condition[`\$${key}\$`] = payload[key];
-        delete condition[key];
+        condition[`\$${key}\$`] = payload[key]
+        delete condition[key]
       }
     }
 
@@ -373,23 +374,23 @@ export class BaseService {
         for (const key2 in condition[key]) {
           if (key2 === 'isnull') {
             if (condition[key][key2] === 'true') {
-              condition[key][Op.eq] = null;
+              condition[key][Op.eq] = null
             } else {
-              condition[key][Op.ne] = null;
+              condition[key][Op.ne] = null
             }
-            delete condition[key][key2];
+            delete condition[key][key2]
           } else if (allOperators.includes(key2)) {
-            condition[key][Op[key2]] = condition[key][key2];
-            delete condition[key][key2];
+            condition[key][Op[key2]] = condition[key][key2]
+            delete condition[key][key2]
           }
         }
       }
     }
-    return condition;
+    return condition
   }
 
   protected normalizeMeiliCondition(payload: any) {
-    const filter = [];
+    const filter = []
 
     for (const key in payload) {
       if (_.isPlainObject(payload[key])) {
@@ -397,40 +398,40 @@ export class BaseService {
           if (key2 === 'in') {
             const condition = `${key} IN [${payload[key][key2]
               .map((o) => `"${o}"`)
-              .join(',')}]`;
-            filter.push(condition);
+              .join(',')}]`
+            filter.push(condition)
           }
         }
       } else {
-        const condition = `${key}='${payload[key]}'`;
-        filter.push(condition);
+        const condition = `${key}='${payload[key]}'`
+        filter.push(condition)
       }
     }
-    return filter;
+    return filter
   }
 
   protected normallizeMongoCondition(payload: any) {
-    const condition = _.cloneDeep(payload);
+    const condition = _.cloneDeep(payload)
 
     for (const key in payload) {
       if (_.isPlainObject(payload[key])) {
         for (const key2 in payload[key]) {
           if (['gte', 'gt', 'lt', 'lte'].includes(key2)) {
-            condition[key][`$${key2}`] = condition[key][key2];
-            delete condition[key][key2];
+            condition[key][`$${key2}`] = condition[key][key2]
+            delete condition[key][key2]
           }
         }
       }
     }
 
-    return condition;
+    return condition
   }
 
   protected sleep(ms: number) {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(true);
-      }, ms);
-    });
+        resolve(true)
+      }, ms)
+    })
   }
 }

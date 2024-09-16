@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common';
-import { BaiduSpeechService } from './baidu.speech.service';
+import { Module } from '@nestjs/common'
+import { BaiduSpeechService } from './baidu.speech.service'
 
 @Module({
   providers: [BaiduSpeechService],

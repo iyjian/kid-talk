@@ -1,5 +1,5 @@
-export * from './request.dto';
-export * from './response.dto';
+export * from './request.dto'
+export * from './response.dto'
 
 export enum USER_TYPE {
   STUDENT = 1,
@@ -71,18 +71,18 @@ export enum CLIENT_TYPE {
 }
 
 export interface USER {
-  id: number;
-  isAdmin: boolean;
+  id: number
+  isAdmin: boolean
   member: {
-    id: number;
-    type: number;
-    organizationId: number;
+    id: number
+    type: number
+    organizationId: number
     organization: {
-      id: number;
-      name: string;
-    };
-    validityDays?: number;
-  };
+      id: number
+      name: string
+    }
+    validityDays?: number
+  }
 }
 
 export const SUPER_ADMIN_USER: USER = {
@@ -98,7 +98,7 @@ export const SUPER_ADMIN_USER: USER = {
     },
     validityDays: 999999,
   },
-};
+}
 
 // 1 - FPS题 2 - 客观题 3 - 判断题 4 - 主观题 5 - 多选题
 export enum PROBLEM_TYPE {
@@ -109,6 +109,6 @@ export enum PROBLEM_TYPE {
   MULTIPLE_CHOICE = 5,
 }
 
-export const iv = '4398d6f74f48cce1837906b8be577fc8';
+export const iv = '4398d6f74f48cce1837906b8be577fc8'
 export const key =
-  '3353cfe9550a892fca352069822c1e86eb3735e750d1c58e704a52bef47605ed';
+  '3353cfe9550a892fca352069822c1e86eb3735e750d1c58e704a52bef47605ed'

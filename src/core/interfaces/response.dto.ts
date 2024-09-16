@@ -1,5 +1,5 @@
-import { applyDecorators } from '@nestjs/common';
-import { ApiOkResponse } from '@nestjs/swagger';
+import { applyDecorators } from '@nestjs/common'
+import { ApiOkResponse } from '@nestjs/swagger'
 
 export const ApiPaginatedResponse = (modelName: string, schema: any) => {
   return applyDecorators(
@@ -28,8 +28,8 @@ export const ApiPaginatedResponse = (modelName: string, schema: any) => {
         },
       },
     }),
-  );
-};
+  )
+}
 
 export const ApiFindOneResponse = (modelName: string, schema: any) => {
   return applyDecorators(
@@ -47,8 +47,8 @@ export const ApiFindOneResponse = (modelName: string, schema: any) => {
         },
       },
     }),
-  );
-};
+  )
+}
 
 export const ApiPatchResponse = (modelName: string) => {
   return applyDecorators(
@@ -66,8 +66,8 @@ export const ApiPatchResponse = (modelName: string) => {
         },
       },
     }),
-  );
-};
+  )
+}
 
 export const ApiDeleteResponse = (modelName: string) => {
   return applyDecorators(
@@ -85,5 +85,5 @@ export const ApiDeleteResponse = (modelName: string) => {
         },
       },
     }),
-  );
-};
+  )
+}

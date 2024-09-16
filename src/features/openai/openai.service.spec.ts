@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { OpenaiService } from './openai.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import conf from './../../config';
-import { SequelizeModule } from '@nestjs/sequelize';
-import { ChatrepoModule } from '../chatrepo/chatrepo.module';
+import { Test, TestingModule } from '@nestjs/testing'
+import { OpenaiService } from './openai.service'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import conf from './../../config'
+import { SequelizeModule } from '@nestjs/sequelize'
+import { ChatrepoModule } from '../chatrepo/chatrepo.module'
 
 describe('OpenaiService', () => {
-  let service: OpenaiService;
+  let service: OpenaiService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -39,10 +39,10 @@ describe('OpenaiService', () => {
         }),
       ],
       providers: [OpenaiService],
-    }).compile();
+    }).compile()
 
-    service = module.get<OpenaiService>(OpenaiService);
-  });
+    service = module.get<OpenaiService>(OpenaiService)
+  })
 
   it('should be defined', async () => {
     const result = await service.chat([
@@ -57,7 +57,7 @@ describe('OpenaiService', () => {
           'Yes, I understand. Let’s begin practicing English together! Could you please tell me what topics interest you the most?',
       },
       { role: 'user', content: 'my name is wuchong' },
-    ]);
-    console.log(result.choices[0]);
-  });
-});
+    ])
+    console.log(result.choices[0])
+  })
+})
