@@ -6,7 +6,6 @@ import {
   BelongsTo,
   Model,
 } from 'sequelize-typescript';
-import { User } from './user.entity';
 import { Session } from './session.entity';
 
 @Table({
