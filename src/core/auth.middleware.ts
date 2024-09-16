@@ -7,9 +7,8 @@ import {
 } from '@nestjs/common';
 import { Response, Request, NextFunction } from 'express';
 import { AuthenticationClient } from 'authing-js-sdk';
-// import 'dotenv/config';
 import ConfigService from './../config';
-import { UserService } from './../features/chatrepo/user.service';
+import { UserService } from './../features/chatrepo/services/user.service';
 
 const configService = ConfigService();
 
@@ -39,7 +38,7 @@ export class AuthMiddleware implements NestMiddleware {
       };
     };
 
-    // this.logger.debug(userInfo);
+    this.logger.debug(userInfo);
 
     if (!userInfo || !userInfo.status) {
       this.logger.debug(`auth failed`);

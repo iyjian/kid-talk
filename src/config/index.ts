@@ -11,10 +11,7 @@ export default () => ({
   },
   openai: {
     apiKey: process.env.OPENAI_API_KEY,
-  },
-  proxy: {
-    host: process.env.PROXY_HOST,
-    port: process.env.PROXY_PORT,
+    endpoint: process.env.OPENAI_ENDPOINT,
   },
   sqlLogging: process.env.SQL_LOGGING,
   mysql: {

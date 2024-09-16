@@ -1,29 +1,21 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  ChatCompletionRequestMessage,
-  Configuration,
-  CreateChatCompletionResponse,
-  OpenAIApi,
-} from 'openai';
-import tunnel from 'tunnel';
+import OpenAI from 'openai';
+import { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
 @Injectable()
 export class OpenaiService {
   private readonly logger = new Logger(OpenaiService.name);
-  private readonly configuration = new Configuration({
+
+  private readonly openai = new OpenAI({
+    baseURL: this.configService.get('openai.endpoint'),
     apiKey: this.configService.get('openai.apiKey'),
   });
-  private readonly openai = new OpenAIApi(this.configuration);
-  private readonly agent = this.configService.get('proxy.host')
-    ? tunnel.httpsOverHttp({
-        proxy: {
-          host: this.configService.get('proxy.host'),
-          port: this.configService.get('proxy.port'),
-        },
-      })
-    : undefined;
-  constructor(private readonly configService: ConfigService) {}
+
+  constructor(private readonly configService: ConfigService) {
+    console.log(this.configService.get('openai.endpoint'));
+    console.log(this.configService.get('openai.apiKey'));
+  }
 
   /**
     {
@@ -46,21 +38,41 @@ export class OpenaiService {
     }
    */
   async chat(
-    messages: ChatCompletionRequestMessage[],
-  ): Promise<CreateChatCompletionResponse> {
-    const startTime = +new Date();
-    const result = await this.openai.createChatCompletion(
-      {
-        model: 'gpt-3.5-turbo',
-        temperature: 1,
-        n: 1,
-        stream: false,
-        max_tokens: 1000,
-        messages,
-      },
-      { httpsAgent: this.agent },
-    );
-    this.logger.debug(`chatgpt - timing: ${+new Date() - startTime}ms`);
-    return result.data;
+    messages: Array<ChatCompletionMessageParam>,
+  ): Promise<OpenAI.Chat.Completions.ChatCompletion> {
+    const result = await this.openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      temperature: 1,
+      n: 1,
+      stream: false,
+      max_tokens: 1000,
+      messages,
+    });
+    return result;
+  }
+
+  async ask(quest: string, model: string = 'gpt-4o') {
+    return this.openai.chat.completions.create({
+      model,
+      temperature: 1,
+      n: 1,
+      stream: false,
+      max_tokens: 1000,
+      messages: [
+        {
+          content: quest,
+          role: 'user',
+        },
+      ],
+    });
+  }
+
+  async createSpeech(
+    body: OpenAI.Audio.Speech.SpeechCreateParams,
+    options?: OpenAI.RequestOptions,
+  ): Promise<Buffer> {
+    console.log(`createSpeech - ${JSON.stringify(body)}`);
+    const response = await this.openai.audio.speech.create(body, options);
+    return Buffer.from(await response.arrayBuffer());
   }
 }

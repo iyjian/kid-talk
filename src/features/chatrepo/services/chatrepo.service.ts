@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Chat } from './chatrepo.entity';
-import { Session } from './session.entity';
+import { Chat } from '../entities/chatrepo.entity';
+import { Session } from '../entities/session.entity';
 import { Op } from 'sequelize';
 import { ENGLISH_TEACHER_PROMPT } from './prompts';
 

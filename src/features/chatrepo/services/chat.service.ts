@@ -8,9 +8,9 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { ChatrepoService } from './chatrepo.service';
-import { OpenaiService } from '../openai/openai.service';
-import { BaiduSpeechService } from '../audio/baidu.speech.service';
-import { ApiGuard } from './../../core/api.guard';
+import { OpenaiService } from './../../openai/openai.service';
+import { BaiduSpeechService } from './../../audio/baidu.speech.service';
+import { ApiGuard } from './../../../core/api.guard';
 import { AuthenticationClient } from 'authing-js-sdk';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from './user.service';

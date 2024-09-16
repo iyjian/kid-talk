@@ -13,6 +13,10 @@ class APIClient extends RequestBase {
   public getLatestSession () {
     return this.request.get(`/api/chatrepo/session/latest`)
   }
+
+  public makeSentence (payload: any) {
+    return this.request.post(`/api/chatrepo/phrase/sentence`, payload)
+  }
 }
 
 export const apiClient = new APIClient()

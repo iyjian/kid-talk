@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LetsChat from '../views/LetsChat.vue'
 import Login from './../views/Login.vue'
+import PhraseStudy from './../views/PhraseStudy.vue'
 import { AuthenticationClient } from 'authing-js-sdk'
 
 const authClient = new AuthenticationClient({
@@ -14,6 +15,11 @@ const router = createRouter({
       path: '/chat',
       name: 'chat',
       component: LetsChat
+    },
+    {
+      path: '/phraseStudy',
+      name: 'phraseStudy',
+      component: PhraseStudy
     },
     {
       path: '/login',

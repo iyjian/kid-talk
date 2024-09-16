@@ -1,5 +1,4 @@
 import {
-  CacheModule,
   MiddlewareConsumer,
   Module,
   NestModule,
@@ -9,6 +8,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AudioModule } from './features/audio/audio.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CacheModule } from '@nestjs/cache-manager';
 import { OpenaiModule } from './features/openai/openai.module';
 import redisStore from 'cache-manager-ioredis';
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -22,14 +22,24 @@ import { AuthMiddleware } from './core/auth.middleware';
       isGlobal: true,
     }),
     CacheModule.registerAsync({
-      useFactory: (configService: ConfigService) => ({
-        store: redisStore,
-        host: configService.get('redis.host'),
-        port: +configService.get<number>('redis.port'),
-        password: configService.get('redis.password'),
-        db: +configService.get<number>('redis.db'),
-        ttl: 0,
-      }),
+      useFactory: (configService: ConfigService) => {
+        // console.log({
+        //   store: redisStore,
+        //   host: configService.get('redis.host'),
+        //   port: +configService.get<number>('redis.port'),
+        //   password: configService.get('redis.password'),
+        //   db: +configService.get<number>('redis.db'),
+        //   ttl: 0,
+        // });
+        return {
+          store: redisStore,
+          host: configService.get('redis.host'),
+          port: +configService.get<number>('redis.port'),
+          password: configService.get('redis.password'),
+          db: +configService.get<number>('redis.db'),
+          ttl: 0,
+        };
+      },
       inject: [ConfigService],
       isGlobal: true,
     }),
