@@ -6,8 +6,8 @@ import {
   BelongsTo,
   Model,
   Scopes,
-} from 'sequelize-typescript';
-import { codeGen } from './../../../core';
+} from 'sequelize-typescript'
+import { codeGen } from './../../../core'
 
 @Table({
   tableName: 't_phrase_sentence',
@@ -26,25 +26,25 @@ export class PhraseSentence extends Model<PhraseSentence> {
     allowNull: false,
     type: DataType.STRING,
   })
-  phrase: string;
+  phrase: string
 
   @Column({
     allowNull: false,
     type: DataType.TEXT,
   })
-  sentence: string;
+  sentence: string
 
   @Column({
     allowNull: false,
     type: DataType.STRING(40),
   })
-  voice: string;
+  voice: string
 
   @Column({
     allowNull: false,
     type: DataType.TEXT('long'),
   })
-  audio: string;
+  audio: string
 
   @Column({
     allowNull: false,
@@ -52,5 +52,5 @@ export class PhraseSentence extends Model<PhraseSentence> {
     defaultValue: false,
   })
   // value from `0.25` to `4.0`. `1.0` is the default.
-  speed: number;
+  speed: number
 }
