@@ -54,7 +54,7 @@ const isDefinedRoute = (path: string) => {
 router.beforeEach(async (to, from, next) => {
   console.log(`beforeEach - routePath: ${to.path} isDefined: ${isDefinedRoute(to.path)}`)
 
-  if (to.path === '/login') {
+  if (to.path === '/login' || to.path === '/phraseAudio') {
     next()
     return
   }

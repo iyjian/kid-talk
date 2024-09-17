@@ -1,11 +1,17 @@
 <template>
   <div style="display: flex; flex-direction: column; margin: 10px 20px">
-    <el-form style="max-width: 150px;">
+    <el-form style="max-width: 150px">
       <el-form-item label="单元">
         <el-select v-model="selectedUnit">
-          <el-option v-for="unit, idx in units" :key="idx" :value="unit.unitName" :label="unit.unitName"></el-option>
+          <el-option
+            v-for="(unit, idx) in units"
+            :key="idx"
+            :value="unit.unitName"
+            :label="unit.unitName"
+          ></el-option>
         </el-select>
       </el-form-item>
+      <el-form-item><el-button type="primary" @click="playAll">播放全部</el-button></el-form-item>
     </el-form>
     <el-table :data="sentences" style="width: 100%">
       <el-table-column prop="unit" label="unit" width="180"></el-table-column>
@@ -34,7 +40,8 @@ const selectedUnit = ref<string>('六上/1c')
 const queryParams = computed(() => {
   const [grade, unit] = selectedUnit.value.split('/')
   return {
-    grade, unit
+    grade,
+    unit
   }
 })
 
@@ -42,7 +49,7 @@ watch(queryParams, (val) => {
   reloadPhraseSentences(val)
 })
 
-const units = ref<any[]>([{unitName: '六上/1c'}])
+const units = ref<any[]>([{ unitName: '六上/1c' }])
 
 async function loadUnits() {
   units.value = (await apiClient.getAllUnits({})).data
@@ -66,6 +73,24 @@ function play(id: string) {
   if (mediaEl) {
     mediaEl.play()
   }
+}
+
+let audioEls: HTMLMediaElement[]
+let currentAudioIndex = 0
+
+function playAll() {
+  audioEls = document.querySelectorAll('audio') as unknown as HTMLMediaElement[]
+  audioEls.forEach(function (audio) {
+    audio.addEventListener('ended', playNextAudio)
+  })
+  playNextAudio()
+}
+
+function playNextAudio() {
+  if (currentAudioIndex < audioEls.length) {
+    audioEls[currentAudioIndex].play()
+  }
+  currentAudioIndex++
 }
 </script>
 
