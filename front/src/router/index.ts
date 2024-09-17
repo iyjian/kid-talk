@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LetsChat from '../views/LetsChat.vue'
 import Login from './../views/Login.vue'
 import PhraseStudy from './../views/PhraseStudy.vue'
+import PhraseAudio from './../views/PhraseAudio.vue'
 import SpeechTest from './../views/SpeechTest.vue'
 import { AuthenticationClient } from 'authing-js-sdk'
 
@@ -21,6 +22,11 @@ const router = createRouter({
       path: '/phraseStudy',
       name: 'phraseStudy',
       component: PhraseStudy
+    },
+    {
+      path: '/phraseAudio',
+      name: 'phraseAudio',
+      component: PhraseAudio
     },
     {
       path: '/speechTest',

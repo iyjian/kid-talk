@@ -58,6 +58,14 @@ export class PhraseSentenceController {
     )
   }
 
+  @Get('unit')
+  @ApiOperation({
+    summary: 'getAll units',
+  })
+  findAllUnits() {
+    return this.phraseSentenceService.findAllUnits()
+  }
+
   @Get('')
   @ApiOperation({
     summary: 'GET phraseSentence(list)',

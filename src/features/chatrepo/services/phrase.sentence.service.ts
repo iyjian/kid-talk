@@ -1,6 +1,6 @@
 import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/sequelize'
-import { Op, Transaction } from 'sequelize'
+import { Op, QueryTypes, Transaction } from 'sequelize'
 import { Sequelize } from 'sequelize-typescript'
 import { BaseService } from './../../../core'
 import { PhraseSentence } from './../entities/phrase.sentence.entity'
@@ -54,6 +54,17 @@ export class PhraseSentenceService extends BaseService {
       }
       throw e
     }
+  }
+
+  async findAllUnits() {
+    // const phraseSentences = await this.phraseSentenceModel.findAll({
+    //   attributes: ['grade', 'unit'],
+    //   distinct: true
+    // })
+    return this.mysql.query(
+      `select distinct concat(grade, '/' ,unit) as unitName, unit, grade from t_phrase_sentence`,
+      { type: QueryTypes.SELECT },
+    )
   }
 
   async findAll(
