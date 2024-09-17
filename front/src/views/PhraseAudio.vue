@@ -13,7 +13,7 @@
       </el-form-item>
       <el-form-item><el-button type="primary" @click="playAll">播放全部</el-button></el-form-item>
     </el-form>
-    <el-table :data="sentences" style="width: 100%">
+    <el-table :data="sentences" style="width: 100%" v-loading="loading.table">
       <el-table-column prop="unit" label="unit" width="180"></el-table-column>
       <el-table-column prop="phrase" label="Phrase" width="180"></el-table-column>
       <el-table-column prop="sentence" label="Sentence" width="400px;"></el-table-column>
@@ -34,6 +34,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { apiClient } from '@/libs/api'
+
+const loading = ref({
+  table: false
+})
 
 const selectedUnit = ref<string>('六上/1c')
 
@@ -60,9 +64,14 @@ loadUnits()
 const sentences = ref()
 
 async function reloadPhraseSentences(params: any) {
-  console.log(params, '-----------')
-  const response = await apiClient.getAllPhraseSentences(params)
-  sentences.value = response.data.rows
+  try {
+    loading.value.table = true
+    const response = await apiClient.getAllPhraseSentences(params)
+    sentences.value = response.data.rows
+    loading.value.table = false
+  } catch (e) {
+    loading.value.table = false
+  }
 }
 
 reloadPhraseSentences(queryParams.value)

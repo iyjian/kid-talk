@@ -24,6 +24,13 @@ export class AuthMiddleware implements NestMiddleware {
   constructor(private readonly userService: UserService) {}
 
   async use(req: Request, res: Response, next: NextFunction): Promise<void> {
+    console.log(req.url)
+    if (req.path === '/phraseSentence/unit' || req.path === '/phraseSentence') {
+      console.log('next')
+      next()
+      return
+    }
+
     const token = req.headers['token'] as string
     // this.logger.debug(`token: ${token}`);
     const userInfo = (await this.authing.checkLoginStatus(token)) as {
