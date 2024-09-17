@@ -11,7 +11,7 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item><el-button type="primary" @click="playAll">播放全部</el-button></el-form-item>
+      <el-form-item><el-button :loading="loading.play" type="primary" @click="playAll">播放全部</el-button></el-form-item>
     </el-form>
     <el-table :data="sentences" style="width: 100%" v-loading="loading.table">
       <el-table-column prop="unit" label="unit" width="180"></el-table-column>
@@ -36,7 +36,8 @@ import { computed, ref, watch } from 'vue'
 import { apiClient } from '@/libs/api'
 
 const loading = ref({
-  table: false
+  table: false,
+  play: false
 })
 
 const selectedUnit = ref<string>('六上/1c')
@@ -87,17 +88,28 @@ function play(id: string) {
 let audioEls: HTMLMediaElement[]
 let currentAudioIndex = 0
 
-function playAll() {
+async function playAll() {
+  loading.value.play = true
   audioEls = document.querySelectorAll('audio') as unknown as HTMLMediaElement[]
   audioEls.forEach(function (audio) {
     audio.addEventListener('ended', playNextAudio)
   })
-  playNextAudio()
+
+  await playNextAudio()
 }
 
-function playNextAudio() {
+
+async function playNextAudio() {
+  await new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(true)
+    }, 1000)
+  })
+
   if (currentAudioIndex < audioEls.length) {
     audioEls[currentAudioIndex].play()
+  } else {
+    loading.value.play = false
   }
   currentAudioIndex++
 }
