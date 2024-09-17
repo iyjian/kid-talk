@@ -15,8 +15,8 @@
       <el-form-item><el-button v-if="loading.play" type="primary" @click="pause">暂停</el-button></el-form-item>
     </el-form>
     <el-table :data="sentences" style="width: 100%" v-loading="loading.table">
-      <!-- <el-table-column prop="unit" label="unit"></el-table-column>
-      <el-table-column prop="phrase" label="Phrase" ></el-table-column> -->
+      <!-- <el-table-column prop="unit" label="unit"></el-table-column> -->
+      <el-table-column prop="phrase" label="Phrase" ></el-table-column>
       <el-table-column prop="sentence" label="Sentence"></el-table-column>
       <el-table-column width="100">
         <template #default="{ row }">
