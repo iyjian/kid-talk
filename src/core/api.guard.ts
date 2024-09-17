@@ -5,6 +5,7 @@ import {
   HttpException,
   Logger,
 } from '@nestjs/common'
+import { Request } from 'express'
 import { ConfigService } from '@nestjs/config'
 import { WsException } from '@nestjs/websockets'
 import { AuthenticationClient } from 'authing-js-sdk'
@@ -27,7 +28,15 @@ export class ApiGuard implements CanActivate {
     // console.log(context.getType());
     if (context.getType() === 'http') {
       const request = context.switchToHttp().getRequest<Request>()
-      const token = request.headers['token']
+
+      if (
+        request.path === '/phraseSentence/unit' ||
+        request.path === '/phraseSentence'
+      ) {
+        return true
+      }
+
+      const token = request.headers['token'] as string
       if (
         this.configService.get('auth.superToken') &&
         token === this.configService.get('auth.superToken')
