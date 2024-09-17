@@ -12,4 +12,4 @@ services:
     env_file:
       - .env    
     ports:
-      - 53001:80
+      - 53004:80
