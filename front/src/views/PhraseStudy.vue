@@ -31,7 +31,7 @@
         ></el-slider>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="generate">Generate</el-button>
+        <el-button :loading="generateBtn.loading" type="primary" @click="generate">Generate</el-button>
       </el-form-item>
     </el-form>
 
@@ -67,14 +67,24 @@ const data = ref({
 
 const sentences = ref()
 
-function generate() {
-  apiClient.makeSentence({
+const generateBtn = ref({
+  loading: false
+})
+
+async function generate() {
+try {
+  generateBtn.value.loading = true
+  await apiClient.makeSentence({
     grade: data.value.grade,
     unit: data.value.unit,
     phrases: data.value.phrases.split('\n'),
     voice: data.value.voice,
     speed: data.value.speed
   })
+  generateBtn.value.loading = false
+} catch(e) {
+  generateBtn.value.loading = false
+}
 }
 
 async function reloadPhraseSentences() {

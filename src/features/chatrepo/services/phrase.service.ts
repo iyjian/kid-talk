@@ -20,6 +20,20 @@ export class PhraseService {
     speed: number
   }) {
     for (const phrase of payload.phrases) {
+      // 判断该phrase是否已经被生成过，如果生成过则不要重新生成
+      const existingPhraseCount = await this.phraseSentenceModel.count({
+        where: {
+          phrase,
+        },
+      })
+
+      if (existingPhraseCount) {
+        console.log(
+          `phrase: ${phrase} has already had ${existingPhraseCount} sentences`,
+        )
+        continue
+      }
+
       const quest = makeSentencePrompt(phrase)
 
       const askResponse = await this.openAIService.ask(quest)
