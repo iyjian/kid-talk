@@ -1,10 +1,10 @@
 <template>
   <div style="display: flex; flex-direction: column; margin: 10px 20px">
     <el-form :model="data" label-width="100px">
-      <el-form-item label="Tag">
+      <el-form-item label="年级">
         <el-input v-model="data.grade"></el-input>
       </el-form-item>
-      <el-form-item label="Tag">
+      <el-form-item label="单元">
         <el-input v-model="data.unit"></el-input>
       </el-form-item>
       <el-form-item label="短语">
@@ -36,9 +36,9 @@
     </el-form>
 
     <el-table :data="sentences" style="width: 100%">
+      <el-table-column prop="unit" label="unit" width="180"></el-table-column>
       <el-table-column prop="phrase" label="Phrase" width="180"></el-table-column>
       <el-table-column prop="sentence" label="Sentence" width="400px;"></el-table-column>
-      <el-table-column prop="difficulty" label="Difficulty" width="120"></el-table-column>
       <el-table-column label="Operation" width="250">
         <template #default="{ row }">
           <audio
@@ -46,7 +46,7 @@
             :id="row.id"
             autobuffer="autobuffer"
           ></audio>
-          <el-button @click="play(row.id)"></el-button>
+          <el-button @click="play(row.id)" type="primary">播放</el-button>
         </template>
       </el-table-column>
     </el-table>

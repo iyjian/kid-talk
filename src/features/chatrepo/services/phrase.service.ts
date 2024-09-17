@@ -13,6 +13,8 @@ export class PhraseService {
   ) {}
 
   async createSentencesWithSpeech(payload: {
+    grade: string
+    unit: string
     phrases: string[]
     voice: 'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'shimmer'
     speed: number
@@ -50,6 +52,8 @@ export class PhraseService {
           })
 
           await this.phraseSentenceModel.create({
+            grade: payload.grade,
+            unit: payload.unit,
             phrase: phrase,
             sentence,
             voice: payload.voice,
