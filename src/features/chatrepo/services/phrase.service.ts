@@ -36,7 +36,10 @@ export class PhraseService {
       console.log(sentences)
 
       for (let sentence of sentences) {
-        if (/^level/i.test(sentence) && sentence.indexOf(phrase) !== -1) {
+        if (
+          /^level/i.test(sentence) &&
+          sentence.toLowerCase().indexOf(phrase.toLowerCase()) !== -1
+        ) {
           sentence = sentence.replace(/level(.*?):\s{0,}/i, '')
           console.log(sentence)
           const audio = await this.openAIService.createSpeech({
