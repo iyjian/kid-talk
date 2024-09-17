@@ -21,7 +21,6 @@ export class RequestBase {
     this.request.interceptors.response.use(
       (response) => {
         if (response.data.err) {
-          console.log(response.data)
           if (response.data.err === 700) {
             router.push('/login')
           }

@@ -2,7 +2,8 @@
   <div style="display: flex; flex-direction: column; align-items: center">
     <div class="messages">
       <div v-for="(message, idx) in messages" :key="idx" class="message">
-        <span class="role">{{ message.role === 'assistant' ? 'teacher' : 'you' }}:</span> {{ message.content }}
+        <span class="role">{{ message.role === 'assistant' ? 'teacher' : 'you' }}:</span>
+        {{ message.content }}
       </div>
     </div>
     <div style="display: flex; align-items: center; flex-direction: column">
@@ -29,15 +30,14 @@ const recording = ref(false)
 const isKeyDown = ref(false)
 const startRecordingTime = ref<number>(0)
 
-
 let currentSessionId: number
 
-apiClient.getLatestSession().then(latestSession => {
+apiClient.getLatestSession().then((latestSession) => {
   if (latestSession?.data?.latestSession) {
-  messages.value = latestSession.data.chatHistories
-  console.log(messages.value)
-  currentSessionId = latestSession.data.latestSession.id
-}
+    messages.value = latestSession.data.chatHistories
+    console.log(messages.value)
+    currentSessionId = latestSession.data.latestSession.id
+  }
 })
 
 // setTimeout(() => {
@@ -98,31 +98,31 @@ recognition.onspeechend = () => {
   // recognition.stop();
 }
 
-window.addEventListener("touchstart", event => {
+window.addEventListener('touchstart', (event) => {
   event.preventDefault()
   if (debug) {
-    messages.value.push({content: 'speech reconition - touchstart', role: 'debug'})
+    messages.value.push({ content: 'speech reconition - touchstart', role: 'debug' })
   }
   if (!recording.value && !isKeyDown.value) {
     console.log('speech reconition - touchstart')
-  if (debug) {
-    messages.value.push({content: 'speech reconition - onspeechend', role: 'debug'})
-  }
+    if (debug) {
+      messages.value.push({ content: 'speech reconition - onspeechend', role: 'debug' })
+    }
     recording.value = true
     startRecordingTime.value = +new Date()
-    recognition.start();
+    recognition.start()
   }
 })
 
-window.addEventListener("touchend", event => {
+window.addEventListener('touchend', (event) => {
   event.preventDefault()
   if (debug) {
-    messages.value.push({content: 'speech reconition - touchend', role: 'debug'})
+    messages.value.push({ content: 'speech reconition - touchend', role: 'debug' })
   }
   if (recording.value) {
     recording.value = false
     isKeyDown.value = false
-    recognition.stop();
+    recognition.stop()
   }
 })
 

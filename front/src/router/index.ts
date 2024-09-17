@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LetsChat from '../views/LetsChat.vue'
 import Login from './../views/Login.vue'
 import PhraseStudy from './../views/PhraseStudy.vue'
+import SpeechTest from './../views/SpeechTest.vue'
 import { AuthenticationClient } from 'authing-js-sdk'
 
 const authClient = new AuthenticationClient({
@@ -22,6 +23,11 @@ const router = createRouter({
       component: PhraseStudy
     },
     {
+      path: '/speechTest',
+      name: 'SpeechTest',
+      component: SpeechTest
+    },
+    {
       path: '/login',
       name: 'login',
       meta: {
@@ -33,7 +39,10 @@ const router = createRouter({
 })
 
 const isDefinedRoute = (path: string) => {
-  return router.getRoutes().map(route => route.path).filter(routePath => routePath === path).length
+  return router
+    .getRoutes()
+    .map((route) => route.path)
+    .filter((routePath) => routePath === path).length
 }
 
 router.beforeEach(async (to, from, next) => {
@@ -43,17 +52,17 @@ router.beforeEach(async (to, from, next) => {
     next()
     return
   }
-  
+
   const user = await authClient.getCurrentUser()
-  
+
   if (!user?.token) {
     router.push('/login')
     next()
     return
   }
-  
+
   const { status } = await authClient.checkLoginStatus(user.token)
-  
+
   if (status && isDefinedRoute(to.path)) {
     // 如果已登录或者是有定义的路由，则渲染页面
     next()

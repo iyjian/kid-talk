@@ -13,18 +13,21 @@ Accuracy: The example sentences should accurately demonstrate the usage of the g
 Clarity: The example sentences should clear and easy to understand for Chinese 6th-grade students.
 Difficulty gradient: The difficulty level should increase gradually across the three examples.
 
-this is an example question and answer:
+this is a request and sentences you made:
 
-Q: please make three example sentences for the phrase "start a topic" in english.
+the request: 
+please make three example sentences for the phrase "start a topic" in english.
 
-A: level1: Let's start a topic of our favorite subjects at school and share why we like them.
+the sentences you made: 
+level1: Let's start a topic of our favorite subjects at school and share why we like them.
 level2: The new student was shy and didn't know how to start a topic in class.
 level3: During the debate competition, the team had to start a topic on climate change, which was very complex, but they managed to make it engaging for their audience through clever arguments. 
 
 ------
-please answer the question
+please complete the following request
 
-Q: please make three example sentences for the phrase "${phrase}" just in english.
+the request:
+please make three example sentences for the phrase "${phrase}" in english.
 
-A: `
+the sentences you made:`
 }

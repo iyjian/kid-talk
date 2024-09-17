@@ -10,12 +10,20 @@ class APIClient extends RequestBase {
     return this.request.get(`/api/chatrepo/session/${sessionId}`)
   }
 
-  public getLatestSession () {
+  public getLatestSession() {
     return this.request.get(`/api/chatrepo/session/latest`)
   }
 
-  public makeSentence (payload: any) {
+  public makeSentence(payload: any) {
     return this.request.post(`/api/chatrepo/phrase/sentence`, payload)
+  }
+
+  public createSpeech(payload: any, config?: any) {
+    return this.request.post(`/api/openai/speech`, payload, config)
+  }
+
+  public getAllPhraseSentences(params: any) {
+    return this.request.get(`/api/phraseSentence`, { params })
   }
 }
 
