@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { apiClient } from '@/libs/api'
 
 const selectedUnit = ref<string>('六上/1c')
@@ -36,6 +36,10 @@ const queryParams = computed(() => {
   return {
     grade, unit
   }
+})
+
+watch(queryParams, (val) => {
+  reloadPhraseSentences(val)
 })
 
 const units = ref<any[]>([{unitName: '六上/1c'}])
