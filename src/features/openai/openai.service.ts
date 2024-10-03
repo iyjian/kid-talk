@@ -41,7 +41,7 @@ export class OpenaiService {
     messages: Array<ChatCompletionMessageParam>,
   ): Promise<OpenAI.Chat.Completions.ChatCompletion> {
     const result = await this.openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4o-mini',
       temperature: 1,
       n: 1,
       stream: false,
@@ -51,7 +51,7 @@ export class OpenaiService {
     return result
   }
 
-  async ask(quest: string, model: string = 'gpt-4o') {
+  async ask(quest: string, model: string = 'gpt-4o-mini') {
     return this.openai.chat.completions.create({
       model,
       temperature: 1,

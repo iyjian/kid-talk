@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common'
-import { ReqUserId } from 'src/core/decorator'
 import { OpenaiService } from './openai.service'
 
 @Controller('openai')
