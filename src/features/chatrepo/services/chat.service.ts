@@ -14,11 +14,16 @@ import { ApiGuard } from './../../../core/api.guard'
 import { AuthenticationClient } from 'authing-js-sdk'
 import { ConfigService } from '@nestjs/config'
 import { UserService } from './user.service'
+// import { Readable } from 'stream'
+import path from 'path'
+import fs from 'fs'
+import { v4 as uuidv4 } from 'uuid'
 
 type ChatResponse = {
   sessionId: number
-  text: string
+  content: string
   audio?: string
+  role: string
 }
 
 @Injectable()
@@ -47,7 +52,7 @@ export class ChatService implements OnGatewayConnection {
     private readonly userService: UserService,
   ) {}
 
-  private async getUserId(client: Socket) {
+  private async getUserIdBySocket(client: Socket) {
     const token = client.handshake.query.token as string
     const userInfo = (await this.authing.checkLoginStatus(token)) as {
       code: number
@@ -96,10 +101,10 @@ export class ChatService implements OnGatewayConnection {
 
   @SubscribeMessage('init')
   async startNewChat(
-    @MessageBody() data: { mode: string },
+    @MessageBody() payload: { mode: string },
     @ConnectedSocket() client: Socket,
   ): Promise<ChatResponse> {
-    const userId = await this.getUserId(client)
+    const userId = await this.getUserIdBySocket(client)
     const messages = []
     const chatRepo = await this.chatrepoService.init(userId)
 
@@ -124,7 +129,8 @@ export class ChatService implements OnGatewayConnection {
 
     return {
       sessionId: chatRepo.sessionId,
-      text: result.choices[0].message.content,
+      role: result.choices[0].message.role,
+      content: result.choices[0].message.content,
       audio: 'data:audio/mp3;base64,' + audio.toString('base64'),
     }
   }
@@ -142,14 +148,28 @@ export class ChatService implements OnGatewayConnection {
     let { sessionId, role = 'user', content, name } = data
 
     if (typeof content !== 'string') {
-      const speech2TextResult = await this.baiduSpeechService.speech2Text(
-        content,
-      )
-      content = speech2TextResult.result[0]
+      // console.log(content)
+      // const readable = new Readable()
+      // // readable._read = () => {} // _read is required but you can noop it
+      // readable.push(content)
+      // readable.push(null)
+      // readable.pause()
+      // fs.readFileSync()
+      const tmpFile = path.join(__dirname, `./../../../tmp/${uuidv4()}.wav`)
+      fs.writeFileSync(tmpFile, content as any)
+      console.log('sssssssssssssss')
+      const stream = fs.createReadStream(tmpFile)
+      content = await this.openaiService.speech2Text(stream)
+      fs.unlinkSync(tmpFile)
+      // const speech2TextResult = await this.baiduSpeechService.speech2Text(
+      //   content,
+      // )
+      // content = speech2TextResult.result[0]
+      console.log(content)
     }
 
     const messages = JSON.parse(
-      JSON.stringify(await this.chatrepoService.findAllBySession(sessionId)),
+      JSON.stringify(await this.chatrepoService.findAllBySessionId(sessionId)),
     )
     // const messages = [];
 
@@ -175,9 +195,11 @@ export class ChatService implements OnGatewayConnection {
     })
 
     const audio = await this.baiduSpeechService.text2Speech(response)
+
     return {
       sessionId,
-      text: result.choices[0].message.content,
+      role: result.choices[0].message.role,
+      content: result.choices[0].message.content,
       audio: 'data:audio/mp3;base64,' + audio.toString('base64'),
     }
   }

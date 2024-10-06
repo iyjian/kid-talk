@@ -38,7 +38,7 @@ export class ChatrepoService {
     })
   }
 
-  findAllBySession(sessionId: number, maxId?: number) {
+  findAllBySessionId(sessionId: number, maxId?: number) {
     return this.ChatModel.findAll({
       attributes: ['role', 'content'],
       where: {
@@ -61,10 +61,11 @@ export class ChatrepoService {
       },
       order: [['id', 'desc']],
     })
+
     if (latestSession) {
       return {
         latestSession,
-        chatHistories: await this.findAllBySession(latestSession.id),
+        chatHistories: await this.findAllBySessionId(latestSession.id),
       }
     }
   }

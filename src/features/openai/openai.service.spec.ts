@@ -1,9 +1,34 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { OpenaiService } from './openai.service'
 import { ConfigModule, ConfigService } from '@nestjs/config'
+import fs from 'fs'
+import { fs as fs2 } from 'memfs'
+import path from 'path'
 import conf from './../../config'
-import { SequelizeModule } from '@nestjs/sequelize'
-import { ChatrepoModule } from '../chatrepo/chatrepo.module'
+// import { Readable } from 'stream'
+// import streamifier from 'streamifier'
+// import { SequelizeModule } from '@nestjs/sequelize'
+// import { ChatrepoModule } from '../chatrepo/chatrepo.module'
+
+// function bufferToStream(buf: Buffer) {
+//   const readableStream = new Readable()
+//   // readable._read = () => {} // _read is required but you can noop it
+//   readableStream.push(buf)
+//   readableStream.push(null)
+//   // readableStream.pause()
+//   // readableStream['fileName'] = 'test.wav'
+//   return readableStream
+// }
+
+// function bufferToStream(buffer) {
+//   const readable = new Readable({
+//     read() {
+//       this.push(buffer) // 将 Buffer 添加到可读流
+//       this.push(null) // 表示流的结束
+//     },
+//   })
+//   return readable
+// }
 
 describe('OpenaiService', () => {
   let service: OpenaiService
@@ -14,29 +39,6 @@ describe('OpenaiService', () => {
         ConfigModule.forRoot({
           load: [conf],
         }),
-        SequelizeModule.forRootAsync({
-          imports: [ConfigModule],
-          useFactory: (configService: ConfigService) => ({
-            dialect: 'mysql',
-            host: configService.get('mysql.host'),
-            port: +configService.get<number>('mysql.port'),
-            username: configService.get('mysql.username'),
-            password: configService.get('mysql.password'),
-            database: configService.get('mysql.db'),
-            models: [],
-            autoLoadModels: true,
-            synchronize: true,
-            pool: {
-              max: 100,
-              min: 0,
-              idle: 10000,
-            },
-            timezone: '+08:00',
-            logging:
-              configService.get<string>('sqlLogging') === 'true' ? true : false,
-          }),
-          inject: [ConfigService],
-        }),
       ],
       providers: [OpenaiService],
     }).compile()
@@ -44,20 +46,39 @@ describe('OpenaiService', () => {
     service = module.get<OpenaiService>(OpenaiService)
   })
 
-  it('should be defined', async () => {
+  it('should chat with AI', async () => {
     const result = await service.chat([
       {
-        role: 'system',
-        content:
-          'You are an English teacher and I am a Chinese 4th grade student with only 4000 vocabulary. \n1. You practice English with me\n2. you ask me questions as actively as possible\nstart if you understand.',
+        role: 'user',
+        content: 'just say "hello",all characters in lowwer case',
       },
-      {
-        role: 'assistant',
-        content:
-          'Yes, I understand. Let’s begin practicing English together! Could you please tell me what topics interest you the most?',
-      },
-      { role: 'user', content: 'my name is wuchong' },
     ])
-    console.log(result.choices[0])
+    expect(result.choices[0].message.content).toBe('hello')
   })
+
+  it('should speech2text using file', async () => {
+    const result = await service.speech2Text(
+      fs.createReadStream(
+        path.join(__dirname, './../../../testData/test2.wav'),
+      ),
+    )
+
+    expect(result).toBe(`Hello, what's your name?`)
+  })
+
+  // it('should speech2text using buffer', async () => {
+  //   const content = fs.readFileSync(
+  //     path.join(__dirname, './../../../testData/test2.wav'),
+  //   )
+
+  //   fs2.writeFileSync('/test.wav', content)
+
+  //   // const result = await service.speech2Text(
+  //   //   streamifier.createReadStream(content),
+  //   // )
+  //   // const result = await service.speech2Text(bufferToStream(content))
+  //   const result = await service.speech2Text(fs2.createReadStream('/test.wav'))
+
+  //   expect(result).toBe(`Hello, what's your name?`)
+  // })
 })
