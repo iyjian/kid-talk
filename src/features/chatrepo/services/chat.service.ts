@@ -31,6 +31,7 @@ type ChatResponse = {
   cors: {
     origin: '*',
   },
+  transports: ['websocket']
 })
 
 //
