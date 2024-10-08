@@ -2,33 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { OpenaiService } from './openai.service'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import fs from 'fs'
-import { fs as fs2 } from 'memfs'
 import path from 'path'
 import conf from './../../config'
-// import { Readable } from 'stream'
-// import streamifier from 'streamifier'
-// import { SequelizeModule } from '@nestjs/sequelize'
-// import { ChatrepoModule } from '../chatrepo/chatrepo.module'
-
-// function bufferToStream(buf: Buffer) {
-//   const readableStream = new Readable()
-//   // readable._read = () => {} // _read is required but you can noop it
-//   readableStream.push(buf)
-//   readableStream.push(null)
-//   // readableStream.pause()
-//   // readableStream['fileName'] = 'test.wav'
-//   return readableStream
-// }
-
-// function bufferToStream(buffer) {
-//   const readable = new Readable({
-//     read() {
-//       this.push(buffer) // 将 Buffer 添加到可读流
-//       this.push(null) // 表示流的结束
-//     },
-//   })
-//   return readable
-// }
 
 describe('OpenaiService', () => {
   let service: OpenaiService
@@ -66,19 +41,17 @@ describe('OpenaiService', () => {
     expect(result).toBe(`Hello, what's your name?`)
   })
 
-  // it('should speech2text using buffer', async () => {
-  //   const content = fs.readFileSync(
-  //     path.join(__dirname, './../../../testData/test2.wav'),
-  //   )
-
-  //   fs2.writeFileSync('/test.wav', content)
-
-  //   // const result = await service.speech2Text(
-  //   //   streamifier.createReadStream(content),
-  //   // )
-  //   // const result = await service.speech2Text(bufferToStream(content))
-  //   const result = await service.speech2Text(fs2.createReadStream('/test.wav'))
-
-  //   expect(result).toBe(`Hello, what's your name?`)
-  // })
+  it('should create speech from text', async () => {
+    const result = await service.createSpeech(
+      {
+        model: 'tts',
+        input: 'hello',
+        voice: 'echo',
+        response_format: 'wav',
+      },
+      {},
+    )
+    require('fs').writeFileSync('./test.wav', result)
+    expect(result.toString('base64').substring(0, 1)).toBe('U')
+  })
 })
