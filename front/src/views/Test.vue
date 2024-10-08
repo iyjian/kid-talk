@@ -17,14 +17,14 @@
 
 <script setup lang="ts">
 import { Howl, Howler } from 'howler'
-import { io } from 'socket.io-client'
+// import { io } from 'socket.io-client'
 import { ref } from 'vue'
 import { apiClient } from './../libs/api'
 import { niceToSeeYou } from './../assets/nice2seeu.ts'
 
 const debug = false
 const currentSessionId = ref<number>()
-const content = ref<Uint8Array>(base64ToBuffer(niceToSeeYou))
+const content = ref<any>(niceToSeeYou)
 
 // console.log(1)
 
@@ -32,28 +32,57 @@ const responses = ref<string[]>([])
 
 const response = ref<any>()
 
-const socket = io('', {
-  query: {
-    token: localStorage.getItem('token')
+// const socket = io('', {
+//   query: {
+//     token: localStorage.getItem('token')
+//   }
+// })
+const socket = new WebSocket('ws://localhost:3000')
+
+socket.onopen = () => {
+  console.log('socket open')
+}
+
+socket.onmessage = (msg: any) => {
+  console.log(msg, typeof msg)
+  const {command, sessionId, content, role, audio} = JSON.parse(msg.data)
+
+  if (command === 'init') {
+    console.log(command, sessionId, content, role, audio)
+    // const { sessionId, content, role, audio } = payload
+    currentSessionId.value = sessionId
+    responses.value.push(JSON.stringify(msg.data, null, 2))
+  } else if (command === 'chat') {
+    // const { sessionId, content, role, audio } = payload
+    responses.value.push(JSON.stringify(msg.data, null, 2))
   }
-})
+}
 
 function init(){
-  socket.emit('init', { mode: '' }, (result: any) => {
-    const { sessionId, content, role, audio } = result
-    currentSessionId.value = sessionId
-    responses.value.push(JSON.stringify(result, null, 2))
-  })
+  socket.send(JSON.stringify({
+    event: 'init',
+    data: {
+      token: localStorage.getItem('token')
+    }
+  }))
 }
 
 function chat(){
-  if (!currentSessionId.value) {
-    alert('对话前请先初始化对话！')
-  }
-  socket.emit('chat', { content: content.value, sessionId: currentSessionId.value }, (result: any) => {
-    const { sessionId, content, role, audio } = result
-    responses.value.push(JSON.stringify(result, null, 2))
-  })
+  // if (!currentSessionId.value) {
+  //   alert('对话前请先初始化对话！')
+  // }
+  // socket.emit('chat', { content: content.value, sessionId: currentSessionId.value }, (result: any) => {
+  //   const { sessionId, content, role, audio } = result
+  //   responses.value.push(JSON.stringify(result, null, 2))
+  // })
+  socket.send(JSON.stringify({
+    event: 'chat',
+    data: {
+      token: localStorage.getItem('token'),
+      content: content.value, 
+      sessionId: currentSessionId.value
+    }
+  }))
 }
 
 function base64ToBuffer(base64String) {

@@ -20,6 +20,7 @@ import fs from 'fs'
 import { v4 as uuidv4 } from 'uuid'
 
 type ChatResponse = {
+  command: string
   sessionId: number
   content: string
   audio?: string
@@ -53,8 +54,7 @@ export class ChatService implements OnGatewayConnection {
     private readonly userService: UserService,
   ) {}
 
-  private async getUserIdBySocket(client: Socket) {
-    const token = client.handshake.query.token as string
+  private async getUserIdBySocket(token: string) {
     const userInfo = (await this.authing.checkLoginStatus(token)) as {
       code: number
       message: string
@@ -82,19 +82,24 @@ export class ChatService implements OnGatewayConnection {
    *
    * @param client
    */
-  @UseGuards(ApiGuard)
-  handleConnection(client: Socket) {
-    this.logger.debug(`socketio client connected: ${client.id}`)
-    this.socketUsers[client.id] = {
-      client,
-    }
+  // @UseGuards(ApiGuard)
+  handleConnection(client: Socket, req: any) {
+    // const token = client.handshake.query.token as string
+    // this.logger.debug(`socketio client connected - token: ${token}`)
+    // console.log(client)
+    // console.log(req.url)
+    // // console.log(client.request)
+    // this.socketUsers[client.id] = {
+    //   client,
+    // }
+    console.log('connected')
   }
 
   // async handleClientEvents(@MessageBody() data: string) {
   //   this.logger.debug(`handleClientEvents - text2speech - text: ${data}`);
   // }
 
-  @UseGuards(ApiGuard)
+  // @UseGuards(ApiGuard)
   @SubscribeMessage('test')
   test(@ConnectedSocket() client: Socket) {
     // console.log(client.handshake.query.token);
@@ -102,10 +107,10 @@ export class ChatService implements OnGatewayConnection {
 
   @SubscribeMessage('init')
   async startNewChat(
-    @MessageBody() payload: { mode: string },
-    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { token: string },
+    // @ConnectedSocket() client: Socket,
   ): Promise<ChatResponse> {
-    const userId = await this.getUserIdBySocket(client)
+    const userId = await this.getUserIdBySocket(payload.token)
     const messages = []
     const chatRepo = await this.chatrepoService.init(userId)
 
@@ -129,6 +134,7 @@ export class ChatService implements OnGatewayConnection {
     const audio = await this.baiduSpeechService.text2Speech(response)
 
     return {
+      command: 'init',
       sessionId: chatRepo.sessionId,
       role: result.choices[0].message.role,
       content: result.choices[0].message.content,
@@ -141,33 +147,24 @@ export class ChatService implements OnGatewayConnection {
     @MessageBody()
     data: {
       sessionId: number
-      content: string | Buffer
+      content: string
       role?: string
       name?: string
     },
   ): Promise<ChatResponse> {
     let { sessionId, role = 'user', content, name } = data
 
-    if (typeof content !== 'string') {
-      // console.log(content)
-      // const readable = new Readable()
-      // // readable._read = () => {} // _read is required but you can noop it
-      // readable.push(content)
-      // readable.push(null)
-      // readable.pause()
-      // fs.readFileSync()
-      const tmpFile = path.join(__dirname, `./../../../tmp/${uuidv4()}.wav`)
-      fs.writeFileSync(tmpFile, content as any)
-      console.log('sssssssssssssss')
-      const stream = fs.createReadStream(tmpFile)
-      content = await this.openaiService.speech2Text(stream)
-      fs.unlinkSync(tmpFile)
-      // const speech2TextResult = await this.baiduSpeechService.speech2Text(
-      //   content,
-      // )
-      // content = speech2TextResult.result[0]
-      console.log(content)
-    }
+    const tmpFile = path.join(__dirname, `./../../../tmp/${uuidv4()}.wav`)
+    fs.writeFileSync(tmpFile, Buffer.from(content, 'base64'))
+    console.log('sssssssssssssss')
+    const stream = fs.createReadStream(tmpFile)
+    content = await this.openaiService.speech2Text(stream)
+    fs.unlinkSync(tmpFile)
+    // const speech2TextResult = await this.baiduSpeechService.speech2Text(
+    //   content,
+    // )
+    // content = speech2TextResult.result[0]
+    console.log(content)
 
     const messages = JSON.parse(
       JSON.stringify(await this.chatrepoService.findAllBySessionId(sessionId)),
@@ -198,6 +195,7 @@ export class ChatService implements OnGatewayConnection {
     const audio = await this.baiduSpeechService.text2Speech(response)
 
     return {
+      command: 'chat',
       sessionId,
       role: result.choices[0].message.role,
       content: result.choices[0].message.content,
