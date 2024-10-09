@@ -25,6 +25,7 @@ type ChatResponse = {
   content: string
   audio?: string
   role: string
+  originContent?: string
 }
 
 @Injectable()
@@ -32,7 +33,7 @@ type ChatResponse = {
   cors: {
     origin: '*',
   },
-  transports: ['websocket']
+  transports: ['websocket'],
 })
 
 //
@@ -152,13 +153,12 @@ export class ChatService implements OnGatewayConnection {
       name?: string
     },
   ): Promise<ChatResponse> {
-    let { sessionId, role = 'user', content, name } = data
+    const { sessionId, role = 'user', content, name } = data
 
     const tmpFile = path.join(__dirname, `./../../../tmp/${uuidv4()}.wav`)
     fs.writeFileSync(tmpFile, Buffer.from(content, 'base64'))
-    console.log('sssssssssssssss')
     const stream = fs.createReadStream(tmpFile)
-    content = await this.openaiService.speech2Text(stream)
+    const textContent = await this.openaiService.speech2Text(stream)
     fs.unlinkSync(tmpFile)
     // const speech2TextResult = await this.baiduSpeechService.speech2Text(
     //   content,
@@ -169,12 +169,11 @@ export class ChatService implements OnGatewayConnection {
     const messages = JSON.parse(
       JSON.stringify(await this.chatrepoService.findAllBySessionId(sessionId)),
     )
-    // const messages = [];
 
     await this.chatrepoService.create({
       sessionId,
       role,
-      content: this.formatContent(content),
+      content: this.formatContent(textContent),
       name,
     })
 
@@ -198,6 +197,7 @@ export class ChatService implements OnGatewayConnection {
       command: 'chat',
       sessionId,
       role: result.choices[0].message.role,
+      originContent: textContent,
       content: result.choices[0].message.content,
       audio: 'data:audio/mp3;base64,' + audio.toString('base64'),
     }
