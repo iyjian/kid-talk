@@ -27,9 +27,10 @@
       <el-table-column width="100">
         <template #default="{ row }">
           <audio
-            :src="'data:audio/mp3;base64,' + row.audio"
+            :src="'data:audio/mp3;base64,' + audioList[row.id]?.audio"
             :id="row.id"
             autobuffer="autobuffer"
+            @loadeddata="markAsLoaded(row.id)"
           ></audio>
           <el-button v-if="!loading.play" @click="play(row.id)" type="primary">播放</el-button>
         </template>
@@ -42,6 +43,13 @@
 import { computed, ref, watch } from 'vue'
 import { apiClient } from '@/libs/api'
 
+const audioList = ref<any>({})
+
+function markAsLoaded(rowId: string) {
+  console.log('markAsLoaded')
+  audioList.value[rowId]['loaded'] = true
+}
+
 const loading = ref({
   table: false,
   play: false
@@ -53,7 +61,8 @@ const queryParams = computed(() => {
   const [grade, unit] = selectedUnit.value.split('/')
   return {
     grade,
-    unit
+    unit,
+    attributes: ['id', 'unit', 'grade', 'phrase', 'sentence']
   }
 })
 
@@ -85,16 +94,37 @@ async function reloadPhraseSentences(params: any) {
 
 reloadPhraseSentences(queryParams.value)
 
-function play(id: string) {
-  audioEls = document.querySelectorAll('audio') as unknown as HTMLMediaElement[]
-  audioEls.forEach(function (audio) {
-    audio.removeEventListener('ended', playNextAudio)
-  })
+async function waitLoaded(id: string) {
+  
+}
 
-  const mediaEl = document.getElementById(`${id}`) as HTMLMediaElement
-  if (mediaEl) {
-    mediaEl.play()
-  }
+async function play(id: string) {
+  // 清空所有的监听
+  // audioEls = document.querySelectorAll('audio') as unknown as HTMLMediaElement[]
+
+  // audioEls.forEach(function (audio) {
+  //   audio.removeEventListener('ended', playNextAudio)
+  // })
+  
+  // const mediaEl = document.getElementById(`${id}`) as HTMLMediaElement
+
+  // if (id in audioList.value && audioList.value[id].loaded) {
+  //   if (mediaEl) {
+  //     mediaEl.play()
+  //   }
+  //   return
+  // }
+
+  // // 读取音频数据
+  const response = await apiClient.getOnePhraseSentenceWithAudio(id)
+  audioList.value[id] = { audio: response.data.audio }
+  
+  // mediaEl.addEventListener('loadeddata', () => {
+  //   if (mediaEl) {
+  //     audioList.value[id]['loaded'] = true
+  //     mediaEl.play()
+  //   }
+  // })
 }
 
 let audioEls: HTMLMediaElement[]
@@ -102,7 +132,9 @@ let currentAudioIndex = 0
 
 async function playAll() {
   loading.value.play = true
+
   audioEls = document.querySelectorAll('audio') as unknown as HTMLMediaElement[]
+  
   audioEls.forEach(function (audio) {
     audio.removeEventListener('ended', playNextAudio)
     audio.addEventListener('ended', playNextAudio)

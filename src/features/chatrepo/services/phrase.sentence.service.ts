@@ -77,6 +77,7 @@ export class PhraseSentenceService extends BaseService {
       skipPaging,
       search,
       sort = [['id', 'desc']],
+      attributes = undefined,
       ...payload
     } = findAllPhraseSentenceRequest
 
@@ -90,6 +91,7 @@ export class PhraseSentenceService extends BaseService {
       .scope(['defaultScope', 'findAll'])
       .findAndCountAll({
         where: { ...condition },
+        attributes,
         offset: skipPaging ? undefined : (page - 1) * pageSize,
         limit: skipPaging ? undefined : pageSize,
         order: sort,

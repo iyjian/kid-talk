@@ -160,6 +160,8 @@ export class FindOnePhraseSentenceRequestDTO {
 }
 
 export class FindAllPhraseSentenceRequestDTO extends PagingRequestDTO {
+  attributes: string[]
+
   @codeGen('11041')
   @ApiProperty({
     description: '短语',
