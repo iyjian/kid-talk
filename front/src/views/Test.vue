@@ -46,7 +46,7 @@ const response = ref<any>()
 //     token: localStorage.getItem('token')
 //   }
 // })
-const socket = new WebSocket('ws://localhost:3000')
+const socket = new WebSocket('wss://kidtalk.tltr.top/ws/')
 
 socket.onopen = () => {
   console.log('socket open')
