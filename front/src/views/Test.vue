@@ -1,17 +1,26 @@
 <template>
   <div style="margin: 10px">
-    <div style="display: flex; flex-direction: row; gap: 20px 20px;">
+    <div style="display: flex; flex-direction: row; gap: 20px 20px">
       <Button @click="init">对话初始化</Button>
       <!-- <input v-model="content" style="width:200px;"> -->
       <Button @click="chat">测试发送对话</Button>
     </div>
     <!-- {{ niceToSeeYou }} -->
     <h2>当前会话Id: {{ currentSessionId }}</h2>
-    
+
     <h2>数据返回：</h2>
-    <pre 
-      style="padding: 10px; word-break: break-all; word-wrap: break-word;width:100%; overflow-y: scroll;border:1px solid lightgray;"
-      v-for="response in responses">{{ response }}</pre>
+    <pre
+      style="
+        padding: 10px;
+        word-break: break-all;
+        word-wrap: break-word;
+        width: 100%;
+        overflow-y: scroll;
+        border: 1px solid lightgray;
+      "
+      v-for="response in responses"
+      >{{ response }}</pre
+    >
   </div>
 </template>
 
@@ -45,7 +54,7 @@ socket.onopen = () => {
 
 socket.onmessage = (msg: any) => {
   console.log(msg, typeof msg)
-  const {command, sessionId, content, role, audio} = JSON.parse(msg.data)
+  const { command, sessionId, content, role, audio } = JSON.parse(msg.data)
 
   if (command === 'init') {
     console.log(command, sessionId, content, role, audio)
@@ -58,16 +67,18 @@ socket.onmessage = (msg: any) => {
   }
 }
 
-function init(){
-  socket.send(JSON.stringify({
-    event: 'init',
-    data: {
-      token: localStorage.getItem('token')
-    }
-  }))
+function init() {
+  socket.send(
+    JSON.stringify({
+      event: 'init',
+      data: {
+        token: localStorage.getItem('token')
+      }
+    })
+  )
 }
 
-function chat(){
+function chat() {
   // if (!currentSessionId.value) {
   //   alert('对话前请先初始化对话！')
   // }
@@ -75,28 +86,30 @@ function chat(){
   //   const { sessionId, content, role, audio } = result
   //   responses.value.push(JSON.stringify(result, null, 2))
   // })
-  socket.send(JSON.stringify({
-    event: 'chat',
-    data: {
-      token: localStorage.getItem('token'),
-      content: content.value, 
-      sessionId: currentSessionId.value
-    }
-  }))
+  socket.send(
+    JSON.stringify({
+      event: 'chat',
+      data: {
+        token: localStorage.getItem('token'),
+        content: content.value,
+        sessionId: currentSessionId.value
+      }
+    })
+  )
 }
 
 function base64ToBuffer(base64String) {
   // Convert base64 string to binary data
-  const byteCharacters = atob(base64String);
+  const byteCharacters = atob(base64String)
   // Create an 8-bit unsigned integer array (Uint8Array)
-  const byteNumbers = new Array(byteCharacters.length);
+  const byteNumbers = new Array(byteCharacters.length)
   for (let i = 0; i < byteCharacters.length; i++) {
-    byteNumbers[i] = byteCharacters.charCodeAt(i);
+    byteNumbers[i] = byteCharacters.charCodeAt(i)
   }
   // Create a buffer from the 8-bit unsigned integer array
-  const buffer = new Uint8Array(byteNumbers).buffer;
+  const buffer = new Uint8Array(byteNumbers).buffer
   console.log(buffer, '----')
-  return buffer;
+  return buffer
 }
 
 /*

@@ -27,12 +27,19 @@
       <el-table-column width="100">
         <template #default="{ row }">
           <audio
-            :src="'data:audio/mp3;base64,' + audioList[row.id]?.audio"
+            :src="'data:audio/mp3;base64,' + row.audio"
             :id="row.id"
             autobuffer="autobuffer"
-            @loadeddata="markAsLoaded(row.id)"
+            @loadeddata="markAsLoaded(row)"
+            @ended="onAudioEnded(row)"
           ></audio>
-          <el-button v-if="!loading.play" @click="play(row.id)" type="primary">播放</el-button>
+          <el-button
+            @click="play(row)"
+            type="primary"
+            :disabled="!!(currentPlayId && currentPlayId !== row.id)"
+            :loading="currentPlayId === row.id"
+            >播放</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -42,20 +49,17 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { apiClient } from '@/libs/api'
+import { ElMessage } from 'element-plus'
 
-const audioList = ref<any>({})
-
-function markAsLoaded(rowId: string) {
-  console.log('markAsLoaded')
-  audioList.value[rowId]['loaded'] = true
-}
+const selectedUnit = ref<string>('六上/1c')
+const units = ref<any[]>([{ unitName: '六上/1c' }])
+const sentences = ref([])
+const currentPlayId = ref<number>(0)
 
 const loading = ref({
   table: false,
   play: false
 })
-
-const selectedUnit = ref<string>('六上/1c')
 
 const queryParams = computed(() => {
   const [grade, unit] = selectedUnit.value.split('/')
@@ -66,20 +70,27 @@ const queryParams = computed(() => {
   }
 })
 
+loadUnits()
+reloadPhraseSentences(queryParams.value)
+
 watch(queryParams, (val) => {
-  currentAudioIndex = 0
+  // currentAudioIndex = 0
   reloadPhraseSentences(val)
 })
 
-const units = ref<any[]>([{ unitName: '六上/1c' }])
+function markAsLoaded(row: any) {
+  console.log(`${row.id} loaded`)
+  row.loaded = true
+}
+
+function onAudioEnded(row: any) {
+  console.log(`${row.id} ended`)
+  currentPlayId.value = 0
+}
 
 async function loadUnits() {
   units.value = (await apiClient.getAllUnits({})).data
 }
-
-loadUnits()
-
-const sentences = ref()
 
 async function reloadPhraseSentences(params: any) {
   try {
@@ -92,49 +103,63 @@ async function reloadPhraseSentences(params: any) {
   }
 }
 
-reloadPhraseSentences(queryParams.value)
-
-async function waitLoaded(id: string) {
-  
+function waitLoaded(row: any) {
+  const retry = 0
+  return new Promise((resolve, reject) => {
+    setInterval(() => {
+      if (row.loaded) {
+        resolve(true)
+      } else if (retry > 100) {
+        reject(false)
+      }
+    }, 100)
+  })
 }
 
-async function play(id: string) {
-  // 清空所有的监听
-  // audioEls = document.querySelectorAll('audio') as unknown as HTMLMediaElement[]
+async function play(row: any) {
+  try {
+    currentPlayId.value = row.id
+    console.log('playing', currentPlayId.value)
+    // 读取音频数据
+    if (!row.loaded) {
+      const response = await apiClient.getOnePhraseSentenceWithAudio(row.id)
+      row.audio = response.data.audio
+    }
 
-  // audioEls.forEach(function (audio) {
-  //   audio.removeEventListener('ended', playNextAudio)
-  // })
-  
-  // const mediaEl = document.getElementById(`${id}`) as HTMLMediaElement
+    const loadSuccess = await waitLoaded(row)
 
-  // if (id in audioList.value && audioList.value[id].loaded) {
-  //   if (mediaEl) {
-  //     mediaEl.play()
-  //   }
-  //   return
-  // }
+    if (!loadSuccess) {
+      ElMessage({
+        message: '音频数据加载失败',
+        type: 'error'
+      })
+      currentPlayId.value = 0
+    }
 
-  // // 读取音频数据
-  const response = await apiClient.getOnePhraseSentenceWithAudio(id)
-  audioList.value[id] = { audio: response.data.audio }
-  
-  // mediaEl.addEventListener('loadeddata', () => {
-  //   if (mediaEl) {
-  //     audioList.value[id]['loaded'] = true
-  //     mediaEl.play()
-  //   }
-  // })
+    console.log('play', row.id)
+
+    const mediaEl = document.getElementById(`${row.id}`) as HTMLMediaElement
+
+    if (mediaEl) {
+      mediaEl.play()
+    }
+  } catch (e) {
+    ElMessage({
+      message: '系统异常',
+      type: 'error'
+    })
+    currentPlayId.value = 0
+  }
 }
 
-let audioEls: HTMLMediaElement[]
-let currentAudioIndex = 0
+// let audioEls: HTMLMediaElement[]
+// let currentAudioIndex = 0
 
 async function playAll() {
   loading.value.play = true
 
   audioEls = document.querySelectorAll('audio') as unknown as HTMLMediaElement[]
-  
+
   audioEls.forEach(function (audio) {
     audio.removeEventListener('ended', playNextAudio)
     audio.addEventListener('ended', playNextAudio)
@@ -159,9 +184,9 @@ async function playNextAudio() {
   currentAudioIndex++
 }
 
-function pause() {
-  audioEls[currentAudioIndex - 1].pause()
-  loading.value.play = false
+function pause(row: any) {
+  const mediaEl = document.getElementById(`${row.id}`) as HTMLMediaElement
+  mediaEl.pause()
 }
 </script>
 
