@@ -28,8 +28,8 @@
 import { Howl, Howler } from 'howler'
 // import { io } from 'socket.io-client'
 import { ref } from 'vue'
-import { apiClient } from './../libs/api'
-import { niceToSeeYou } from './../assets/nice2seeu.ts'
+// import { apiClient } from './../libs/api'
+import { niceToSeeYou } from './../assets/nice2seeu'
 
 const debug = false
 const currentSessionId = ref<number>()
@@ -98,19 +98,19 @@ function chat() {
   )
 }
 
-function base64ToBuffer(base64String) {
-  // Convert base64 string to binary data
-  const byteCharacters = atob(base64String)
-  // Create an 8-bit unsigned integer array (Uint8Array)
-  const byteNumbers = new Array(byteCharacters.length)
-  for (let i = 0; i < byteCharacters.length; i++) {
-    byteNumbers[i] = byteCharacters.charCodeAt(i)
-  }
-  // Create a buffer from the 8-bit unsigned integer array
-  const buffer = new Uint8Array(byteNumbers).buffer
-  console.log(buffer, '----')
-  return buffer
-}
+// function base64ToBuffer(base64String) {
+//   // Convert base64 string to binary data
+//   const byteCharacters = atob(base64String)
+//   // Create an 8-bit unsigned integer array (Uint8Array)
+//   const byteNumbers = new Array(byteCharacters.length)
+//   for (let i = 0; i < byteCharacters.length; i++) {
+//     byteNumbers[i] = byteCharacters.charCodeAt(i)
+//   }
+//   // Create a buffer from the 8-bit unsigned integer array
+//   const buffer = new Uint8Array(byteNumbers).buffer
+//   console.log(buffer, '----')
+//   return buffer
+// }
 
 /*
 
