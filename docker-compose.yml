@@ -4,6 +4,8 @@ services:
   api:
     image: iyjian/kid-talk-api
     restart: always
+    ports:
+      - 53005:3000
     env_file:
       - .env
   ui:
