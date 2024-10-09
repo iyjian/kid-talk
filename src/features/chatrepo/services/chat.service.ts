@@ -156,7 +156,7 @@ export class ChatService implements OnGatewayConnection {
     const { sessionId, role = 'user', content, name } = data
 
     const tmpFile = path.join(__dirname, `./../../../tmp/${uuidv4()}.wav`)
-    fs.writeFileSync(tmpFile, Buffer.from(content, 'base64'))
+    fs.writeFileSync(tmpFile, Buffer.from(content, 'base64') as any)
     const stream = fs.createReadStream(tmpFile)
     const textContent = await this.openaiService.speech2Text(stream)
     fs.unlinkSync(tmpFile)
