@@ -177,7 +177,7 @@ export class ChatService implements OnGatewayConnection {
       name,
     })
 
-    messages.push({ role, content: this.formatContent(content), name })
+    messages.push({ role, content: this.formatContent(textContent), name })
 
     const result = await this.openaiService.chat(messages)
 
