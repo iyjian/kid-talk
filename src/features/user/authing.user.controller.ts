@@ -21,16 +21,16 @@ import { ReqUserId } from './../../core'
 @Controller('user')
 @ApiTags('用户表')
 export class AuthingUserController {
-  constructor(private readonly userService: AuthingUserService) {}
+  constructor(private readonly userService: AuthingUserService) { }
 
 
-      // const {
-    //   'x-wx-code': code,
-    //   'x-wx-encrypted-data': encryptedData,
-    //   'x-wx-iv': iv,
-    // } = req.headers
-  @Post('')
-  login(@Body('code') code: string){
+  // const {
+  //   'x-wx-code': code,
+  //   'x-wx-encrypted-data': encryptedData,
+  //   'x-wx-iv': iv,
+  // } = req.headers
+  @Post('login')
+  login(@Body('code') code: string) {
     //   const {
     //   'x-wx-code': code,
     //   'x-wx-encrypted-data': encryptedData,
