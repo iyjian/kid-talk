@@ -8,7 +8,7 @@ import {
 import { Response, Request, NextFunction } from 'express'
 import { AuthenticationClient } from 'authing-js-sdk'
 import ConfigService from './../config'
-import { UserService } from './../features/chatrepo/services/user.service'
+import { AuthingUserService } from './../features/user/authing.user.service'
 
 const configService = ConfigService()
 
@@ -21,7 +21,7 @@ export class AuthMiddleware implements NestMiddleware {
     appId: '',
     appHost: '',
   })
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: AuthingUserService) { }
 
   async use(req: Request, res: Response, next: NextFunction): Promise<void> {
     console.log(req.url)
@@ -31,38 +31,38 @@ export class AuthMiddleware implements NestMiddleware {
       return
     }
 
-    const token = req.headers['token'] as string
-    // this.logger.debug(`token: ${token}`);
-    const userInfo = (await this.authing.checkLoginStatus(token)) as {
-      code: number
-      message: string
-      status: boolean
-      exp: number
-      iat: number
-      data: {
-        id: string
-        userPoolId: string
-      }
-    }
+    // const token = req.headers['token'] as string
+    // // this.logger.debug(`token: ${token}`);
+    // const userInfo = (await this.authing.checkLoginStatus(token)) as {
+    //   code: number
+    //   message: string
+    //   status: boolean
+    //   exp: number
+    //   iat: number
+    //   data: {
+    //     id: string
+    //     userPoolId: string
+    //   }
+    // }
 
-    this.logger.debug(userInfo)
+    // this.logger.debug(userInfo)
 
-    if (!userInfo || !userInfo.status) {
-      this.logger.debug(`auth failed`)
-      throw new HttpException('无权限', HttpStatus.UNAUTHORIZED)
-    }
+    // if (!userInfo || !userInfo.status) {
+    //   this.logger.debug(`auth failed`)
+    //   throw new HttpException('无权限', HttpStatus.UNAUTHORIZED)
+    // }
 
-    const user = await this.userService.findOneByUid(userInfo.data.id)
+    // const user = await this.userService.findOneByUid(userInfo.data.id)
 
-    if (!user || !user.isEnable) {
-      if (!user) {
-        await this.userService.create(userInfo.data.id)
-      }
-      throw new HttpException('无权限', HttpStatus.UNAUTHORIZED)
-    }
+    // if (!user || !user.isEnable) {
+    //   if (!user) {
+    //     await this.userService.create(userInfo.data.id)
+    //   }
+    //   throw new HttpException('无权限', HttpStatus.UNAUTHORIZED)
+    // }
 
     req['locals'] = {
-      user: { id: user.id },
+      user: { id: 1 },
     }
 
     next()
