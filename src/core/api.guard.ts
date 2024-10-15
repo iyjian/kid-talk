@@ -22,7 +22,7 @@ export class ApiGuard implements CanActivate {
   //   appHost: this.configService.get('auth.authingAppHost'),
   // }
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // console.log(context.getType());
@@ -30,8 +30,8 @@ export class ApiGuard implements CanActivate {
       const request = context.switchToHttp().getRequest<Request>()
 
       if (
-        /phraseSentence/.test(request.path) &&
-        request.method.toLowerCase() === 'get'
+        (/phraseSentence/.test(request.path) &&
+          request.method.toLowerCase() === 'get') || (/\/user\/login/.test(request.path))
       ) {
         return true
       }

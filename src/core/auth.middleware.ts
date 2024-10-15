@@ -21,11 +21,12 @@ export class AuthMiddleware implements NestMiddleware {
     appId: '',
     appHost: '',
   })
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   async use(req: Request, res: Response, next: NextFunction): Promise<void> {
     console.log(req.url)
-    if (/phraseSentence/.test(req.path) && req.method.toLowerCase() === 'get') {
+    if ((/phraseSentence/.test(req.path) &&
+      req.method.toLowerCase() === 'get') || (/\/user\/login/.test(req.path))) {
       next()
       return
     }
