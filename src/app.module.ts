@@ -15,6 +15,7 @@ import { SequelizeModule } from '@nestjs/sequelize'
 import { ChatrepoModule } from './features/chatrepo/chatrepo.module'
 import conf from './config'
 import { AuthMiddleware } from './core/auth.middleware'
+import { UserModule } from './features/user/user.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -69,6 +70,7 @@ import { AuthMiddleware } from './core/auth.middleware'
     AudioModule,
     OpenaiModule,
     ChatrepoModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
