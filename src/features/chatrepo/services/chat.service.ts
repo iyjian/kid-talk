@@ -131,7 +131,16 @@ export class ChatService implements OnGatewayConnection {
       completionTokens: result.usage.completion_tokens,
     })
 
-    const audio = await this.baiduSpeechService.text2Speech(response)
+    // const audio = await this.baiduSpeechService.text2Speech(response)
+    const audio = await this.openaiService.createSpeech(
+      {
+        model: 'tts',
+        input: response,
+        voice: 'echo',
+        response_format: 'mp3',
+      },
+      {},
+    )
 
     return {
       command: 'init',
@@ -191,7 +200,16 @@ export class ChatService implements OnGatewayConnection {
       completionTokens: result.usage.completion_tokens,
     })
 
-    const audio = await this.baiduSpeechService.text2Speech(response)
+    // const audio = await this.baiduSpeechService.text2Speech(response)
+    const audio = await this.openaiService.createSpeech(
+      {
+        model: 'tts',
+        input: response,
+        voice: 'echo',
+        response_format: 'mp3',
+      },
+      {},
+    )
 
     return {
       command: 'chat',
