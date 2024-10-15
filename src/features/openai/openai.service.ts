@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import 'openai/shims/node'
 import OpenAI from 'openai'
 import { ChatCompletionMessageParam } from 'openai/resources/chat/completions'
 
@@ -13,8 +14,8 @@ export class OpenaiService {
   })
 
   constructor(private readonly configService: ConfigService) {
-    console.log(this.configService.get('openai.endpoint'))
-    console.log(this.configService.get('openai.apiKey'))
+    // console.log(this.configService.get('openai.endpoint'))
+    // console.log(this.configService.get('openai.apiKey'))
   }
 
   /**
@@ -74,5 +75,13 @@ export class OpenaiService {
     console.log(`createSpeech - ${JSON.stringify(body)}`)
     const response = await this.openai.audio.speech.create(body, options)
     return Buffer.from(await response.arrayBuffer())
+  }
+
+  async speech2Text(stream: any): Promise<string> {
+    const transcription = await this.openai.audio.transcriptions.create({
+      file: stream,
+      model: 'whisper',
+    })
+    return transcription.text
   }
 }

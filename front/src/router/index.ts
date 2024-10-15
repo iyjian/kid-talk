@@ -4,6 +4,8 @@ import Login from './../views/Login.vue'
 import PhraseStudy from './../views/PhraseStudy.vue'
 import PhraseAudio from './../views/PhraseAudio.vue'
 import SpeechTest from './../views/SpeechTest.vue'
+import Test from './../views/Test.vue'
+
 import { AuthenticationClient } from 'authing-js-sdk'
 
 const authClient = new AuthenticationClient({
@@ -32,6 +34,11 @@ const router = createRouter({
       path: '/speechTest',
       name: 'SpeechTest',
       component: SpeechTest
+    },
+    {
+      path: '/test',
+      name: 'Test',
+      component: Test
     },
     {
       path: '/login',

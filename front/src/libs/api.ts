@@ -26,6 +26,10 @@ class APIClient extends RequestBase {
     return this.request.get(`/api/phraseSentence`, { params })
   }
 
+  public getOnePhraseSentenceWithAudio(id: any) {
+    return this.request.get(`/api/phraseSentence/${id}`)
+  }
+
   public getAllUnits(params: any) {
     return this.request.get(`/api/phraseSentence/unit`, { params })
   }

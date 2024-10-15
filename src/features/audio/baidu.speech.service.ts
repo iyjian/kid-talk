@@ -121,6 +121,9 @@ export class BaiduSpeechService {
         dev_pid: 1737,
       },
     )
+    if (result.err_no) {
+      throw new Error(result.err_msg)
+    }
     this.logger.debug(`speech2Text - timing: ${+new Date() - startTime}ms`)
     return result
   }

@@ -25,8 +25,7 @@ export class AuthMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction): Promise<void> {
     console.log(req.url)
-    if (req.path === '/phraseSentence/unit' || req.path === '/phraseSentence') {
-      console.log('next')
+    if (/phraseSentence/.test(req.path) && req.method.toLowerCase() === 'get') {
       next()
       return
     }

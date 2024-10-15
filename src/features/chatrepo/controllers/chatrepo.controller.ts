@@ -25,6 +25,6 @@ export class ChatrepoController {
     @Param('sessionId') sessionId: string,
     @Query('maxId') maxId: string,
   ) {
-    return this.chatrepoService.findAllBySession(+sessionId, +maxId)
+    return this.chatrepoService.findAllBySessionId(+sessionId, +maxId)
   }
 }

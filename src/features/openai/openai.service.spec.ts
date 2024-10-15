@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { OpenaiService } from './openai.service'
 import { ConfigModule, ConfigService } from '@nestjs/config'
+import fs from 'fs'
+import path from 'path'
 import conf from './../../config'
-import { SequelizeModule } from '@nestjs/sequelize'
-import { ChatrepoModule } from '../chatrepo/chatrepo.module'
 
 describe('OpenaiService', () => {
   let service: OpenaiService
@@ -14,29 +14,6 @@ describe('OpenaiService', () => {
         ConfigModule.forRoot({
           load: [conf],
         }),
-        SequelizeModule.forRootAsync({
-          imports: [ConfigModule],
-          useFactory: (configService: ConfigService) => ({
-            dialect: 'mysql',
-            host: configService.get('mysql.host'),
-            port: +configService.get<number>('mysql.port'),
-            username: configService.get('mysql.username'),
-            password: configService.get('mysql.password'),
-            database: configService.get('mysql.db'),
-            models: [],
-            autoLoadModels: true,
-            synchronize: true,
-            pool: {
-              max: 100,
-              min: 0,
-              idle: 10000,
-            },
-            timezone: '+08:00',
-            logging:
-              configService.get<string>('sqlLogging') === 'true' ? true : false,
-          }),
-          inject: [ConfigService],
-        }),
       ],
       providers: [OpenaiService],
     }).compile()
@@ -44,20 +21,37 @@ describe('OpenaiService', () => {
     service = module.get<OpenaiService>(OpenaiService)
   })
 
-  it('should be defined', async () => {
+  it('should chat with AI', async () => {
     const result = await service.chat([
       {
-        role: 'system',
-        content:
-          'You are an English teacher and I am a Chinese 4th grade student with only 4000 vocabulary. \n1. You practice English with me\n2. you ask me questions as actively as possible\nstart if you understand.',
+        role: 'user',
+        content: 'just say "hello",all characters in lowwer case',
       },
-      {
-        role: 'assistant',
-        content:
-          'Yes, I understand. Let’s begin practicing English together! Could you please tell me what topics interest you the most?',
-      },
-      { role: 'user', content: 'my name is wuchong' },
     ])
-    console.log(result.choices[0])
+    expect(result.choices[0].message.content).toBe('hello')
+  })
+
+  it('should speech2text using file', async () => {
+    const result = await service.speech2Text(
+      fs.createReadStream(
+        path.join(__dirname, './../../../testData/test2.wav'),
+      ),
+    )
+
+    expect(result).toBe(`Hello, what's your name?`)
+  })
+
+  it('should create speech from text', async () => {
+    const result = await service.createSpeech(
+      {
+        model: 'tts',
+        input: 'hello',
+        voice: 'echo',
+        response_format: 'wav',
+      },
+      {},
+    )
+    require('fs').writeFileSync('./test.wav', result)
+    expect(result.toString('base64').substring(0, 1)).toBe('U')
   })
 })

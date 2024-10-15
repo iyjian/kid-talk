@@ -14,11 +14,18 @@ import { ApiGuard } from './../../../core/api.guard'
 import { AuthenticationClient } from 'authing-js-sdk'
 import { ConfigService } from '@nestjs/config'
 import { UserService } from './user.service'
+// import { Readable } from 'stream'
+import path from 'path'
+import fs from 'fs'
+import { v4 as uuidv4 } from 'uuid'
 
 type ChatResponse = {
+  command: string
   sessionId: number
-  text: string
+  content: string
   audio?: string
+  role: string
+  originContent?: string
 }
 
 @Injectable()
@@ -26,6 +33,7 @@ type ChatResponse = {
   cors: {
     origin: '*',
   },
+  transports: ['websocket'],
 })
 
 //
@@ -47,8 +55,7 @@ export class ChatService implements OnGatewayConnection {
     private readonly userService: UserService,
   ) {}
 
-  private async getUserId(client: Socket) {
-    const token = client.handshake.query.token as string
+  private async getUserIdBySocket(token: string) {
     const userInfo = (await this.authing.checkLoginStatus(token)) as {
       code: number
       message: string
@@ -76,19 +83,24 @@ export class ChatService implements OnGatewayConnection {
    *
    * @param client
    */
-  @UseGuards(ApiGuard)
-  handleConnection(client: Socket) {
-    this.logger.debug(`socketio client connected: ${client.id}`)
-    this.socketUsers[client.id] = {
-      client,
-    }
+  // @UseGuards(ApiGuard)
+  handleConnection(client: Socket, req: any) {
+    // const token = client.handshake.query.token as string
+    // this.logger.debug(`socketio client connected - token: ${token}`)
+    // console.log(client)
+    // console.log(req.url)
+    // // console.log(client.request)
+    // this.socketUsers[client.id] = {
+    //   client,
+    // }
+    console.log('connected')
   }
 
   // async handleClientEvents(@MessageBody() data: string) {
   //   this.logger.debug(`handleClientEvents - text2speech - text: ${data}`);
   // }
 
-  @UseGuards(ApiGuard)
+  // @UseGuards(ApiGuard)
   @SubscribeMessage('test')
   test(@ConnectedSocket() client: Socket) {
     // console.log(client.handshake.query.token);
@@ -96,10 +108,10 @@ export class ChatService implements OnGatewayConnection {
 
   @SubscribeMessage('init')
   async startNewChat(
-    @MessageBody() data: { mode: string },
-    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { token: string },
+    // @ConnectedSocket() client: Socket,
   ): Promise<ChatResponse> {
-    const userId = await this.getUserId(client)
+    const userId = await this.getUserIdBySocket(payload.token)
     const messages = []
     const chatRepo = await this.chatrepoService.init(userId)
 
@@ -132,8 +144,10 @@ export class ChatService implements OnGatewayConnection {
     )
 
     return {
+      command: 'init',
       sessionId: chatRepo.sessionId,
-      text: result.choices[0].message.content,
+      role: result.choices[0].message.role,
+      content: result.choices[0].message.content,
       audio: 'data:audio/mp3;base64,' + audio.toString('base64'),
     }
   }
@@ -143,33 +157,36 @@ export class ChatService implements OnGatewayConnection {
     @MessageBody()
     data: {
       sessionId: number
-      content: string | Buffer
+      content: string
       role?: string
       name?: string
     },
   ): Promise<ChatResponse> {
-    let { sessionId, role = 'user', content, name } = data
+    const { sessionId, role = 'user', content, name } = data
 
-    if (typeof content !== 'string') {
-      const speech2TextResult = await this.baiduSpeechService.speech2Text(
-        content,
-      )
-      content = speech2TextResult.result[0]
-    }
+    const tmpFile = path.join(__dirname, `./../../../tmp/${uuidv4()}.wav`)
+    fs.writeFileSync(tmpFile, Buffer.from(content, 'base64') as any)
+    const stream = fs.createReadStream(tmpFile)
+    const textContent = await this.openaiService.speech2Text(stream)
+    fs.unlinkSync(tmpFile)
+    // const speech2TextResult = await this.baiduSpeechService.speech2Text(
+    //   content,
+    // )
+    // content = speech2TextResult.result[0]
+    console.log(content)
 
     const messages = JSON.parse(
-      JSON.stringify(await this.chatrepoService.findAllBySession(sessionId)),
+      JSON.stringify(await this.chatrepoService.findAllBySessionId(sessionId)),
     )
-    // const messages = [];
 
     await this.chatrepoService.create({
       sessionId,
       role,
-      content: this.formatContent(content),
+      content: this.formatContent(textContent),
       name,
     })
 
-    messages.push({ role, content: this.formatContent(content), name })
+    messages.push({ role, content: this.formatContent(textContent), name })
 
     const result = await this.openaiService.chat(messages)
 
@@ -194,8 +211,11 @@ export class ChatService implements OnGatewayConnection {
       {},
     )
     return {
+      command: 'chat',
       sessionId,
-      text: result.choices[0].message.content,
+      role: result.choices[0].message.role,
+      originContent: textContent,
+      content: result.choices[0].message.content,
       audio: 'data:audio/mp3;base64,' + audio.toString('base64'),
     }
   }

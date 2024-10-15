@@ -30,8 +30,8 @@ export class ApiGuard implements CanActivate {
       const request = context.switchToHttp().getRequest<Request>()
 
       if (
-        request.path === '/phraseSentence/unit' ||
-        request.path === '/phraseSentence'
+        /phraseSentence/.test(request.path) &&
+        request.method.toLowerCase() === 'get'
       ) {
         return true
       }
