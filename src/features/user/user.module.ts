@@ -11,7 +11,7 @@ import { AuthingUserController } from './authing.user.controller';
     ],
     controllers: [AuthingUserController],
     providers: [AuthingUserService, MiniProgramService],
-    exports: [AuthingUserService],
+    exports: [AuthingUserService, MiniProgramService],
 
 })
 export class UserModule {}

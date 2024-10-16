@@ -15,8 +15,8 @@ import { SequelizeModule } from '@nestjs/sequelize'
 import { ChatrepoModule } from './features/chatrepo/chatrepo.module'
 import conf from './config'
 import { AuthMiddleware } from './core/auth.middleware'
-// import { UserModule } from './features/user/user.module';
 import {UserModule} from './features/user/user.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,14 +25,6 @@ import {UserModule} from './features/user/user.module';
     }),
     CacheModule.registerAsync({
       useFactory: (configService: ConfigService) => {
-        // console.log({
-        //   store: redisStore,
-        //   host: configService.get('redis.host'),
-        //   port: +configService.get<number>('redis.port'),
-        //   password: configService.get('redis.password'),
-        //   db: +configService.get<number>('redis.db'),
-        //   ttl: 0,
-        // });
         return {
           store: redisStore,
           host: configService.get('redis.host'),
@@ -73,7 +65,7 @@ import {UserModule} from './features/user/user.module';
     ChatrepoModule,
     UserModule,
   ],
-  controllers: [AppController],
+  // controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule implements NestModule {

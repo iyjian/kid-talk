@@ -53,7 +53,9 @@ export class ChatService implements OnGatewayConnection {
     private readonly baiduSpeechService: BaiduSpeechService,
     private readonly configService: ConfigService,
     private readonly userService: UserService,
-  ) {}
+  ) {
+    console.log(this.configService, '------------')
+  }
 
   private async getUserIdBySocket(token: string) {
     const userInfo = (await this.authing.checkLoginStatus(token)) as {
