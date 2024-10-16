@@ -16,13 +16,10 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { AuthingUserService } from './authing.user.service'
 import { ReqUserId } from './../../core'
 
-
-
 @Controller('user')
 @ApiTags('用户表')
 export class AuthingUserController {
-  constructor(private readonly userService: AuthingUserService) { }
-
+  constructor(private readonly userService: AuthingUserService) {}
 
   // const {
   //   'x-wx-code': code,
@@ -46,7 +43,6 @@ export class AuthingUserController {
   getLoginInfo(@ReqUserId('userId') userId: number) {
     return this.userService.findOneById(userId)
   }
-
 
   @Get('')
   @ApiOperation({

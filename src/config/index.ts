@@ -37,5 +37,5 @@ export default () => ({
   wx: {
     appId: process.env.WX_APPID,
     appSecret: process.env.WX_APPSECRET,
-  }
+  },
 })

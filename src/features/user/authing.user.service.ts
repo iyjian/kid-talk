@@ -1,10 +1,20 @@
-import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common'
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  Logger,
+  Inject,
+} from '@nestjs/common'
 import { InjectModel } from '@nestjs/sequelize'
 import { Op, Transaction } from 'sequelize'
 import { Sequelize } from 'sequelize-typescript'
 import { BaseService, USER_TYPE } from './../../core'
 import { AuthingUser } from './authing.user.entity'
 import { MiniProgramService } from './mini.program.service'
+import { Cache } from 'cache-manager'
+import { CACHE_MANAGER } from '@nestjs/cache-manager'
+import { v4 } from 'uuid'
+
 // import {
 //   FindAllUserRequestDTO,
 //   FindOneUserRequestDTO,
@@ -22,23 +32,47 @@ export class AuthingUserService extends BaseService {
     @InjectModel(AuthingUser)
     private readonly userModel: typeof AuthingUser,
     private readonly mysql: Sequelize,
-    private readonly miniProgramService: MiniProgramService
+    private readonly miniProgramService: MiniProgramService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {
     super()
     this.include = []
     this.includeForOne = []
   }
 
-  async login(code:string) {
-    const openId = await this.miniProgramService.authorization(code)
-    await this.create({openId})
-    return true
+  async isLogin(token: string) {
+    const userId = await this.cacheManager.get<string>(`TALK_TOKEN:${token}`)
+
+    if (!userId) {
+      return false
+    } else {
+      return await this.findOneById(parseInt(userId))
+    }
   }
 
-  async create(
-    createUserRequest: any,
-    transaction?: Transaction,
-  ) {
+  async login(code: string) {
+    // const openId = await this.miniProgramService.authorization(code)
+    const openId = 'fake'
+
+    const user = await this.findOne({ openId })
+
+    if (!user) {
+      await this.create({ userName: openId, passwd: '', openId })
+    }
+
+    let token = await this.cacheManager.get(`TALK_USER:${user.id}`)
+
+    if (!token) {
+      token = v4()
+
+      await this.cacheManager.set(`TALK_USER:${user.id}`, token)
+      await this.cacheManager.set(`TALK_TOKEN:${token}`, user.id)
+    }
+
+    return token
+  }
+
+  async create(createUserRequest: any, transaction?: Transaction) {
     const isOuterTransaction = !!transaction
     try {
       if (!isOuterTransaction) {
@@ -63,10 +97,7 @@ export class AuthingUserService extends BaseService {
     }
   }
 
-  async findAll(
-    findAllUserRequest: any,
-    transaction?: Transaction,
-  ) {
+  async findAll(findAllUserRequest: any, transaction?: Transaction) {
     const {
       page = 1,
       pageSize = 20,
@@ -148,10 +179,7 @@ export class AuthingUserService extends BaseService {
     return user
   }
 
-  async findOneOrThrow(
-    findOneUserRequest: any,
-    transaction?: Transaction,
-  ) {
+  async findOneOrThrow(findOneUserRequest: any, transaction?: Transaction) {
     const user = await this.userModel
       .scope(['defaultScope', 'findOne'])
       .findOne({
@@ -166,10 +194,7 @@ export class AuthingUserService extends BaseService {
     return user
   }
 
-  async findOne(
-    findOneUserRequest: any,
-    transaction?: Transaction,
-  ) {
+  async findOne(findOneUserRequest: any, transaction?: Transaction) {
     const user = await this.userModel
       .scope(['defaultScope', 'findOne'])
       .findOne({

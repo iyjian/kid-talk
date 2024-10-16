@@ -29,12 +29,8 @@ import { Injectable } from '@nestjs/common'
   // },
 }))
 @Scopes(() => ({
-  findAll: {
-
-  },
-  findOne: {
-
-  },
+  findAll: {},
+  findOne: {},
   enable: {
     where: {
       isEnable: true,
@@ -48,10 +44,10 @@ import { Injectable } from '@nestjs/common'
     // {
     //   fields: ['isActive'],
     // },
-    // {
-    //   fields: ['userName', 'isActive'],
-    //   unique: true,
-    // },
+    {
+      fields: ['openId', 'isActive'],
+      unique: true,
+    },
     // {
     //   fields: ['name'],
     // },
@@ -94,7 +90,6 @@ export class AuthingUser extends Model<AuthingUser> {
     comment: '密码',
   })
   passwd: string
-
 
   @Column({
     allowNull: true,
@@ -159,11 +154,13 @@ export class AuthingUser extends Model<AuthingUser> {
   })
   type?: number
 
-
   @Column(DataType.STRING(32))
   syncKey: string
 
-  @Column
+  @Column(DataType.STRING(32))
+  openId: string
+
+  @Column({ type: DataType.BOOLEAN, defaultValue: true })
   isActive?: boolean
 
   @Column({

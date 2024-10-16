@@ -4,21 +4,15 @@ import http from 'axios'
 
 @Injectable()
 export class MiniProgramService {
-  constructor(
-    private readonly configService: ConfigService,
-  ) {
-  }
-
+  constructor(private readonly configService: ConfigService) {}
 
   async authorization(code: string, encryptedData?: string, iv?: string) {
-
     const pkg = await this.getSessionKey(code)
 
     const { openid: openId, session_key } = pkg
 
     return openId
   }
-
 
   /**
    * 获取微信会话密钥
@@ -28,7 +22,6 @@ export class MiniProgramService {
    * @throws 如果请求失败或响应数据不符合预期，将抛出错误
    */
   async getSessionKey(code: string) {
-
     const response = await http({
       url: 'https://api.weixin.qq.com/sns/jscode2session',
       method: 'GET',

@@ -14,8 +14,8 @@ import redisStore from 'cache-manager-ioredis'
 import { SequelizeModule } from '@nestjs/sequelize'
 import { ChatrepoModule } from './features/chatrepo/chatrepo.module'
 import conf from './config'
-import { AuthMiddleware } from './core/auth.middleware'
-import {UserModule} from './features/user/user.module';
+import { AuthMiddleware } from './core/middlewares/auth.middleware'
+import { UserModule } from './features/user/user.module'
 
 @Module({
   imports: [
