@@ -4,7 +4,6 @@ import {
   NestModule,
   RequestMethod,
 } from '@nestjs/common'
-import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { AudioModule } from './features/audio/audio.module'
 import { ConfigModule, ConfigService } from '@nestjs/config'
@@ -65,7 +64,6 @@ import { UserModule } from './features/user/user.module'
     ChatrepoModule,
     UserModule,
   ],
-  // controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule implements NestModule {

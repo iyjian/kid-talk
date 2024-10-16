@@ -51,8 +51,8 @@ export class AuthingUserService extends BaseService {
   }
 
   async login(code: string) {
-    // const openId = await this.miniProgramService.authorization(code)
-    const openId = 'fake'
+    const openId = await this.miniProgramService.authorization(code)
+    // const openId = 'fake'
 
     const user = await this.findOne({ openId })
 
