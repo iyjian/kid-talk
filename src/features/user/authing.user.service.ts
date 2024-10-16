@@ -44,7 +44,7 @@ export class AuthingUserService extends BaseService {
     const userId = await this.cacheManager.get<string>(`TALK_TOKEN:${token}`)
 
     if (!userId) {
-      return false
+      return undefined
     } else {
       return await this.findOneById(parseInt(userId))
     }
