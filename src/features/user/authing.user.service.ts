@@ -51,13 +51,13 @@ export class AuthingUserService extends BaseService {
   }
 
   async login(code: string) {
-    const openId = await this.miniProgramService.authorization(code)
-    // const openId = 'fake'
+    // const openId = await this.miniProgramService.authorization(code)
+    const openId = 'fake'
 
-    const user = await this.findOne({ openId })
+    let user = await this.findOne({ openId })
 
     if (!user) {
-      await this.create({ userName: openId, passwd: '', openId })
+      user = await this.create({ userName: openId, passwd: '', openId })
     }
 
     let token = await this.cacheManager.get(`TALK_USER:${user.id}`)

@@ -156,9 +156,6 @@ export class AuthingUser extends BaseModel<AuthingUser> {
   type?: number
 
   @Column(DataType.STRING(32))
-  syncKey: string
-
-  @Column(DataType.STRING(32))
   openId: string
 
   @Column({ type: DataType.BOOLEAN, defaultValue: true })
