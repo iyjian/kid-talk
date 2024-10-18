@@ -13,8 +13,7 @@ import { BaiduSpeechService } from './../../audio/baidu.speech.service'
 import { ApiGuard } from './../../../core/api.guard'
 import { AuthenticationClient } from 'authing-js-sdk'
 import { ConfigService } from '@nestjs/config'
-import { UserService } from './user.service'
-// import { Readable } from 'stream'
+import { AuthingUserService } from './../../user/authing.user.service'
 import path from 'path'
 import fs from 'fs'
 import { v4 as uuidv4 } from 'uuid'
@@ -52,22 +51,25 @@ export class ChatService implements OnGatewayConnection {
     private readonly openaiService: OpenaiService,
     private readonly baiduSpeechService: BaiduSpeechService,
     private readonly configService: ConfigService,
-    private readonly userService: UserService,
-  ) {}
+    private readonly authingUserService: AuthingUserService,
+  ) {
+    console.log(this.configService, '------------')
+  }
 
   private async getUserIdBySocket(token: string) {
-    const userInfo = (await this.authing.checkLoginStatus(token)) as {
-      code: number
-      message: string
-      status: boolean
-      exp: number
-      iat: number
-      data: {
-        id: string
-        userPoolId: string
-      }
-    }
-    const user = await this.userService.findOneByUid(userInfo.data.id)
+    // const userInfo = (await this.authing.checkLoginStatus(token)) as {
+    //   code: number
+    //   message: string
+    //   status: boolean
+    //   exp: number
+    //   iat: number
+    //   data: {
+    //     id: string
+    //     userPoolId: string
+    //   }
+    // }
+    const user = await this.authingUserService.isLogin(token)
+    // const user = await this.authingUserService.findOneByUid(userInfo.data.id)
     return user.id
   }
 
@@ -132,7 +134,16 @@ export class ChatService implements OnGatewayConnection {
       completionTokens: result.usage.completion_tokens,
     })
 
-    const audio = await this.baiduSpeechService.text2Speech(response)
+    // const audio = await this.baiduSpeechService.text2Speech(response)
+    const audio = await this.openaiService.createSpeech(
+      {
+        model: 'tts',
+        input: response,
+        voice: 'echo',
+        response_format: 'mp3',
+      },
+      {},
+    )
 
     return {
       command: 'init',
@@ -191,8 +202,16 @@ export class ChatService implements OnGatewayConnection {
       completionTokens: result.usage.completion_tokens,
     })
 
-    const audio = await this.baiduSpeechService.text2Speech(response)
-
+    // const audio = await this.baiduSpeechService.text2Speech(response)
+    const audio = await this.openaiService.createSpeech(
+      {
+        model: 'tts',
+        input: response,
+        voice: 'echo',
+        response_format: 'mp3',
+      },
+      {},
+    )
     return {
       command: 'chat',
       sessionId,

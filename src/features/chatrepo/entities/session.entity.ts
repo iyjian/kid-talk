@@ -6,7 +6,7 @@ import {
   BelongsTo,
   Model,
 } from 'sequelize-typescript'
-import { User } from './user.entity'
+import { AuthingUser } from './../../user/authing.user.entity'
 
 @Table({
   tableName: 't_session',
@@ -18,13 +18,13 @@ export class Session extends Model<Session> {
   })
   name: string
 
-  @ForeignKey(() => User)
+  @ForeignKey(() => AuthingUser)
   @Column({
     allowNull: false,
     type: DataType.INTEGER,
   })
   userId: number
 
-  @BelongsTo(() => User, 'userId')
-  user: User
+  @BelongsTo(() => AuthingUser, 'userId')
+  user: AuthingUser
 }

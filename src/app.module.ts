@@ -4,7 +4,6 @@ import {
   NestModule,
   RequestMethod,
 } from '@nestjs/common'
-import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { AudioModule } from './features/audio/audio.module'
 import { ConfigModule, ConfigService } from '@nestjs/config'
@@ -14,7 +13,9 @@ import redisStore from 'cache-manager-ioredis'
 import { SequelizeModule } from '@nestjs/sequelize'
 import { ChatrepoModule } from './features/chatrepo/chatrepo.module'
 import conf from './config'
-import { AuthMiddleware } from './core/auth.middleware'
+import { AuthMiddleware } from './core/middlewares/auth.middleware'
+import { UserModule } from './features/user/user.module'
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -23,14 +24,6 @@ import { AuthMiddleware } from './core/auth.middleware'
     }),
     CacheModule.registerAsync({
       useFactory: (configService: ConfigService) => {
-        // console.log({
-        //   store: redisStore,
-        //   host: configService.get('redis.host'),
-        //   port: +configService.get<number>('redis.port'),
-        //   password: configService.get('redis.password'),
-        //   db: +configService.get<number>('redis.db'),
-        //   ttl: 0,
-        // });
         return {
           store: redisStore,
           host: configService.get('redis.host'),
@@ -69,8 +62,8 @@ import { AuthMiddleware } from './core/auth.middleware'
     AudioModule,
     OpenaiModule,
     ChatrepoModule,
+    UserModule,
   ],
-  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule implements NestModule {

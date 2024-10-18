@@ -6,28 +6,29 @@ import { AudioModule } from '../audio/audio.module'
 import { OpenaiModule } from '../openai/openai.module'
 import { ChatService } from './services/chat.service'
 import { ChatrepoController } from './controllers/chatrepo.controller'
-import { User } from './entities/user.entity'
+import { AuthingUser } from './../user/authing.user.entity'
 import { PhraseSentence } from './entities/phrase.sentence.entity'
 import { Session } from './entities/session.entity'
-import { UserService } from './services/user.service'
 import { PhraseService } from './services/phrase.service'
 import { PhraseSentenceController } from './controllers/phrase.sentence.controller'
 import { PhraseSentenceService } from './services/phrase.sentence.service'
+import { UserModule } from '../user/user.module'
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([Chat, Session, User, PhraseSentence]),
+    SequelizeModule.forFeature([Chat, Session, AuthingUser, PhraseSentence]),
     AudioModule,
     OpenaiModule,
+    UserModule
   ],
   providers: [
     ChatrepoService,
     ChatService,
-    UserService,
+    // AuthingUserService,
     PhraseService,
     PhraseSentenceService,
   ],
-  exports: [ChatrepoService, UserService, PhraseSentenceService],
+  exports: [ChatrepoService, PhraseSentenceService],
   controllers: [ChatrepoController, PhraseSentenceController],
 })
 export class ChatrepoModule {}

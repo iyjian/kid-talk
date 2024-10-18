@@ -34,4 +34,8 @@ export default () => ({
     authingAppHost: process.env.AUTHING_APP_HOST,
     superToken: process.env.SUPER_TOKEN,
   },
+  wx: {
+    appId: process.env.WX_APPID,
+    appSecret: process.env.WX_APPSECRET,
+  },
 })
