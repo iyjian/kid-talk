@@ -28,11 +28,11 @@
       <el-table-column prop="sentence" label="Sentence"></el-table-column>
       <el-table-column width="100">
         <template #default="{ row, column, $index }">
-          <audio
+          <audio controls
             :src="'data:audio/mp3;base64,' + row.audio"
             :id="$index"
             autobuffer="autobuffer"
-            @loadeddata="markAsLoaded(row, $index)"
+            @canplay="markAsLoaded(row, $index)"
             @ended="onAudioEnded(row, $index)"
           ></audio>
           <el-button
