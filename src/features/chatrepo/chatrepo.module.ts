@@ -19,7 +19,7 @@ import { UserModule } from '../user/user.module'
     SequelizeModule.forFeature([Chat, Session, AuthingUser, PhraseSentence]),
     AudioModule,
     OpenaiModule,
-    UserModule
+    UserModule,
   ],
   providers: [
     ChatrepoService,

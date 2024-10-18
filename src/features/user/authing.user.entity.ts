@@ -8,6 +8,7 @@ import {
   Model,
 } from 'sequelize-typescript'
 import { Injectable } from '@nestjs/common'
+import { BaseModel } from './../../core'
 
 @Injectable()
 @DefaultScope(() => ({
@@ -62,7 +63,7 @@ import { Injectable } from '@nestjs/common'
     // },
   ],
 })
-export class AuthingUser extends Model<AuthingUser> {
+export class AuthingUser extends BaseModel<AuthingUser> {
   @Column({
     allowNull: false,
     type: DataType.STRING(255),
