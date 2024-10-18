@@ -69,7 +69,10 @@ export class AuthingUserService extends BaseService {
       await this.cacheManager.set(`TALK_TOKEN:${token}`, user.id)
     }
 
-    return token
+    return {
+      ...JSON.parse(JSON.stringify(user)),
+      token,
+    }
   }
 
   async create(createUserRequest: any, transaction?: Transaction) {
