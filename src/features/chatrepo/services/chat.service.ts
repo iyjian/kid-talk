@@ -111,8 +111,8 @@ export class ChatService implements OnGatewayConnection {
   @SubscribeMessage('init')
   async startNewChat(
     @MessageBody() payload: { token: string },
-    // @ConnectedSocket() client: Socket,
   ): Promise<ChatResponse> {
+    this.logger.debug(`init - token: ${payload.token}`)
     const userId = await this.getUserIdBySocket(payload.token)
     const messages = []
     const chatRepo = await this.chatrepoService.init(userId)
@@ -164,8 +164,8 @@ export class ChatService implements OnGatewayConnection {
       name?: string
     },
   ): Promise<ChatResponse> {
+    this.logger.debug(`chat - sessionId: ${data.sessionId}, content: ${data.content}, role: ${data.role}, name: ${data.name}`)
     const { sessionId, role = 'user', content, name } = data
-
     const tmpFile = path.join(__dirname, `./../../../tmp/${uuidv4()}.wav`)
     fs.writeFileSync(tmpFile, Buffer.from(content, 'base64') as any)
     const stream = fs.createReadStream(tmpFile)
