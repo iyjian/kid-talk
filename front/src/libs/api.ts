@@ -33,6 +33,10 @@ class APIClient extends RequestBase {
   public getAllUnits(params: any) {
     return this.request.get(`/api/phraseSentence/unit`, { params })
   }
+
+  public getUserDetail(token: any) {
+    return this.request.get(`/api/auth/users/detail/${token}`);
+  } 
 }
 
 export const apiClient = new APIClient()

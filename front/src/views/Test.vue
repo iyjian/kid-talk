@@ -1,9 +1,9 @@
 <template>
   <div style="margin: 10px">
     <div style="display: flex; flex-direction: row; gap: 20px 20px">
-      <Button @click="init">对话初始化</Button>
+      <button @click="init">对话初始化</button>
       <!-- <input v-model="content" style="width:200px;"> -->
-      <Button @click="chat">测试发送对话</Button>
+      <button @click="chat">测试发送对话</button>
     </div>
     <!-- {{ niceToSeeYou }} -->
     <h2>当前会话Id: {{ currentSessionId }}</h2>
@@ -26,27 +26,19 @@
 
 <script setup lang="ts">
 import { Howl, Howler } from 'howler'
-// import { io } from 'socket.io-client'
 import { ref } from 'vue'
-// import { apiClient } from './../libs/api'
 import { niceToSeeYou } from './../assets/nice2seeu'
+import { useAdminStore } from '@/stores/user';
+const adminStore = useAdminStore()
 
 const debug = false
 const currentSessionId = ref<number>()
 const content = ref<any>(niceToSeeYou)
 
-// console.log(1)
-
 const responses = ref<string[]>([])
 
-const response = ref<any>()
-
-// const socket = io('', {
-//   query: {
-//     token: localStorage.getItem('token')
-//   }
-// })
-const socket = new WebSocket('wss://kidtalk.tltr.top/ws/')
+// const socket = new WebSocket('wss://kidtalk.tltr.top/ws/')
+const socket = new WebSocket('/ws')
 
 socket.onopen = () => {
   console.log('socket open')
@@ -67,12 +59,16 @@ socket.onmessage = (msg: any) => {
   }
 }
 
+socket.onclose = () => {
+  console.log('socket close')
+}
+
 function init() {
   socket.send(
     JSON.stringify({
       event: 'init',
       data: {
-        token: localStorage.getItem('token')
+        token: adminStore?.user.token
       }
     })
   )
@@ -90,7 +86,7 @@ function chat() {
     JSON.stringify({
       event: 'chat',
       data: {
-        token: localStorage.getItem('token'),
+        token: adminStore?.user.token,
         content: content.value,
         sessionId: currentSessionId.value
       }

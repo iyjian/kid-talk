@@ -17,7 +17,9 @@
     "axios": "^0.27.2",
     "element-plus": "^2.3.4",
     "howler": "^2.2.3",
+    "lodash": "^4.17.21",
     "pinia": "^2.0.36",
+    "pinia-plugin-persistedstate": "^4.1.1",
     "socket.io-client": "^4.6.1",
     "vue": "^3.3.2",
     "vue-router": "^4.2.0"
@@ -26,6 +28,7 @@
     "@rushstack/eslint-patch": "^1.2.0",
     "@tsconfig/node18": "^2.0.1",
     "@types/howler": "^2.2.7",
+    "@types/lodash": "^4.17.11",
     "@types/node": "^18.16.8",
     "@vitejs/plugin-vue": "^4.2.3",
     "@vue/eslint-config-prettier": "^7.1.0",

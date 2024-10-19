@@ -2,6 +2,8 @@ import axios from 'axios'
 import type { AxiosInstance } from 'axios'
 // import { ElMessage } from "element-plus";
 import router from './../router'
+import { useAdminStore } from "@/stores/user";
+
 export class RequestBase {
   private readonly TIMEOUT = 100000
 
@@ -14,7 +16,8 @@ export class RequestBase {
     })
 
     this.request.interceptors.request.use((config: any) => {
-      config.headers['token'] = localStorage.getItem('token') || ''
+      const adminStore = useAdminStore();
+      config.headers['token'] = adminStore?.user.token
       return config
     })
 

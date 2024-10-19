@@ -12,7 +12,11 @@
         </el-select>
       </el-form-item>
       <el-form-item
-        ><el-button :loading="continuePlay && status.playing" :disabled="!continuePlay && status.playing" type="primary" @click="playAll"
+        ><el-button
+          :loading="continuePlay && status.playing"
+          :disabled="!continuePlay && status.playing"
+          type="primary"
+          @click="playAll"
           >播放全部</el-button
         ></el-form-item
       >
@@ -28,7 +32,8 @@
       <el-table-column prop="sentence" label="Sentence"></el-table-column>
       <el-table-column width="100">
         <template #default="{ row, column, $index }">
-          <audio controls
+          <audio
+            controls
             :src="'data:audio/mp3;base64,' + row.audio"
             :id="$index"
             autobuffer="autobuffer"

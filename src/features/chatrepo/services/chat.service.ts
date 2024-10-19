@@ -39,21 +39,13 @@ type ChatResponse = {
 export class ChatService implements OnGatewayConnection {
   private readonly logger = new Logger(ChatService.name)
 
-  private readonly socketUsers = {}
-
-  private readonly authing = new AuthenticationClient({
-    appId: this.configService.get('auth.authingAppId'),
-    appHost: this.configService.get('auth.authingAppHost'),
-  })
-
   constructor(
     private readonly chatrepoService: ChatrepoService,
     private readonly openaiService: OpenaiService,
-    private readonly baiduSpeechService: BaiduSpeechService,
-    private readonly configService: ConfigService,
+    // private readonly baiduSpeechService: BaiduSpeechService,
+    // private readonly configService: ConfigService,
     private readonly authingUserService: AuthingUserService,
   ) {
-    console.log(this.configService, '------------')
   }
 
   private async getUserIdBySocket(token: string) {
