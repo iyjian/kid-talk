@@ -53,8 +53,8 @@ export class AuthingUserService extends BaseService {
   }
 
   async login(code: string) {
-    // const openId = await this.miniProgramService.authorization(code)
-    const openId = 'fake'
+    const openId = await this.miniProgramService.authorization(code)
+    // const openId = 'fake'
 
     let user = await this.findOne({ openId })
 
@@ -63,7 +63,7 @@ export class AuthingUserService extends BaseService {
     }
 
     const response = await axios.post(`${this.configService.get('auth.endpoint')}/auth/users/login`, {openId})
-    
+
     return response.data.data
   }
 
