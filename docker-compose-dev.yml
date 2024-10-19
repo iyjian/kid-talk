@@ -1,0 +1,39 @@
+version: "3.5"
+
+services:
+  ui:
+    image: iyjian/kid-talk-ui
+    build: ./front
+    restart: always
+    env_file:
+      - .env    
+    ports:
+      - 53004:80
+  fe-entrance:
+    image: iyjian-docker.pkg.coding.net/jcjy/docker/fe-entrance:0.0.13
+    env_file:
+      - .env
+    ports:
+      - 49893:3000
+    restart: always
+  api:
+    image: iyjian/kid-talk-api
+    build: .
+    restart: always
+    ports:
+      - 53005:3000
+    env_file:
+      - .env
+  authing:
+    image: iyjian-docker.pkg.coding.net/jcjy/docker/authing:dev
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - PORT=3000
+    # ports:
+    #   - 50001:50001
+    command: >
+      sh -c "
+        npx ts-node dist/main.js
+      "
