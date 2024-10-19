@@ -30,9 +30,7 @@ export default () => ({
     ttl: parseInt(process.env.REDIS_TTL, 0),
   },
   auth: {
-    authingAppId: process.env.AUTHING_APP_ID,
-    authingAppHost: process.env.AUTHING_APP_HOST,
-    superToken: process.env.SUPER_TOKEN,
+    endpoint: process.env.AUTH_ENDPOINT,
   },
   wx: {
     appId: process.env.WX_APPID,

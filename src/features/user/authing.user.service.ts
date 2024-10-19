@@ -14,6 +14,8 @@ import { MiniProgramService } from './mini.program.service'
 import { Cache } from 'cache-manager'
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { v4 } from 'uuid'
+import axios from 'axios'
+import { ConfigService } from '@nestjs/config'
 
 // import {
 //   FindAllUserRequestDTO,
@@ -33,6 +35,7 @@ export class AuthingUserService extends BaseService {
     private readonly userModel: typeof AuthingUser,
     private readonly mysql: Sequelize,
     private readonly miniProgramService: MiniProgramService,
+    private readonly configService: ConfigService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {
     super()
@@ -41,18 +44,17 @@ export class AuthingUserService extends BaseService {
   }
 
   async isLogin(token: string) {
-    const userId = await this.cacheManager.get<string>(`TALK_TOKEN:${token}`)
-
-    if (!userId) {
-      return undefined
+    const response = await axios.get(`${this.configService.get('auth.endpoint')}/auth/users/detail/${token}`)
+    if (!response.data.err) {
+      return response.data.data
     } else {
-      return await this.findOneById(parseInt(userId))
+      throw new HttpException(response.data.errMsg, HttpStatus.NOT_FOUND)
     }
   }
 
   async login(code: string) {
-    const openId = await this.miniProgramService.authorization(code)
-    // const openId = 'fake'
+    // const openId = await this.miniProgramService.authorization(code)
+    const openId = 'fake'
 
     let user = await this.findOne({ openId })
 
@@ -60,19 +62,9 @@ export class AuthingUserService extends BaseService {
       user = await this.create({ userName: openId, passwd: '', openId })
     }
 
-    let token = await this.cacheManager.get(`TALK_USER:${user.id}`)
-
-    if (!token) {
-      token = v4()
-
-      await this.cacheManager.set(`TALK_USER:${user.id}`, token)
-      await this.cacheManager.set(`TALK_TOKEN:${token}`, user.id)
-    }
-
-    return {
-      ...JSON.parse(JSON.stringify(user)),
-      token,
-    }
+    const response = await axios.post(`${this.configService.get('auth.endpoint')}/auth/users/login`, {openId})
+    
+    return response.data.data
   }
 
   async create(createUserRequest: any, transaction?: Transaction) {
