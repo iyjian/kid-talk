@@ -18,7 +18,7 @@ RUN ls /app/dist
 
 FROM nginx:stable-alpine as production-stage
 
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html/admin-panel
 
 COPY ./quickStart/nginx/nginx.conf /etc/nginx/nginx.conf
 

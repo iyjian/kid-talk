@@ -92,9 +92,9 @@ router.beforeEach(async (to, from, next) => {
         loginPageUrl = window.location.origin
       }
 
-      // window.location.href = `${loginPageUrl}?title=${encodeURIComponent(
-      //   import.meta.env.VITE_APP_LOGIN_TITLE
-      // )}&redirect=${window.location.href}`
+      window.location.href = `${loginPageUrl}?title=${encodeURIComponent(
+        import.meta.env.VITE_APP_LOGIN_TITLE
+      )}&redirect=${window.location.href}`
 
       return
     }
@@ -104,9 +104,10 @@ router.beforeEach(async (to, from, next) => {
     if (/\d+\.\d+\.\d+\.\d+/.test(window.location.host)) {
       loginPageUrl = window.location.origin
     }
-    // window.location.href = `${loginPageUrl}?title=${encodeURIComponent(
-    //   import.meta.env.VITE_APP_LOGIN_TITLE
-    // )}&redirect=${window.location.href}`
+
+    window.location.href = `${loginPageUrl}?title=${encodeURIComponent(
+      import.meta.env.VITE_APP_LOGIN_TITLE
+    )}&redirect=${window.location.href}`
 
     return
   }
