@@ -33,6 +33,7 @@ type ChatResponse = {
     origin: '*',
   },
   transports: ['websocket'],
+  path: '/ws'
 })
 
 //
