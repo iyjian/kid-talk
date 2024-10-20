@@ -58,7 +58,7 @@ router.beforeEach(async (to, from, next) => {
     }
     window.location.href = `${loginPageUrl}?title=${encodeURIComponent(
       import.meta.env.VITE_APP_LOGIN_TITLE
-    )}&redirect=${window.location.href}`
+    )}&redirect=${window.location.href}&skipBind=1`
     return
   }
 
@@ -94,7 +94,7 @@ router.beforeEach(async (to, from, next) => {
 
       window.location.href = `${loginPageUrl}?title=${encodeURIComponent(
         import.meta.env.VITE_APP_LOGIN_TITLE
-      )}&redirect=${window.location.href}`
+      )}&redirect=${window.location.href}&skipBind=1`
 
       return
     }
@@ -107,7 +107,7 @@ router.beforeEach(async (to, from, next) => {
 
     window.location.href = `${loginPageUrl}?title=${encodeURIComponent(
       import.meta.env.VITE_APP_LOGIN_TITLE
-    )}&redirect=${window.location.href}`
+    )}&redirect=${window.location.href}&skipBind=1`
 
     return
   }
