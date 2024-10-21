@@ -29,6 +29,7 @@ import { ConfigService } from '@nestjs/config'
 export class AuthingUserService extends BaseService {
   private readonly include: any[]
   private readonly includeForOne: any[]
+  private readonly logger = new Logger('AuthingUserService')
 
   constructor(
     @InjectModel(AuthingUser)
@@ -46,6 +47,7 @@ export class AuthingUserService extends BaseService {
   async isLogin(token: string) {
     const response = await axios.get(`${this.configService.get('auth.endpoint')}/auth/users/detail/${token}`)
     if (!response.data.err) {
+      this.logger.verbose(`isLogin - ${JSON.stringify(response.data.data)}`)
       return response.data.data
     } else {
       throw new HttpException(response.data.errMsg, HttpStatus.NOT_FOUND)

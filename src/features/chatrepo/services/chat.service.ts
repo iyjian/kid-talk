@@ -62,6 +62,7 @@ export class ChatService implements OnGatewayConnection {
     //   }
     // }
     const user = await this.authingUserService.isLogin(token)
+    this.logger.verbose(`getUserIdBySocket - user: ${JSON.stringify(user)}`)
     // const user = await this.authingUserService.findOneByUid(userInfo.data.id)
     return user.id
   }
