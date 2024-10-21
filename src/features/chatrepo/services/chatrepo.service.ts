@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/sequelize'
 import { Chat } from '../entities/chatrepo.entity'
 import { Session } from '../entities/session.entity'
@@ -7,6 +7,8 @@ import { ENGLISH_TEACHER_PROMPT } from './prompts'
 
 @Injectable()
 export class ChatrepoService {
+  private logger = new Logger(ChatrepoService.name)
+
   constructor(
     @InjectModel(Chat)
     private readonly ChatModel: typeof Chat,
@@ -26,6 +28,8 @@ export class ChatrepoService {
   }
 
   async init(userId: number) {
+    this.logger.verbose(`init - userId: ${userId}`)
+    
     const session = await this.SessionModel.create({
       name: '',
       userId,
