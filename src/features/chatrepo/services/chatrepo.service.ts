@@ -29,7 +29,7 @@ export class ChatrepoService {
 
   async init(userId: number) {
     this.logger.verbose(`init - userId: ${userId}`)
-    
+
     const session = await this.SessionModel.create({
       name: '',
       userId,

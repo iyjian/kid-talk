@@ -33,7 +33,7 @@ type ChatResponse = {
     origin: '*',
   },
   transports: ['websocket'],
-  path: '/ws'
+  path: '/ws',
 })
 
 //
@@ -46,8 +46,7 @@ export class ChatService implements OnGatewayConnection {
     // private readonly baiduSpeechService: BaiduSpeechService,
     // private readonly configService: ConfigService,
     private readonly authingUserService: AuthingUserService,
-  ) {
-  }
+  ) {}
 
   private async getUserIdBySocket(token: string) {
     // const userInfo = (await this.authing.checkLoginStatus(token)) as {
@@ -158,7 +157,9 @@ export class ChatService implements OnGatewayConnection {
       name?: string
     },
   ): Promise<ChatResponse> {
-    this.logger.debug(`chat - sessionId: ${data.sessionId}, content: ${data.content}, role: ${data.role}, name: ${data.name}`)
+    this.logger.debug(
+      `chat - sessionId: ${data.sessionId}, content: ${data.content}, role: ${data.role}, name: ${data.name}`,
+    )
     const { sessionId, role = 'user', content, name } = data
     const tmpFile = path.join(__dirname, `./../../../tmp/${uuidv4()}.wav`)
     fs.writeFileSync(tmpFile, Buffer.from(content, 'base64') as any)

@@ -45,7 +45,9 @@ export class AuthingUserService extends BaseService {
   }
 
   async isLogin(token: string) {
-    const response = await axios.get(`${this.configService.get('auth.endpoint')}/auth/users/detail/${token}`)
+    const response = await axios.get(
+      `${this.configService.get('auth.endpoint')}/auth/users/detail/${token}`,
+    )
     if (!response.data.err) {
       this.logger.verbose(`isLogin - ${JSON.stringify(response.data.data)}`)
       return response.data.data
@@ -64,7 +66,10 @@ export class AuthingUserService extends BaseService {
       user = await this.create({ userName: openId, passwd: '', openId })
     }
 
-    const response = await axios.post(`${this.configService.get('auth.endpoint')}/auth/users/login`, {openId})
+    const response = await axios.post(
+      `${this.configService.get('auth.endpoint')}/auth/users/login`,
+      { openId },
+    )
 
     return response.data.data
   }
