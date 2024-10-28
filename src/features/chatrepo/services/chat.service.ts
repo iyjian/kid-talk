@@ -78,10 +78,32 @@ export class ChatService implements OnGatewayConnection {
   async startNewChat(
     @MessageBody() payload: { token: string },
   ): Promise<ChatResponse> {
-    this.logger.debug(`init - token: ${payload.token}`)
+    let currentTime = +new Date()
+    this.logger.debug(
+      `init - token: ${payload.token} - start - currentTime: ${currentTime}`,
+    )
     const userId = await this.getUserIdBySocket(payload.token)
+
+    this.logger.debug(
+      `init - token: ${
+        payload.token
+      } - getUserIdBySocket - currentTime: ${currentTime} duration: ${
+        +new Date() - currentTime
+      }`,
+    )
+    currentTime = +new Date()
+
     const messages = []
     const chatRepo = await this.chatrepoService.init(userId)
+
+    this.logger.debug(
+      `init - token: ${
+        payload.token
+      } - chatrepoService.init - currentTime: ${currentTime} duration: ${
+        +new Date() - currentTime
+      }`,
+    )
+    currentTime = +new Date()
 
     messages.push({
       role: chatRepo.role,
@@ -89,6 +111,15 @@ export class ChatService implements OnGatewayConnection {
     })
 
     const result = await this.openaiService.chat(messages)
+
+    this.logger.debug(
+      `init - token: ${
+        payload.token
+      } - openaiService.chat - currentTime: ${currentTime} duration: ${
+        +new Date() - currentTime
+      }`,
+    )
+    currentTime = +new Date()
 
     const response = result.choices[0].message.content
 
@@ -100,6 +131,15 @@ export class ChatService implements OnGatewayConnection {
       completionTokens: result.usage.completion_tokens,
     })
 
+    this.logger.debug(
+      `init - token: ${
+        payload.token
+      } - chatrepoService.create - currentTime: ${currentTime} duration: ${
+        +new Date() - currentTime
+      }`,
+    )
+    currentTime = +new Date()
+
     const audio = await this.openaiService.createSpeech(
       {
         model: 'tts',
@@ -109,6 +149,15 @@ export class ChatService implements OnGatewayConnection {
       },
       {},
     )
+
+    this.logger.debug(
+      `init - token: ${
+        payload.token
+      } - openaiService.createSpeech - currentTime: ${currentTime} duration: ${
+        +new Date() - currentTime
+      }`,
+    )
+    currentTime = +new Date()
 
     return {
       command: 'init',
