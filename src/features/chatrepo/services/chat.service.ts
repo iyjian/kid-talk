@@ -43,26 +43,12 @@ export class ChatService implements OnGatewayConnection {
   constructor(
     private readonly chatrepoService: ChatrepoService,
     private readonly openaiService: OpenaiService,
-    // private readonly baiduSpeechService: BaiduSpeechService,
-    // private readonly configService: ConfigService,
     private readonly authingUserService: AuthingUserService,
   ) {}
 
   private async getUserIdBySocket(token: string) {
-    // const userInfo = (await this.authing.checkLoginStatus(token)) as {
-    //   code: number
-    //   message: string
-    //   status: boolean
-    //   exp: number
-    //   iat: number
-    //   data: {
-    //     id: string
-    //     userPoolId: string
-    //   }
-    // }
     const user = await this.authingUserService.isLogin(token)
     this.logger.verbose(`getUserIdBySocket - user: ${JSON.stringify(user)}`)
-    // const user = await this.authingUserService.findOneByUid(userInfo.data.id)
     return user.id
   }
 
@@ -80,22 +66,9 @@ export class ChatService implements OnGatewayConnection {
    */
   // @UseGuards(ApiGuard)
   handleConnection(client: Socket, req: any) {
-    // const token = client.handshake.query.token as string
-    // this.logger.debug(`socketio client connected - token: ${token}`)
-    // console.log(client)
-    // console.log(req.url)
-    // // console.log(client.request)
-    // this.socketUsers[client.id] = {
-    //   client,
-    // }
     console.log('connected')
   }
 
-  // async handleClientEvents(@MessageBody() data: string) {
-  //   this.logger.debug(`handleClientEvents - text2speech - text: ${data}`);
-  // }
-
-  // @UseGuards(ApiGuard)
   @SubscribeMessage('test')
   test(@ConnectedSocket() client: Socket) {
     // console.log(client.handshake.query.token);
@@ -127,7 +100,6 @@ export class ChatService implements OnGatewayConnection {
       completionTokens: result.usage.completion_tokens,
     })
 
-    // const audio = await this.baiduSpeechService.text2Speech(response)
     const audio = await this.openaiService.createSpeech(
       {
         model: 'tts',
@@ -166,11 +138,6 @@ export class ChatService implements OnGatewayConnection {
     const stream = fs.createReadStream(tmpFile)
     const textContent = await this.openaiService.speech2Text(stream)
     fs.unlinkSync(tmpFile)
-    // const speech2TextResult = await this.baiduSpeechService.speech2Text(
-    //   content,
-    // )
-    // content = speech2TextResult.result[0]
-    console.log(content)
 
     const messages = JSON.parse(
       JSON.stringify(await this.chatrepoService.findAllBySessionId(sessionId)),
@@ -197,7 +164,6 @@ export class ChatService implements OnGatewayConnection {
       completionTokens: result.usage.completion_tokens,
     })
 
-    // const audio = await this.baiduSpeechService.text2Speech(response)
     const audio = await this.openaiService.createSpeech(
       {
         model: 'tts',
@@ -207,6 +173,7 @@ export class ChatService implements OnGatewayConnection {
       },
       {},
     )
+
     return {
       command: 'chat',
       sessionId,
