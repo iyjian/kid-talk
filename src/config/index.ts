@@ -31,6 +31,7 @@ export default () => ({
   },
   auth: {
     endpoint: process.env.AUTH_ENDPOINT,
+    superToken: process.env.SUPER_TOKEN
   },
   wx: {
     appId: process.env.WX_APPID,

@@ -76,7 +76,7 @@ export class ChatService implements OnGatewayConnection {
 
   @SubscribeMessage('init')
   async startNewChat(
-    @MessageBody() payload: { token: string },
+    @MessageBody() payload: { token: string, id: number },
   ): Promise<ChatResponse> {
     let currentTime = +new Date()
     this.logger.debug(
@@ -94,7 +94,7 @@ export class ChatService implements OnGatewayConnection {
     currentTime = +new Date()
 
     const messages = []
-    const chatRepo = await this.chatrepoService.init(userId)
+    const chatRepo = await this.chatrepoService.init(userId, payload.id)
 
     this.logger.debug(
       `init - token: ${

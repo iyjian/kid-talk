@@ -68,7 +68,8 @@ function init() {
     JSON.stringify({
       event: 'init',
       data: {
-        token: adminStore?.user.token
+        token: adminStore?.user.token,
+        id: 8
       }
     })
   )
