@@ -76,7 +76,7 @@ export class ChatService implements OnGatewayConnection {
 
   @SubscribeMessage('init')
   async startNewChat(
-    @MessageBody() payload: { token: string, id: number },
+    @MessageBody() payload: { token: string; id: number },
   ): Promise<ChatResponse> {
     let currentTime = +new Date()
     this.logger.debug(
@@ -182,12 +182,24 @@ export class ChatService implements OnGatewayConnection {
       `chat - sessionId: ${data.sessionId}, content: ${data.content}, role: ${data.role}, name: ${data.name}`,
     )
     const { sessionId, role = 'user', content, name } = data
+
+    this.logger.debug(`chat - save to file start`)
     const tmpFile = path.join(__dirname, `./../../../tmp/${uuidv4()}.wav`)
     fs.writeFileSync(tmpFile, Buffer.from(content, 'base64') as any)
     const stream = fs.createReadStream(tmpFile)
-    const textContent = await this.openaiService.speech2Text(stream)
-    fs.unlinkSync(tmpFile)
+    this.logger.debug(`chat - save to file end`)
 
+    this.logger.debug(`chat - speech2Text start`)
+    const textContent = await this.openaiService.speech2Text({
+      file: stream,
+      model: 'whisper',
+      language: 'en',
+    })
+
+    fs.unlinkSync(tmpFile)
+    this.logger.debug(`chat - speech2Text end`)
+
+    this.logger.debug(`chat - save message start`)
     const messages = JSON.parse(
       JSON.stringify(await this.chatrepoService.findAllBySessionId(sessionId)),
     )
@@ -212,7 +224,9 @@ export class ChatService implements OnGatewayConnection {
       promptTokens: result.usage.prompt_tokens,
       completionTokens: result.usage.completion_tokens,
     })
+    this.logger.debug(`chat - save message end`)
 
+    this.logger.debug(`chat - create speech start`)
     const audio = await this.openaiService.createSpeech(
       {
         model: 'tts',
@@ -222,6 +236,7 @@ export class ChatService implements OnGatewayConnection {
       },
       {},
     )
+    this.logger.debug(`chat - create speech end`)
 
     return {
       command: 'chat',

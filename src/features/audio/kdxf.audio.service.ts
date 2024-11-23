@@ -40,15 +40,12 @@ export class KDXFAudioService implements OnGatewayConnection {
   private readonly apiKey = this.configService.get('kdxf.apiKey')
   private readonly logger = new Logger(KDXFAudioService.name)
 
-
   private readonly socketUsers = {}
 
   constructor(
     private readonly configService: ConfigService,
     private eventEmitter: EventEmitter2,
-  ) {
- 
-  }
+  ) {}
 
   /**
    * 为每个客户端新建两个text2speech speech2text的连接

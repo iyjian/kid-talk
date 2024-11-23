@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import 'openai/shims/node'
 import OpenAI from 'openai'
 import { ChatCompletionMessageParam } from 'openai/resources/chat/completions'
+import { TranscriptionCreateParams } from 'openai/resources/audio/transcriptions'
 
 @Injectable()
 export class OpenaiService {
@@ -77,12 +78,11 @@ export class OpenaiService {
     return Buffer.from(await response.arrayBuffer())
   }
 
-  async speech2Text(stream: any): Promise<string> {
-    const transcription = await this.openai.audio.transcriptions.create({
-      file: stream,
-      model: 'whisper',
-      language: 'en',
-    })
+  async speech2Text(
+    body: TranscriptionCreateParams<'json' | undefined>,
+  ): Promise<string> {
+    const transcription = await this.openai.audio.transcriptions.create(body)
+
     return transcription.text
   }
 }

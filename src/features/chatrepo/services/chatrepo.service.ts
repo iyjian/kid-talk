@@ -33,11 +33,14 @@ export class ChatrepoService {
   async init(userId: number, promptId: number) {
     this.logger.verbose(`init - userId: ${userId} promptid: ${promptId}`)
 
-    const response = await axios.get(`https://admin.tiusolution.com/api/prompt/${promptId}`, {
-      params: {
-        token: this.configService.get('auth.superToken'),
+    const response = await axios.get(
+      `https://admin.tiusolution.com/api/prompt/${promptId}`,
+      {
+        params: {
+          token: this.configService.get('auth.superToken'),
+        },
       },
-    })
+    )
 
     const session = await this.SessionModel.create({
       name: '',
