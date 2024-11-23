@@ -14,7 +14,7 @@ import {
   OnGatewayConnection,
   ConnectedSocket,
 } from '@nestjs/websockets'
-import baiduAIP from 'baidu-aip-sdk'
+// import baiduAIP from 'baidu-aip-sdk'
 
 type Text2SpeechResponse = {
   code: number
@@ -38,15 +38,8 @@ export class KDXFAudioService implements OnGatewayConnection {
   private readonly appId = this.configService.get('kdxf.appId')
   private readonly apiSecret = this.configService.get('kdxf.apiSecret')
   private readonly apiKey = this.configService.get('kdxf.apiKey')
-  private readonly baiduAIPAccessKey = this.configService.get('baidu.accessKey')
-  private readonly baiduAIPAccessSecret =
-    this.configService.get('baidu.accessSecret')
   private readonly logger = new Logger(KDXFAudioService.name)
-  private readonly client = new baiduAIP.speech(
-    0,
-    this.baiduAIPAccessKey,
-    this.baiduAIPAccessSecret,
-  )
+
 
   private readonly socketUsers = {}
 
@@ -54,17 +47,7 @@ export class KDXFAudioService implements OnGatewayConnection {
     private readonly configService: ConfigService,
     private eventEmitter: EventEmitter2,
   ) {
-    console.log(this.configService.get('baidu.accessKey'))
-    console.log(this.configService.get('baidu.accessSecret'))
-    this.client.text2audio('百度语音合成测试').then(
-      function (result) {
-        console.log(result)
-      },
-      function (e) {
-        // 发生网络错误
-        console.log(e)
-      },
-    )
+ 
   }
 
   /**
@@ -79,7 +62,7 @@ export class KDXFAudioService implements OnGatewayConnection {
     }
   }
 
-  public registerKDXFClientForSocketIOClient(
+  private registerKDXFClientForSocketIOClient(
     clientId: string,
     type: 'text2speechClient' | 'speech2TextClient',
     cb: (payload: any) => void,
@@ -163,14 +146,14 @@ export class KDXFAudioService implements OnGatewayConnection {
     return authorization
   }
 
-  @SubscribeMessage('text2speech')
-  handleClientEvents(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: { text: string },
-  ) {
-    this.logger.debug(`handleClientEvents - text2speech - text: ${data.text}`)
-    this.text2speech(client.id, data.text)
-  }
+  // @SubscribeMessage('text2speech')
+  // handleClientEvents(
+  //   @ConnectedSocket() client: Socket,
+  //   @MessageBody() data: { text: string },
+  // ) {
+  //   this.logger.debug(`handleClientEvents - text2speech - text: ${data.text}`)
+  //   this.text2speech(client.id, data.text)
+  // }
 
   private text2speech(
     clientId: string,

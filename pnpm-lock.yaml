@@ -40,7 +40,7 @@ importers:
         version: 10.1.4(chokidar@3.6.0)(typescript@4.9.5)
       '@nestjs/sequelize':
         specifier: ^10.0.1
-        version: 10.0.1(@nestjs/common@10.4.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/core@10.4.1(@nestjs/common@10.4.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/platform-express@10.4.1)(@nestjs/websockets@10.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(reflect-metadata@0.1.13)(rxjs@7.8.1)(sequelize-typescript@2.1.5(@types/node@16.18.25)(@types/validator@13.12.1)(reflect-metadata@0.1.13)(sequelize@6.31.1(mysql2@3.3.1)))(sequelize@6.31.1(mysql2@3.3.1))
+        version: 10.0.1(@nestjs/common@10.4.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/core@10.4.1(@nestjs/common@10.4.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/platform-express@10.4.1)(@nestjs/websockets@10.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(reflect-metadata@0.1.13)(rxjs@7.8.1)(sequelize-typescript@2.1.5(@types/node@22.9.1)(@types/validator@13.12.1)(reflect-metadata@0.1.13)(sequelize@6.31.1(mysql2@3.3.1)))(sequelize@6.31.1(mysql2@3.3.1))
       '@nestjs/swagger':
         specifier: ^7.4.0
         version: 7.4.0(@nestjs/common@10.4.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/core@10.4.1(@nestjs/common@10.4.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/platform-express@10.4.1)(@nestjs/websockets@10.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.13)
@@ -112,7 +112,7 @@ importers:
         version: 6.31.1(mysql2@3.3.1)
       sequelize-typescript:
         specifier: ^2.1.5
-        version: 2.1.5(@types/node@16.18.25)(@types/validator@13.12.1)(reflect-metadata@0.1.13)(sequelize@6.31.1(mysql2@3.3.1))
+        version: 2.1.5(@types/node@22.9.1)(@types/validator@13.12.1)(reflect-metadata@0.1.13)(sequelize@6.31.1(mysql2@3.3.1))
       socket.io:
         specifier: ^4.6.1
         version: 4.6.1
@@ -142,8 +142,8 @@ importers:
         specifier: 27.4.0
         version: 27.4.0
       '@types/node':
-        specifier: ^16.0.0
-        version: 16.18.25
+        specifier: ^22.9.1
+        version: 22.9.1
       '@types/supertest':
         specifier: ^2.0.11
         version: 2.0.12
@@ -173,7 +173,7 @@ importers:
         version: 4.2.1(eslint-config-prettier@8.8.0(eslint@8.39.0))(eslint@8.39.0)(prettier@2.8.8)
       jest:
         specifier: ^27.2.5
-        version: 27.5.1(ts-node@10.9.1(@types/node@16.18.25)(typescript@4.9.5))
+        version: 27.5.1(ts-node@10.9.1(@types/node@22.9.1)(typescript@4.9.5))
       prettier:
         specifier: ^2.3.2
         version: 2.8.8
@@ -188,13 +188,13 @@ importers:
         version: 6.3.3
       ts-jest:
         specifier: ^27.0.3
-        version: 27.1.5(@babel/core@7.21.5)(@types/jest@27.4.0)(babel-jest@27.5.1(@babel/core@7.21.5))(jest@27.5.1(ts-node@10.9.1(@types/node@16.18.25)(typescript@4.9.5)))(typescript@4.9.5)
+        version: 27.1.5(@babel/core@7.21.5)(@types/jest@27.4.0)(babel-jest@27.5.1(@babel/core@7.21.5))(jest@27.5.1(ts-node@10.9.1(@types/node@22.9.1)(typescript@4.9.5)))(typescript@4.9.5)
       ts-loader:
         specifier: ^9.2.3
         version: 9.4.2(typescript@4.9.5)(webpack@5.94.0)
       ts-node:
         specifier: ^10.0.0
-        version: 10.9.1(@types/node@16.18.25)(typescript@4.9.5)
+        version: 10.9.1(@types/node@22.9.1)(typescript@4.9.5)
       tsconfig-paths:
         specifier: ^3.10.1
         version: 3.14.2
@@ -850,6 +850,9 @@ packages:
 
   '@types/node@18.19.54':
     resolution: {integrity: sha512-+BRgt0G5gYjTvdLac9sIeE0iZcJxi4Jc4PV5EUzqi+88jmQLr+fRZdv2tCTV7IHKSGxM6SaLoOXQWWUiLUItMw==}
+
+  '@types/node@22.9.1':
+    resolution: {integrity: sha512-p8Yy/8sw1caA8CdRIQBG5tiLHmxtQKObCijiAa9Ez+d4+PRffM4054xbju0msf+cvhJpnFEeNjxmVT/0ipktrg==}
 
   '@types/prettier@2.7.2':
     resolution: {integrity: sha512-KufADq8uQqo1pYKVIYzfKbJfBAc0sOeXqGbFaSpv8MRmC/zXgowNZmFcbngndGk922QDmOASEXUZCaY48gs4cg==}
@@ -3773,6 +3776,9 @@ packages:
   undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
 
+  undici-types@6.19.8:
+    resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
+
   universalify@0.2.0:
     resolution: {integrity: sha512-CJ1QgKmNg3CwvAv/kOFmtnEN05f0D/cn9QntgNOQlQF9dgvVTHj3t+8JPdjqawCHk7V/KA+fbUqzZ9XWhcqPUg==}
     engines: {node: '>= 4.0.0'}
@@ -4400,7 +4406,7 @@ snapshots:
       jest-util: 27.5.1
       slash: 3.0.0
 
-  '@jest/core@27.5.1(ts-node@10.9.1(@types/node@16.18.25)(typescript@4.9.5))':
+  '@jest/core@27.5.1(ts-node@10.9.1(@types/node@22.9.1)(typescript@4.9.5))':
     dependencies:
       '@jest/console': 27.5.1
       '@jest/reporters': 27.5.1
@@ -4414,7 +4420,7 @@ snapshots:
       exit: 0.1.2
       graceful-fs: 4.2.11
       jest-changed-files: 27.5.1
-      jest-config: 27.5.1(ts-node@10.9.1(@types/node@16.18.25)(typescript@4.9.5))
+      jest-config: 27.5.1(ts-node@10.9.1(@types/node@22.9.1)(typescript@4.9.5))
       jest-haste-map: 27.5.1
       jest-message-util: 27.5.1
       jest-regex-util: 27.5.1
@@ -4739,14 +4745,14 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@nestjs/sequelize@10.0.1(@nestjs/common@10.4.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/core@10.4.1(@nestjs/common@10.4.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/platform-express@10.4.1)(@nestjs/websockets@10.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(reflect-metadata@0.1.13)(rxjs@7.8.1)(sequelize-typescript@2.1.5(@types/node@16.18.25)(@types/validator@13.12.1)(reflect-metadata@0.1.13)(sequelize@6.31.1(mysql2@3.3.1)))(sequelize@6.31.1(mysql2@3.3.1))':
+  '@nestjs/sequelize@10.0.1(@nestjs/common@10.4.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/core@10.4.1(@nestjs/common@10.4.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/platform-express@10.4.1)(@nestjs/websockets@10.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(reflect-metadata@0.1.13)(rxjs@7.8.1)(sequelize-typescript@2.1.5(@types/node@22.9.1)(@types/validator@13.12.1)(reflect-metadata@0.1.13)(sequelize@6.31.1(mysql2@3.3.1)))(sequelize@6.31.1(mysql2@3.3.1))':
     dependencies:
       '@nestjs/common': 10.4.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/core': 10.4.1(@nestjs/common@10.4.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/platform-express@10.4.1)(@nestjs/websockets@10.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       reflect-metadata: 0.1.13
       rxjs: 7.8.1
       sequelize: 6.31.1(mysql2@3.3.1)
-      sequelize-typescript: 2.1.5(@types/node@16.18.25)(@types/validator@13.12.1)(reflect-metadata@0.1.13)(sequelize@6.31.1(mysql2@3.3.1))
+      sequelize-typescript: 2.1.5(@types/node@22.9.1)(@types/validator@13.12.1)(reflect-metadata@0.1.13)(sequelize@6.31.1(mysql2@3.3.1))
       uuid: 9.0.1
 
   '@nestjs/swagger@7.4.0(@nestjs/common@10.4.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/core@10.4.1(@nestjs/common@10.4.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(@nestjs/platform-express@10.4.1)(@nestjs/websockets@10.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.13)':
@@ -4941,6 +4947,10 @@ snapshots:
   '@types/node@18.19.54':
     dependencies:
       undici-types: 5.26.5
+
+  '@types/node@22.9.1':
+    dependencies:
+      undici-types: 6.19.8
 
   '@types/prettier@2.7.2': {}
 
@@ -6696,16 +6706,16 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  jest-cli@27.5.1(ts-node@10.9.1(@types/node@16.18.25)(typescript@4.9.5)):
+  jest-cli@27.5.1(ts-node@10.9.1(@types/node@22.9.1)(typescript@4.9.5)):
     dependencies:
-      '@jest/core': 27.5.1(ts-node@10.9.1(@types/node@16.18.25)(typescript@4.9.5))
+      '@jest/core': 27.5.1(ts-node@10.9.1(@types/node@22.9.1)(typescript@4.9.5))
       '@jest/test-result': 27.5.1
       '@jest/types': 27.5.1
       chalk: 4.1.2
       exit: 0.1.2
       graceful-fs: 4.2.11
       import-local: 3.1.0
-      jest-config: 27.5.1(ts-node@10.9.1(@types/node@16.18.25)(typescript@4.9.5))
+      jest-config: 27.5.1(ts-node@10.9.1(@types/node@22.9.1)(typescript@4.9.5))
       jest-util: 27.5.1
       jest-validate: 27.5.1
       prompts: 2.4.2
@@ -6717,7 +6727,7 @@ snapshots:
       - ts-node
       - utf-8-validate
 
-  jest-config@27.5.1(ts-node@10.9.1(@types/node@16.18.25)(typescript@4.9.5)):
+  jest-config@27.5.1(ts-node@10.9.1(@types/node@22.9.1)(typescript@4.9.5)):
     dependencies:
       '@babel/core': 7.21.5
       '@jest/test-sequencer': 27.5.1
@@ -6744,7 +6754,7 @@ snapshots:
       slash: 3.0.0
       strip-json-comments: 3.1.1
     optionalDependencies:
-      ts-node: 10.9.1(@types/node@16.18.25)(typescript@4.9.5)
+      ts-node: 10.9.1(@types/node@22.9.1)(typescript@4.9.5)
     transitivePeerDependencies:
       - bufferutil
       - canvas
@@ -7013,11 +7023,11 @@ snapshots:
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
-  jest@27.5.1(ts-node@10.9.1(@types/node@16.18.25)(typescript@4.9.5)):
+  jest@27.5.1(ts-node@10.9.1(@types/node@22.9.1)(typescript@4.9.5)):
     dependencies:
-      '@jest/core': 27.5.1(ts-node@10.9.1(@types/node@16.18.25)(typescript@4.9.5))
+      '@jest/core': 27.5.1(ts-node@10.9.1(@types/node@22.9.1)(typescript@4.9.5))
       import-local: 3.1.0
-      jest-cli: 27.5.1(ts-node@10.9.1(@types/node@16.18.25)(typescript@4.9.5))
+      jest-cli: 27.5.1(ts-node@10.9.1(@types/node@22.9.1)(typescript@4.9.5))
     transitivePeerDependencies:
       - bufferutil
       - canvas
@@ -7757,9 +7767,9 @@ snapshots:
 
   sequelize-pool@7.1.0: {}
 
-  sequelize-typescript@2.1.5(@types/node@16.18.25)(@types/validator@13.12.1)(reflect-metadata@0.1.13)(sequelize@6.31.1(mysql2@3.3.1)):
+  sequelize-typescript@2.1.5(@types/node@22.9.1)(@types/validator@13.12.1)(reflect-metadata@0.1.13)(sequelize@6.31.1(mysql2@3.3.1)):
     dependencies:
-      '@types/node': 16.18.25
+      '@types/node': 22.9.1
       '@types/validator': 13.12.1
       glob: 7.2.0
       reflect-metadata: 0.1.13
@@ -8148,11 +8158,11 @@ snapshots:
 
   tree-kill@1.2.2: {}
 
-  ts-jest@27.1.5(@babel/core@7.21.5)(@types/jest@27.4.0)(babel-jest@27.5.1(@babel/core@7.21.5))(jest@27.5.1(ts-node@10.9.1(@types/node@16.18.25)(typescript@4.9.5)))(typescript@4.9.5):
+  ts-jest@27.1.5(@babel/core@7.21.5)(@types/jest@27.4.0)(babel-jest@27.5.1(@babel/core@7.21.5))(jest@27.5.1(ts-node@10.9.1(@types/node@22.9.1)(typescript@4.9.5)))(typescript@4.9.5):
     dependencies:
       bs-logger: 0.2.6
       fast-json-stable-stringify: 2.1.0
-      jest: 27.5.1(ts-node@10.9.1(@types/node@16.18.25)(typescript@4.9.5))
+      jest: 27.5.1(ts-node@10.9.1(@types/node@22.9.1)(typescript@4.9.5))
       jest-util: 27.5.1
       json5: 2.2.3
       lodash.memoize: 4.1.2
@@ -8174,14 +8184,14 @@ snapshots:
       typescript: 4.9.5
       webpack: 5.94.0
 
-  ts-node@10.9.1(@types/node@16.18.25)(typescript@4.9.5):
+  ts-node@10.9.1(@types/node@22.9.1)(typescript@4.9.5):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.9
       '@tsconfig/node12': 1.0.11
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.3
-      '@types/node': 16.18.25
+      '@types/node': 22.9.1
       acorn: 8.8.2
       acorn-walk: 8.2.0
       arg: 4.1.3
@@ -8271,6 +8281,8 @@ snapshots:
   underscore@1.13.6: {}
 
   undici-types@5.26.5: {}
+
+  undici-types@6.19.8: {}
 
   universalify@0.2.0: {}
 

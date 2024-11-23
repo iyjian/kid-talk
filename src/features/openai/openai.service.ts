@@ -81,6 +81,7 @@ export class OpenaiService {
     const transcription = await this.openai.audio.transcriptions.create({
       file: stream,
       model: 'whisper',
+      language: 'en',
     })
     return transcription.text
   }
