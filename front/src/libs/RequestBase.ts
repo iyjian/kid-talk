@@ -5,7 +5,7 @@ import router from './../router'
 import { useAdminStore } from "@/stores/user";
 
 export class RequestBase {
-  private readonly TIMEOUT = 100000
+  private readonly TIMEOUT = 900000
 
   protected request: AxiosInstance
 

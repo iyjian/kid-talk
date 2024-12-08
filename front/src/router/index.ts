@@ -67,7 +67,7 @@ router.beforeEach(async (to, from, next) => {
     return
   }
   // http://localhost:49893/?skipBind=1&redirect=http://localhost:5174/admin-panel
-  const token = adminStore?.user.token || to.query.token
+  const token = to.query.token || adminStore?.user.token;
 
   if (token) {
     // 登录地址有token，说明是从单点登录页跳转来的，则用token检查用户状态
